@@ -548,6 +548,8 @@ body.platform-mode .mobile-bottom-nav{display:none!important}
 /* Auth visibility must override mobile layout rules, including iOS Safari. */
 #loginScreen[hidden]{display:none!important;}
 #washpilotApp[hidden]{display:none!important;}
+
+.home-range-panel{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;margin-bottom:14px}.home-range-label{font-size:12px;font-weight:800;color:var(--muted);white-space:nowrap}.home-range-tabs{display:flex;gap:4px;flex-wrap:nowrap}.home-range-tabs button{font-size:12px;padding:9px 12px;white-space:nowrap;min-height:36px}@media(max-width:520px){.home-range-panel{align-items:flex-start;flex-direction:column}.home-range-tabs{width:100%;display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}.home-range-tabs button{padding:8px 2px;font-size:11px}}
 </style>
 </head>
 <body>
@@ -912,13 +914,18 @@ function render(){
  const pages={dashboard:dashboardPage,newwash:newWashPage,queue:queuePage,transactions:transactionsPage,customers:customersPage,catalog:catalogPage,addons:addonsPage,employees:employeesPage,expenses:expensesPage,reports:reportsPage,inventory:inventoryPage,branches:branchesPage,loyalty:loyaltyPage,recipes:recipesPage,reconcile:reconcilePage,subscription:subscriptionPage};
  c.innerHTML=(pages[currentPage]||dashboardPage)();
 }
+let selectedHomeRange=Number(wpStorage.getItem('wp_home_range')||1);
+function setHomeRange(days){selectedHomeRange=[1,7,14,21,30].includes(Number(days))?Number(days):1;wpStorage.setItem('wp_home_range',String(selectedHomeRange));render()}
+function homeRangeTransactions(){const start=isoAgo(selectedHomeRange-1),end=today();return state.transactions.filter(t=>t.date>=start&&t.date<=end)}
+function homeRangeTabs(){const opts=[[1,'Today'],[7,'7 days'],[14,'14 days'],[21,'21 days'],[30,'30 days']];return `<div class="panel home-range-panel"><div class="home-range-label">Performance period</div><div class="tabs home-range-tabs" role="group" aria-label="Home performance period">${opts.map(([days,label])=>`<button type="button" class="${selectedHomeRange===days?'active':''}" aria-pressed="${selectedHomeRange===days}" onclick="setHomeRange(${days})">${label}</button>`).join('')}</div></div>`}
 function easyDashboardPage(){
- const todayTx=state.transactions.filter(isToday),sales=totalSales(todayTx),vehicles=todayTx.filter(t=>t.status!=='Cancelled').length,active=todayTx.filter(t=>!['Cancelled','Completed'].includes(t.status)),completed=todayTx.filter(t=>t.status==='Completed').length;
- const waiting=todayTx.filter(t=>t.status==='Waiting').length;
- return `<section class="easy-welcome"><div><h1>Good day! Here's your carwash today.</h1><p>Keep the line moving. Your sales and vehicle activity are ready below.</p></div><button class="btn" onclick="go('newwash')">＋ Start a New Wash</button></section>
- <div class="grid stats">${stat("Today's Sales",money(sales),`${vehicles} vehicles recorded today`,'₱','green')}${stat('Vehicles Served',vehicles,'Today','🚘')}${stat('In Progress',active.length,'Waiting, washing or inspection','◷','amber')}${stat('Completed',completed,'Ready for customer pickup','✓','purple')}</div>
+ const periodTx=homeRangeTransactions(),sales=totalSales(periodTx),vehicles=periodTx.filter(t=>t.status!=='Cancelled').length,active=periodTx.filter(t=>!['Cancelled','Completed'].includes(t.status)),completed=periodTx.filter(t=>t.status==='Completed').length;
+ const periodLabel=selectedHomeRange===1?'today':`in the last ${selectedHomeRange} days`;
+ const activeNow=state.transactions.filter(t=>!['Cancelled','Completed'].includes(t.status));
+ return `${homeRangeTabs()}<section class="easy-welcome"><div><h1>Good day! Here's your carwash ${periodLabel}.</h1><p>Review sales and vehicle activity for your selected period.</p></div><button class="btn" onclick="go('newwash')">＋ Start a New Wash</button></section>
+ <div class="grid stats">${stat('Sales',money(sales),`${vehicles} vehicles recorded ${periodLabel}`,'₱','green')}${stat('Vehicles Served',vehicles,selectedHomeRange===1?'Today':`Last ${selectedHomeRange} days`,'🚘')}${stat('In Progress',active.length,`Active jobs ${periodLabel}`,'◷','amber')}${stat('Completed',completed,`Finished ${periodLabel}`,'✓','purple')}</div>
  <div class="grid two"><section class="panel"><div class="panel-head"><h3>Vehicles to look after</h3><button class="btn ghost small" onclick="go('queue')">Open queue</button></div>
- ${active.slice(0,5).map(t=>`<div class="easy-queue-row"><span class="plate">${esc(t.plate)}</span><div class="queue-info"><b>${esc(t.vehicle)} · ${esc(t.main)}</b><small>${esc(t.employee||'Awaiting assignment')}</small></div>${statusPill(t.status)}</div>`).join('')||'<div class="empty">No active vehicles. Start a new wash when a customer arrives.</div>'}</section>
+ ${activeNow.slice(0,5).map(t=>`<div class="easy-queue-row"><span class="plate">${esc(t.plate)}</span><div class="queue-info"><b>${esc(t.vehicle)} · ${esc(t.main)}</b><small>${esc(t.employee||'Awaiting assignment')}</small></div>${statusPill(t.status)}</div>`).join('')||'<div class="empty">No active vehicles. Start a new wash when a customer arrives.</div>'}</section>
  <section class="panel"><div class="panel-head"><h3>Quick actions</h3></div><div class="hub-grid" style="grid-template-columns:1fr 1fr"><button class="hub-tile" onclick="go('newwash')"><span class="hub-icon">＋</span><span><b>New Wash</b><small>Register a vehicle and payment</small></span></button><button class="hub-tile" onclick="go('transactions')"><span class="hub-icon">▤</span><span><b>Transactions</b><small>Find sales and receipts</small></span></button><button class="hub-tile" onclick="go('customers')"><span class="hub-icon">♙</span><span><b>Customers</b><small>Look up vehicles and history</small></span></button>${canAccessRolePage('managementHub')?`<button class="hub-tile" onclick="go('managementHub')"><span class="hub-icon">⚙</span><span><b>More Tools</b><small>Services, staff and settings</small></span></button>`:''}</div></section></div>`;
 }
 function easyQueuePage(){
