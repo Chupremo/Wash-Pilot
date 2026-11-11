@@ -571,7 +571,7 @@ const DEMO_USERNAME='owner';
 const DEMO_EMAIL='owner@washpilot.demo';
 const DEMO_RESET_CODE='246810';
 function demoPassword(){return wpStorage.getItem('wp_demo_password')||'washpilot123'}
-function initAuth(){let ok=wpStorage.getItem('wp_demo_authenticated')==='1';document.getElementById('demoPasswordHint').textContent=wpStorage.getItem('wp_demo_password')?'Updated in this browser':'washpilot123';document.getElementById('loginScreen').style.display=ok?'none':'grid';document.getElementById('washpilotApp').classList.toggle('auth-hidden',!ok);if(ok){renderNav();render()}}
+function initAuth(){let ok=wpStorage.getItem('wp_demo_authenticated')==='1';document.getElementById('demoPasswordHint').textContent=wpStorage.getItem('wp_demo_password')?'Updated in this browser':'washpilot123';document.getElementById('loginScreen').style.display=ok?'none':'';document.getElementById('washpilotApp').classList.toggle('auth-hidden',!ok);if(ok){renderNav();render()}}
 function handleLogin(e){e.preventDefault();let username=document.getElementById('loginUsername').value.trim().toLowerCase(),password=document.getElementById('loginPassword').value;let error=document.getElementById('loginError');if(username===DEMO_USERNAME&&password===demoPassword()){wpStorage.setItem('wp_demo_authenticated','1');error.classList.remove('show');document.getElementById('loginScreen').style.display='none';document.getElementById('washpilotApp').classList.remove('auth-hidden');renderNav();render();}else{error.textContent='The username or password is incorrect. Please try again.';error.classList.add('show');document.getElementById('loginPassword').value='';document.getElementById('loginPassword').focus()}}
 function toggleLoginPassword(){let input=document.getElementById('loginPassword'),btn=document.getElementById('loginPasswordToggle');let show=input.type==='password';input.type=show?'text':'password';btn.textContent=show?'Hide':'Show'}
 function logoutDemo(){wpStorage.removeItem('wp_demo_authenticated');document.getElementById('loginPassword').value='';document.getElementById('loginError').classList.remove('show');document.getElementById('washpilotApp').classList.add('auth-hidden');document.getElementById('loginScreen').style.display='grid';document.getElementById('loginUsername').focus()}
@@ -776,7 +776,7 @@ function initAuth(){
  document.getElementById('loginScreen').style.display=ok?'none':'grid';document.getElementById('washpilotApp').classList.toggle('auth-hidden',!ok);
  if(ok){currentPage=currentRole==='platform'?'platform':currentStaffRole==='washer'?'queue':'dashboard';renderNav();render()}else setLoginRole('business');
 }
-function logoutDemo(){wpStorage.removeItem('wp_demo_authenticated');wpStorage.removeItem('wb_demo_authenticated');wpStorage.removeItem('wp_demo_role');wpStorage.removeItem('wp_demo_staff_role');document.getElementById('loginPassword').value='';document.getElementById('loginError').classList.remove('show');document.getElementById('washpilotApp').classList.add('auth-hidden');document.getElementById('loginScreen').style.display='grid';setLoginRole('business');document.getElementById('loginUsername').focus()}
+function logoutDemo(){wpStorage.removeItem('wp_demo_authenticated');wpStorage.removeItem('wb_demo_authenticated');wpStorage.removeItem('wp_demo_role');wpStorage.removeItem('wp_demo_staff_role');document.getElementById('loginPassword').value='';document.getElementById('loginError').classList.remove('show');document.getElementById('washpilotApp').classList.add('auth-hidden');document.getElementById('loginScreen').style.display='';setLoginRole('business');document.getElementById('loginUsername').focus()}
 function setViewMode(mode){if(!['easy','advanced'].includes(mode))return;if(currentStaffRole==='washer'||currentStaffRole==='cashier')return;viewMode=mode;wpStorage.setItem('wp_view_mode',mode);if(mode==='easy'&&['loyalty','recipes','reconcile','subscription','addons','employees','expenses','reports','inventory','branches','catalog'].includes(currentPage))currentPage='managementHub';renderNav();render();}
 function canAccessRolePage(page){
  if(currentRole==='platform')return ['platform','tenants','platformBilling'].includes(page);
@@ -919,3 +919,18 @@ initAuth();
 </script>
 </body>
 </html>
+
+/* Mobile login layout fix: preserve responsive CSS instead of forcing inline grid */
+@media(max-width:680px){
+  #loginScreen{display:flex!important;flex-direction:column;width:100%;min-height:100vh;min-height:100svh;overflow-x:hidden}
+  #loginScreen .login-panel{display:flex;box-sizing:border-box;width:100%;min-width:0;min-height:100svh;align-items:center;justify-content:center;padding:34px 24px calc(34px + env(safe-area-inset-bottom));}
+  #loginScreen .login-form-wrap{box-sizing:border-box;width:100%;max-width:420px;margin:auto}
+  #loginScreen .login-mobile-brand{display:flex!important;width:min(100%,260px);margin:0 0 34px}
+  #loginScreen .login-heading{width:100%;margin-bottom:28px}
+  #loginScreen .login-heading h2{font-size:clamp(27px,7vw,32px);line-height:1.18;letter-spacing:-1px;overflow-wrap:normal;word-break:normal}
+  #loginScreen .login-heading p{font-size:14px;line-height:1.6}
+  #loginScreen .login-field,#loginScreen .login-input-wrap,#loginScreen .login-input{box-sizing:border-box;width:100%;min-width:0}
+  #loginScreen .login-input{height:54px;font-size:16px}
+  #loginScreen .login-submit{width:100%;height:54px}
+  .login-screen:not([style*="display: none"])~.mobile-bottom-nav{display:none!important}
+}
