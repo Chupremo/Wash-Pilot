@@ -1458,7 +1458,7 @@ function logoutDemo(){
             '<div><small>TRIAL ENDS</small><b>'+esc(dateText)+'</b></div>'+
           '</div>'+
           '<div class="wp-trial-note"><b>Your trial includes full Pro-level access for 7 days.</b><br>No payment is collected during the trial. After it expires, choose Starter (₱499), Business (₱1,299), or Pro (₱1,999) and submit payment for manual verification.</div>'+
-          '<div class="wp-trial-preview"><button type="button" onclick="washPilotOpenDemoPreview()">Open interface preview</button><span>Preview uses sample data and is separate from your new account’s business records.</span></div>'+
+          '<div class="wp-trial-preview"><button id="wpOpenWorkspaceBtn" type="button" onclick="washPilotOpenWorkspace()">Open my workspace</button><span>Open your own WashPilot workspace. It starts with no sample transactions or demo records.</span></div>'+
         '</div>'+
       '</div>';
   }
@@ -1468,12 +1468,26 @@ function logoutDemo(){
     if($('publicLanding')){$('publicLanding').style.display='block';window.scrollTo({top:0,behavior:'smooth'});}
     else window.location.reload();
   };
-  window.washPilotOpenDemoPreview=function(){
-    $('wpTrialPortal')?.remove();
-    if($('publicLanding'))$('publicLanding').style.display='none';
-    if($('loginScreen')){$('loginScreen').hidden=false;$('loginScreen').style.display='grid';}
-    document.body.dataset.washpilotLoginOpen='1';setAuthMode('demo');
+  window.washPilotOpenWorkspace=async function(){
+    const button=$('wpOpenWorkspaceBtn');
+    if(button){button.disabled=true;button.textContent='Opening workspace…';}
+    try{
+      const {data,error}=await getClient().auth.getSession();
+      if(error)throw error;
+      if(!data.session?.user){
+        $('wpTrialPortal')?.remove();
+        setAuthMode('account');
+        window.showLoginScreen();
+        return;
+      }
+      await activateTrial(data.session.user);
+    }catch(err){
+      console.error('WashPilot workspace open:',err);
+      if(button){button.disabled=false;button.textContent='Open my workspace';}
+      alert(err&&err.message?err.message:'We could not open your workspace. Please sign in again.');
+    }
   };
+  window.washPilotOpenDemoPreview=window.washPilotOpenWorkspace;
 
   const previousDemoLogout=window.logoutDemo;
   window.logoutDemo=async function(){
