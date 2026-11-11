@@ -85,8 +85,8 @@
   .modal-head h2{font-size:16px}
   .receipt{padding:13px}
   .toast{left:12px;right:12px;bottom:calc(78px + env(safe-area-inset-bottom));text-align:center}
-  .mobile-bottom-nav{position:fixed;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));left:0;right:0;bottom:0;z-index:45;background:rgba(255,255,255,.97);backdrop-filter:blur(14px);border-top:1px solid #dfe6ef;padding:7px 5px calc(7px + env(safe-area-inset-bottom));box-shadow:0 -5px 22px rgba(20,45,75,.08)}
-  .mobile-bottom-nav button{border:0;background:transparent;color:#748198;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:5px 2px;font-size:9px;font-weight:700;min-width:0}
+  .mobile-bottom-nav{position:fixed;display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;left:0;right:0;bottom:0;z-index:45;background:rgba(255,255,255,.98);backdrop-filter:blur(14px);border-top:1px solid #dfe6ef;padding:8px 12px calc(8px + env(safe-area-inset-bottom));box-shadow:0 -5px 22px rgba(20,45,75,.08)}
+  .mobile-bottom-nav button{width:100%;min-height:58px;border:0;background:transparent;color:#748198;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:7px 4px;font-size:11px;font-weight:700;min-width:0;white-space:nowrap}
   .mobile-bottom-nav button .nav-ico{font-size:19px;line-height:1.1}
   .mobile-bottom-nav button.active{color:#1e63c7;background:#edf4ff}
   .mobile-bottom-nav button:active{transform:scale(.97)}
@@ -634,7 +634,6 @@ body.platform-mode .mobile-bottom-nav{display:none!important}
   <button data-mobile-page="newwash" onclick="go('newwash')"><span class="nav-ico">＋</span><span>New Wash</span></button>
   <button data-mobile-page="queue" onclick="go('queue')"><span class="nav-ico">◷</span><span>Queue</span></button>
   <button data-mobile-page="transactions" onclick="go('transactions')"><span class="nav-ico">▤</span><span>Records</span></button>
-  <button onclick="toggleSidebar()"><span class="nav-ico">☰</span><span>More</span></button>
 </nav>
 <div class="forgot-backdrop" id="forgotBackdrop" onclick="forgotBackdropClose(event)"><div class="forgot-card" id="forgotCard" role="dialog" aria-modal="true" aria-labelledby="forgotTitle"><div id="forgotContent"></div></div></div>
 <div class="modal-backdrop" id="modalBackdrop" onclick="backdropClose(event)"><div class="modal" id="modal"></div></div>
