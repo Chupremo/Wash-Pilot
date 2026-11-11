@@ -1362,19 +1362,26 @@ function handleLogin(e){
  if(e&&typeof e.preventDefault==='function')e.preventDefault();
  const ui=document.getElementById('loginUsername'),pi=document.getElementById('loginPassword'),error=document.getElementById('loginError');
  const u=(ui?.value||'').trim().toLowerCase(),p=pi?.value||'';
- const keys={owner:{u:'owner',p:demoPassword(),group:'business',staff:'owner'},cashier:{u:'cashier',p:'washcashier123',group:'business',staff:'cashier'},washer:{u:'washer',p:'washwasher123',group:'business',staff:'washer'},supervisor:{u:'supervisor',p:'washsupervisor123',group:'business',staff:'supervisor'},admin:{u:'admin',p:'pilotadmin123',group:'platform',staff:'owner'}};
- const key=demoLoginRole==='platform'?'admin':demoLoginRole==='staff'?demoStaffRole:'owner';const account=keys[key];
- if(!account||u!==account.u||p!==account.p){error.textContent='The username or password is incorrect. Please check the selected demo workspace.';error.classList.add('show');return;}
- try {
-  currentRole=account.group;currentStaffRole=account.staff;if(['cashier','washer'].includes(currentStaffRole))viewMode='easy';
-  wpStorage.setItem('wp_view_mode',viewMode);wpStorage.setItem('wp_demo_authenticated','1');wpStorage.setItem('wp_demo_role',currentRole);wpStorage.setItem('wp_demo_staff_role',currentStaffRole);
-  currentPage=currentRole==='platform'?'platform':currentStaffRole==='washer'?'queue':'dashboard';
-  error.classList.remove('show');document.getElementById('loginScreen').style.display='none';document.getElementById('washpilotApp').classList.remove('auth-hidden');
+ if(u!=='owner'||p!==demoPassword()){
+  error.textContent='The username or password is incorrect. Please check the Owner demo credentials.';
+  error.classList.add('show');return;
+ }
+ try{
+  currentRole='business';currentStaffRole='owner';
+  wpStorage.setItem('wp_view_mode',viewMode);
+  wpStorage.setItem('wp_demo_authenticated','1');
+  wpStorage.setItem('wp_demo_role','business');
+  wpStorage.setItem('wp_demo_staff_role','owner');
+  currentPage='dashboard';
+  error.classList.remove('show');
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('washpilotApp').classList.remove('auth-hidden');
   renderNav();render();
- } catch(err) {
+ }catch(err){
   setWashPilotAuthVisibility(false);
-  error.textContent='The demo sign-in started but the dashboard could not load. Please reload this demo. Details: '+(err&&err.message?err.message:'Unknown error');error.classList.add('show');
-  console.error('WashPilot demo login error:',err);
+  error.textContent='The Owner demo could not load. Please reload and try again.';
+  error.classList.add('show');
+  console.error('WashPilot owner demo login error:',err);
  }
 }
 function setWashPilotAuthVisibility(authenticated){
