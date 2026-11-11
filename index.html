@@ -633,6 +633,33 @@ html{scroll-behavior:smooth;scroll-padding-top:85px}
 .wp-trial-preview span{font-size:9px;color:#91abc5}
 @media(max-width:600px){.wp-signup-backdrop{padding:10px;align-items:flex-start}.wp-signup-card{padding:23px 18px;margin:10px 0;border-radius:16px;max-height:calc(100dvh - 20px)}.wp-signup-fields{grid-template-columns:1fr;gap:11px}.wp-signup-fields .wp-signup-wide{grid-column:auto}.wp-signup-brand img{width:145px}.wp-signup-card h2{font-size:26px}.wp-trial-meta{grid-template-columns:1fr}.wp-trial-meta>div{display:flex;align-items:center;justify-content:space-between;gap:12px}.wp-trial-meta b{font-size:14px;margin:0;text-align:right}.wp-trial-brand{margin-bottom:22px}}
 
+
+/* WashPilot guided product tour */
+.wp-tour-launch{display:inline-flex;align-items:center;gap:7px;border:1px solid #dbe6f5;background:#f7faff;color:#194b86;font-weight:800;cursor:pointer}
+.wp-tour-launch:hover{background:#eaf3ff;border-color:#b8d0ef}
+.wp-tour-backdrop{position:fixed;inset:0;background:rgba(7,20,40,.20);z-index:10010;pointer-events:none}
+.wp-tour-spotlight{position:relative!important;z-index:10011!important;outline:3px solid #31b9ee!important;outline-offset:4px!important;box-shadow:0 0 0 8px rgba(49,185,238,.18)!important;border-radius:12px!important}
+.wp-tour-panel{position:fixed;right:24px;bottom:24px;z-index:10020;width:min(450px,calc(100vw - 32px));background:#fff;border:1px solid #d8e4f3;border-radius:20px;box-shadow:0 22px 70px rgba(7,25,55,.28);padding:20px;color:#1a2b45;font-family:inherit}
+.wp-tour-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.wp-tour-kicker{font-size:10px;letter-spacing:.09em;text-transform:uppercase;font-weight:900;color:#2871c7}
+.wp-tour-count{font-size:11px;color:#70819a;font-weight:800;white-space:nowrap}
+.wp-tour-progress{height:5px;background:#eaf0f8;border-radius:99px;overflow:hidden;margin:0 0 16px}
+.wp-tour-progress span{display:block;height:100%;background:linear-gradient(90deg,#2f67ef,#30b7e8);border-radius:99px;transition:width .2s ease}
+.wp-tour-panel h2{font-size:21px;line-height:1.2;margin:0 0 9px;color:#142b49}
+.wp-tour-panel p{font-size:13px;line-height:1.65;color:#596c86;margin:0 0 11px}
+.wp-tour-purpose{padding:11px 12px;background:#f3f7fd;border:1px solid #e4edf8;border-radius:12px;margin:12px 0}
+.wp-tour-purpose b{display:block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#2a65a8;margin-bottom:5px}
+.wp-tour-purpose span{font-size:12px;line-height:1.55;color:#435873;display:block}
+.wp-tour-tip{font-size:11px!important;color:#74849a!important;margin-bottom:0!important}
+.wp-tour-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px}
+.wp-tour-actions-left,.wp-tour-actions-right{display:flex;align-items:center;gap:8px}
+.wp-tour-panel button{border:0;border-radius:10px;padding:10px 13px;font:inherit;font-size:12px;font-weight:800;cursor:pointer}
+.wp-tour-skip{background:transparent;color:#78879a;padding-left:2px!important}
+.wp-tour-prev{background:#eef3fa;color:#425977}
+.wp-tour-next{background:#2f67ef;color:#fff;min-width:94px}
+.wp-tour-next:disabled,.wp-tour-prev:disabled{opacity:.42;cursor:not-allowed}
+.wp-tour-close{background:#f2f5fa;color:#5c6b81;padding:6px 10px!important}
+@media(max-width:700px){.wp-tour-launch{padding:7px 9px;font-size:11px}.wp-tour-panel{left:12px;right:12px;bottom:12px;width:auto;padding:17px;border-radius:16px}.wp-tour-panel h2{font-size:19px}.wp-tour-actions{gap:6px}.wp-tour-panel button{padding:9px 10px}}
 </style>
 </head>
 <body>
@@ -805,7 +832,7 @@ html{scroll-behavior:smooth;scroll-padding-top:85px}
 <main class="main">
 <header class="topbar">
   <div class="topbar-left" style="display:flex;align-items:center;gap:10px"><button class="mobile-menu" onclick="toggleSidebar()">☰</button><img class="topbar-brand-icon" src="washpilot-logo.svg" alt="WashPilot" /><div class="crumb" id="crumb">Dashboard<small id="crumbSub">Welcome back! Here's your business overview.</small></div></div>
-  <div class="top-actions"><div class="mode-switch" id="modeSwitch" role="group" aria-label="Display mode"><button type="button" id="easyModeButton" onclick="setViewMode('easy')">Easy</button><button type="button" id="advancedModeButton" onclick="setViewMode('advanced')">Advanced</button></div><select class="pill plan-pill" id="planSelect" aria-label="Choose demo plan"><option value="starter">Starter · ₱499</option><option value="business">Business · ₱1,299</option><option value="pro">Pro · ₱1,999</option></select><button class="pill reset-demo-button" onclick="resetDemo()">↻ Reset demo</button><button class="avatar" type="button" onclick="logoutDemo()" title="Sign out" aria-label="Sign out">BO</button></div>
+  <div class="top-actions"><div class="mode-switch" id="modeSwitch" role="group" aria-label="Display mode"><button type="button" id="easyModeButton" onclick="setViewMode('easy')">Easy</button><button type="button" id="advancedModeButton" onclick="setViewMode('advanced')">Advanced</button></div><select class="pill plan-pill" id="planSelect" aria-label="Choose demo plan"><option value="starter">Starter · ₱499</option><option value="business">Business · ₱1,299</option><option value="pro">Pro · ₱1,999</option></select><button class="pill reset-demo-button" onclick="resetDemo()">↻ Reset demo</button><button class="pill wp-tour-launch" id="wpTourLaunch" type="button" onclick="startWashPilotTour()" title="Learn how WashPilot works">▶ Guided Tour</button><button class="avatar" type="button" onclick="logoutDemo()" title="Sign out" aria-label="Sign out">BO</button></div>
 </header>
 <div class="content" id="content"></div>
 </main>
@@ -1586,5 +1613,114 @@ function logoutDemo(){
 })();
 </script>
 
+
+<script>
+(function(){
+ var active=false,steps=[],stepIndex=0,spotlight=null,card=null,backdrop=null;
+ function addStep(out,step){
+  if(step.page&&typeof canAccessRolePage==='function'&&!canAccessRolePage(step.page))return;
+  if(step.page&&typeof allowed==='function'&&step.page!=='dashboard'&&step.page!=='newwash'&&step.page!=='queue'&&step.page!=='transactions'&&step.page!=='customers'&&step.page!=='managementHub'&&!allowed(step.page)){
+   step.targets=['#content .locked'];
+   step.description+=' This screen is part of the '+(minPlan(step.page)===2?'Business':'Pro')+' plan. In the demo, switch the plan selector in Advanced mode to preview it.';
+   step.locked=true;
+  }
+  out.push(step);
+ }
+ function buildSteps(){
+  var out=[],role=currentRole==='platform'?'platform':currentStaffRole;
+  if(role==='platform'){
+   addStep(out,{page:'platform',section:'PLATFORM ADMIN',title:'Platform overview',description:'This is the WashPilot control center. It summarizes active businesses, trial accounts, past-due accounts and recurring subscription revenue.',purpose:'Use this screen to monitor the health of the SaaS platform—not an individual carwash.',targets:['#content .admin-banner','#content .grid.stats']});
+   addStep(out,{page:'tenants',section:'PLATFORM ADMIN',title:'Customer businesses',description:'Review businesses using WashPilot, check their account status and open a tenant record. This is where platform support and account administration begin.',purpose:'Use the business list to manage customer accounts and follow up on account issues.',targets:['#content .panel','#content .table-wrap']});
+   addStep(out,{page:'platformBilling',section:'PLATFORM ADMIN',title:'Platform billing and revenue',description:'Review subscription invoices, payment status and the platform-level revenue view. This is separate from each carwash owner’s daily wash collections.',purpose:'Use this area to monitor WashPilot subscription income.',targets:['#content .panel','#content .grid.stats']});
+   return out;
+  }
+  if(role==='washer'){
+   addStep(out,{page:'queue',section:'WASHER WORKSPACE',title:'Your assigned wash queue',description:'This is your main work screen. Each vehicle appears with its plate number, vehicle type, selected service and current stage. Start a waiting job when you begin washing it.',purpose:'Use the queue to keep the team updated without handling cashier or business settings.',targets:['#content .easy-queue-row','#content .kanban','#content .panel']});
+   addStep(out,{page:'queue',section:'WASHER WORKSPACE',title:'Move the wash forward',description:'The normal flow is Waiting → Washing → Quality Check → Ready. Update the stage as you work. Your role can move a vehicle through the washing steps; a supervisor handles final inspection and pickup handoff.',purpose:'Accurate stages let the owner and cashier know where every vehicle is.',targets:['#content .easy-queue-row','#content .kanban','#content .panel']});
+   addStep(out,{page:'queue',section:'WASHER WORKSPACE',title:'Hand off when the wash is done',description:'After washing, send the vehicle to the next stage and let the supervisor know when it is ready for inspection. The cashier records payment only when the customer collects the vehicle.',purpose:'Wash progress and payment collection are separate responsibilities.',targets:['#content .panel']});
+   return out;
+  }
+  addStep(out,{page:'dashboard',section:'GETTING STARTED',title:'Your daily dashboard',description:'The dashboard is your business snapshot. Sales includes collected payments only; Vehicles Served counts registered wash tickets; In Progress shows active jobs; Completed counts paid, completed washes. Use the period selector to change the reporting range.',purpose:'Start here each day to understand sales and workload at a glance.',targets:['#content .home-range-panel','#content .easy-welcome','#content .grid.stats']});
+  if(role==='cashier'){
+   addStep(out,{page:'newwash',section:'REGISTER A VEHICLE',title:'Enter the vehicle details',description:'Enter the plate number, select the vehicle type, and confirm the vehicle size. WashPilot suggests a size from the type, but you can change it when a vehicle needs a different category.',purpose:'The size matters because each main wash service can have a different rate for Small, Medium, Large and XL vehicles.',targets:['#content .form-section:nth-of-type(1)']});
+   addStep(out,{page:'newwash',section:'CHOOSE THE WASH',title:'Select a service and extras',description:'Choose the main wash service first. Add optional extras when the customer requests them. The summary on the right updates the amount due using the selected vehicle-size price.',purpose:'This makes sure the cashier starts with the correct service and amount.',targets:['#content .form-section:nth-of-type(2)','#content aside.panel']});
+   addStep(out,{page:'newwash',section:'TICKET CREATION',title:'Create the ticket as unpaid',description:'Creating the ticket registers the vehicle and places it in the queue. It does not collect payment. The ticket should remain UNPAID until the wash is complete and the customer is ready to pick up the vehicle.',purpose:'Do not mark a wash as paid just because its details were entered.',targets:['#content aside.panel']});
+   addStep(out,{page:'queue',section:'SERVICE QUEUE',title:'Track the wash status',description:'Watch the ticket move from Waiting to Washing, Quality Check and Ready. When the vehicle is marked Ready, open its payment collection action.',purpose:'The queue coordinates the washer, supervisor and cashier.',targets:['#content .easy-queue-row','#content .kanban','#content .panel']});
+   addStep(out,{page:'queue',section:'PAYMENT AT PICKUP',title:'Collect payment only at pickup',description:'When the ticket is Ready, choose Collect Payment, select Cash, GCash, Maya, Card or Other, then confirm that the money was received. WashPilot changes the financial status to PAID and updates collected-sales KPIs.',purpose:'The payment date—not just the ticket creation date—is used for daily sales.',targets:['#content .easy-queue-row','#content .kanban','#content .panel']});
+   addStep(out,{page:'transactions',section:'RECORDS',title:'Review tickets and receipts',description:'Use Transactions to search by plate, ticket or service. Open a record to view or print its ticket/receipt and check its wash and payment status. Refund or void actions should only be used when appropriate.',purpose:'This is the record of what was registered and what was actually collected.',targets:['#content .panel','#content .table-wrap']});
+   addStep(out,{page:'customers',section:'CUSTOMER HISTORY',title:'Look up customer and vehicle history',description:'WashPilot groups visit history by plate number. Review repeat visits, customer details and recorded spending to recognize returning customers.',purpose:'Use this when a regular customer returns or asks about a previous wash.',targets:['#content .panel','#content .grid.stats']});
+   return out;
+  }
+  addStep(out,{page:'catalog',section:'SET UP YOUR SERVICES',title:'Build your service menu',description:'Create each main service with its name, description, duration and four prices: Small, Medium, Large and XL. Add-ons have a separate flat price. These settings determine the amount shown when staff create a wash ticket.',purpose:'Set up service prices before recording your first customer.',targets:['#content .panel','#content .table-wrap']});
+  addStep(out,{page:'newwash',section:'STEP 1 · VEHICLE',title:'Register the vehicle',description:'Enter the plate number and choose the vehicle type. WashPilot suggests a size: Sedan/Hatchback → Small, SUV/MPV → Medium, Pickup/Van → Large, and Truck/Bus → XL. You can override the suggestion.',purpose:'Vehicle size selects the correct price tier for the main wash service.',targets:['#content .form-section:nth-of-type(1)']});
+  addStep(out,{page:'newwash',section:'STEP 2 · SERVICE',title:'Choose the wash service',description:'Select one main service. Its displayed price changes with the selected vehicle size and the rates configured in Services & Pricing. This is where the customer’s primary wash is recorded.',purpose:'The main service determines the base charge and estimated wash duration.',targets:['#content .form-section:nth-of-type(2)']});
+  addStep(out,{page:'newwash',section:'STEP 3 · OPTIONAL EXTRAS',title:'Add services and extras',description:'Select any optional add-ons, such as tire dressing, spray wax or interior vacuum. You can select multiple extras. Each one appears as a separate line in the wash summary.',purpose:'Use add-ons to record extra work and show the customer exactly what is included.',targets:['#content .form-section:nth-of-type(3)','#content aside.panel']});
+  addStep(out,{page:'newwash',section:'STEP 4 · TICKET',title:'Review the total and create an unpaid ticket',description:'Check the live summary, any applicable package/reward credit and the total due. Create the ticket to register the vehicle and add it to the Waiting queue. No payment is collected at this point.',purpose:'A new ticket must remain UNPAID until collection at pickup.',targets:['#content aside.panel']});
+  addStep(out,{page:'queue',section:'STEP 5 · WASH WORKFLOW',title:'Move each vehicle through the queue',description:'The wash process follows Waiting → Washing → Quality Check → Ready. Update each ticket as the team completes a stage. The Ready stage is the handoff to customer pickup and the cashier.',purpose:'This screen keeps the team aligned and prevents vehicles from getting lost between stages.',targets:['#content .easy-queue-row','#content .kanban','#content .panel']});
+  addStep(out,{page:'queue',section:'STEP 6 · PAYMENT',title:'Collect payment at pickup',description:'When a vehicle is Ready, use Collect Payment. Select the actual method—Cash, GCash, Maya, Card or Other—and confirm receipt. The ticket then becomes PAID and Completed, and the collected amount is counted in Sales for the payment date.',purpose:'Only confirmed collections should increase the Sales KPI.',targets:['#content .easy-queue-row','#content .kanban','#content .panel']});
+  addStep(out,{page:'transactions',section:'RECORD KEEPING',title:'Transactions, tickets and receipts',description:'Search all wash records, inspect payment and wash statuses, open a ticket/receipt, print it, or record a refund/void when required. A demo refund is a local record and does not reverse a real payment.',purpose:'Use Transactions when you need to verify what happened to a specific wash.',targets:['#content .panel','#content .table-wrap']});
+  addStep(out,{page:'customers',section:'CUSTOMER HISTORY',title:'Customers and vehicles',description:'WashPilot uses the plate number to group a customer’s vehicle history. Review visits, last visit and recorded spend, and keep customer contact details available for future visits.',purpose:'This helps recognize returning customers and understand visit patterns.',targets:['#content .panel','#content .grid.stats']});
+  addStep(out,{page:'managementHub',section:'OWNER TOOLS',title:'Business Management hub',description:'In Easy mode, use Business Management to find additional owner tools. Advanced mode places those tools directly in the sidebar. Some tools depend on your subscription plan.',purpose:'Use this hub when you need more than the daily wash, queue and transaction screens.',targets:['#content .hub-section','#content .hub-grid']});
+  addStep(out,{page:'employees',section:'TEAM MANAGEMENT',title:'Employees and roles',description:'Create staff records for washers, cashiers and supervisors, set their active status, and assign a team member to a wash. Employee records help with accountability and staff performance reporting.',purpose:'Use Employees to know who is handling each wash and who is responsible for daily operations.',targets:['#content .panel','#content .table-wrap']});
+  addStep(out,{page:'expenses',section:'COST CONTROL',title:'Record business expenses',description:'Log operating costs such as cleaning supplies, utilities, rent and other expenses. These records help compare collected sales with day-to-day operating costs.',purpose:'Use Expenses to understand estimated net earnings, not just gross collections.',targets:['#content .panel','#content .table-wrap']});
+  addStep(out,{page:'inventory',section:'STOCK CONTROL',title:'Manage inventory and supplies',description:'Record supplies, quantities on hand and reorder levels. Track stock changes and see low-stock alerts so the team can replenish products before they run out.',purpose:'Use Inventory to monitor the materials used to deliver carwash services.',targets:['#content .panel','#content .table-wrap']});
+  addStep(out,{page:'recipes',section:'AUTOMATIC STOCK USAGE',title:'Connect supplies to services',description:'Service Recipes let you define which inventory items and quantities are used by a main service or add-on. When a paid wash is completed, configured usage can be deducted from stock automatically.',purpose:'Set recipes once to reduce manual stock tracking after every wash.',targets:['#content .panel','#content .table-wrap']});
+  addStep(out,{page:'loyalty',section:'CUSTOMER RETENTION',title:'Loyalty and prepaid packages',description:'Use loyalty points, rewards and prepaid wash packages to encourage repeat visits. Eligible customers can use available credits or a matching package when a new wash is created.',purpose:'Use this area to reward repeat customers and sell wash bundles.',targets:['#content .panel','#content .table-wrap']});
+  addStep(out,{page:'addons',section:'SERVICE PERFORMANCE',title:'Add-on analytics',description:'Review which optional extras sell most often, how much add-on revenue they contribute and which services customers choose together.',purpose:'Use this data to improve your service menu and staff recommendations.',targets:['#content .panel','#content .grid.stats']});
+  addStep(out,{page:'reports',section:'BUSINESS PERFORMANCE',title:'Reports and insights',description:'Review collected sales, payment methods, service performance, add-on contribution and recorded expenses. Use the reports to understand business trends and make operating decisions.',purpose:'Reports turn daily wash records into business information.',targets:['#content .grid.stats','#content .panel']});
+  addStep(out,{page:'branches',section:'MULTI-LOCATION',title:'Manage branches',description:'Add business locations and compare wash activity and sales by branch. This is intended for carwash owners operating more than one site.',purpose:'Use Branches when your business expands beyond one location.',targets:['#content .panel','#content .grid.three']});
+  addStep(out,{page:'reconcile',section:'CASHIER CONTROL',title:'Shift and payment reconciliation',description:'Open a cashier shift, enter the starting cash float, compare recorded Cash/GCash/Maya/Card collections and enter the physical closing count. Review any variance before closing the shift.',purpose:'Use reconciliation to make sure the money recorded by the system matches what the cashier actually holds.',targets:['#content .grid.stats','#content .panel']});
+  addStep(out,{page:'subscription',section:'WASHPILOT PLAN',title:'Subscription and billing',description:'Review the current WashPilot plan, trial information, plan inclusions and pricing. Use this page to understand which tools are available with Starter, Business and Pro.',purpose:'Manage your WashPilot subscription separately from carwash customer payments.',targets:['#content .grid.stats','#content .panel']});
+  return out;
+ }
+ function clearSpotlight(){if(spotlight){spotlight.classList.remove('wp-tour-spotlight');spotlight=null;}}
+ function findTarget(step){
+  var selectors=step.targets||[];
+  for(var i=0;i<selectors.length;i++){var el=document.querySelector(selectors[i]);if(el&&el.getClientRects().length)return el;}
+  return document.querySelector('#content .panel, #content .easy-welcome, #content .admin-banner, #content .locked, #content')||document.body;
+ }
+ function drawPanel(){
+  if(!card){card=document.createElement('section');card.id='wpTourPanel';card.className='wp-tour-panel';card.setAttribute('role','dialog');card.setAttribute('aria-modal','false');card.setAttribute('aria-live','polite');document.body.appendChild(card);}
+  var step=steps[stepIndex],count=steps.length,progress=Math.round(((stepIndex+1)/count)*100);
+  card.innerHTML=
+   '<div class="wp-tour-top"><span class="wp-tour-kicker">'+esc(step.section||'WASHPILOT TOUR')+'</span><span class="wp-tour-count">Step '+(stepIndex+1)+' of '+count+'</span><button class="wp-tour-close" type="button" aria-label="Close tour" onclick="closeWashPilotTour(true)">×</button></div>'+
+   '<div class="wp-tour-progress"><span style="width:'+progress+'%"></span></div>'+
+   '<h2>'+esc(step.title)+'</h2><p>'+esc(step.description)+'</p>'+
+   (step.purpose?'<div class="wp-tour-purpose"><b>What this is for</b><span>'+esc(step.purpose)+'</span></div>':'')+
+   (step.locked?'<p class="wp-tour-tip">This is a plan preview step. You can still learn what the feature does here.</p>':'')+
+   '<div class="wp-tour-actions"><div class="wp-tour-actions-left"><button class="wp-tour-skip" type="button" onclick="closeWashPilotTour(true)">Skip tour</button></div><div class="wp-tour-actions-right"><button class="wp-tour-prev" type="button" '+(stepIndex===0?'disabled':'')+' onclick="previousWashPilotTourStep()">Previous</button><button class="wp-tour-next" type="button" onclick="nextWashPilotTourStep()">'+(stepIndex===count-1?'Finish tour':'Next step →')+'</button></div></div>';
+ }
+ function displayStep(){
+  if(!active||!steps.length)return;
+  var step=steps[stepIndex];
+  if(step.page&&currentPage!==step.page)go(step.page);
+  drawPanel();
+  window.setTimeout(function(){if(!active)return;clearSpotlight();spotlight=findTarget(step);if(spotlight&&spotlight!==document.body){spotlight.classList.add('wp-tour-spotlight');spotlight.scrollIntoView({behavior:'smooth',block:'center',inline:'nearest'});}},80);
+ }
+ window.startWashPilotTour=function(){
+  steps=buildSteps();
+  if(!steps.length){toast('There is no guided tour for this workspace.');return;}
+  active=true;stepIndex=0;
+  if(!backdrop){backdrop=document.createElement('div');backdrop.className='wp-tour-backdrop';backdrop.id='wpTourBackdrop';document.body.appendChild(backdrop);}
+  displayStep();
+ };
+ window.nextWashPilotTourStep=function(){if(!active)return;if(stepIndex<steps.length-1){stepIndex++;displayStep();}else closeWashPilotTour(true);};
+ window.previousWashPilotTourStep=function(){if(!active||stepIndex===0)return;stepIndex--;displayStep();};
+ window.closeWashPilotTour=function(markSeen){
+  active=false;clearSpotlight();if(card){card.remove();card=null;}if(backdrop){backdrop.remove();backdrop=null;}
+  if(markSeen&&typeof wpStorage!=='undefined'){var key='wp_tour_seen_'+(currentRole==='platform'?'platform':currentStaffRole);wpStorage.setItem(key,'1');}
+ };
+ var previousHandleLogin=window.handleLogin;
+ if(typeof previousHandleLogin==='function'){
+  window.handleLogin=async function(){
+   await previousHandleLogin.apply(this,arguments);
+   if(!window.wpRealWorkspaceActive&&typeof wpStorage!=='undefined'&&wpStorage.getItem('wp_demo_authenticated')==='1'){
+    var key='wp_tour_seen_'+(currentRole==='platform'?'platform':currentStaffRole);
+    if(wpStorage.getItem(key)!=='1')window.setTimeout(function(){window.startWashPilotTour();},650);
+   }
+  };
+ }
+})();
+</script>
 </body>
 </html>
