@@ -1025,9 +1025,7 @@ tbody tr:hover td{background:#f5f9ff}
       </form>
       <div class="wp-login-signup" id="wpLoginSignup">New to WashPilot? <button type="button" onclick="openTrialSignup()">Start your 7-day free trial</button></div>
       <div class="login-demo" id="wpLoginDemo" style="display:none">
-        <div class="login-demo-title">Choose a demo workspace</div>
-        <div class="login-role-switch"><button type="button" id="businessLoginTab" class="active" onclick="setLoginRole('business')">Owner</button><button type="button" id="staffLoginTab" onclick="setLoginRole('staff')">Staff</button><button type="button" id="platformLoginTab" onclick="setLoginRole('platform')">Platform Admin</button></div>
-        <div class="field" id="staffRolePicker"><label for="staffDemoRole">Staff workspace</label><select id="staffDemoRole" onchange="setStaffDemoRole(this.value)"><option value="cashier">Cashier</option><option value="washer">Washer</option><option value="supervisor">Supervisor</option></select></div>
+        <div class="login-demo-title">Owner demo workspace</div>
         <div class="login-demo-row"><span>Username</span><b id="demoUsernameHint">owner</b></div>
         <div class="login-demo-row"><span>Password</span><b id="demoPasswordHint">washpilot123</b></div>
         <p class="demo-role-note" id="demoRoleNote">Manage one carwash location and explore daily operations.</p>
@@ -1129,7 +1127,22 @@ const DEMO_EMAIL='owner@washpilot.demo';
 const DEMO_RESET_CODE='246810';
 function demoPassword(){return wpStorage.getItem('wp_demo_password')||'washpilot123'}
 function initAuth(){let ok=wpStorage.getItem('wp_demo_authenticated')==='1';document.getElementById('demoPasswordHint').textContent=wpStorage.getItem('wp_demo_password')?'Updated in this browser':'washpilot123';document.getElementById('loginScreen').style.display=ok?'none':'';document.getElementById('washpilotApp').classList.toggle('auth-hidden',!ok);if(ok){renderNav();render()}}
-function handleLogin(e){e.preventDefault();let username=document.getElementById('loginUsername').value.trim().toLowerCase(),password=document.getElementById('loginPassword').value;let error=document.getElementById('loginError');if(username===DEMO_USERNAME&&password===demoPassword()){wpStorage.setItem('wp_demo_authenticated','1');error.classList.remove('show');setWashPilotAuthVisibility(true);renderNav();render();}else{error.textContent='The username or password is incorrect. Please try again.';error.classList.add('show');document.getElementById('loginPassword').value='';document.getElementById('loginPassword').focus()}}
+function handleLogin(e){
+ e.preventDefault();
+ const username=document.getElementById('loginUsername').value.trim().toLowerCase();
+ const password=document.getElementById('loginPassword').value;
+ const error=document.getElementById('loginError');
+ if(username===DEMO_USERNAME&&password===demoPassword()){
+  wpStorage.setItem('wp_demo_authenticated','1');
+  wpStorage.setItem('wp_demo_role','business');
+  wpStorage.setItem('wp_demo_staff_role','owner');
+  error.classList.remove('show');setWashPilotAuthVisibility(true);renderNav();render();
+ }else{
+  error.textContent='The username or password is incorrect. Please try again.';
+  error.classList.add('show');document.getElementById('loginPassword').value='';
+  document.getElementById('loginPassword').focus();
+ }
+}
 function toggleLoginPassword(){let input=document.getElementById('loginPassword'),btn=document.getElementById('loginPasswordToggle');let show=input.type==='password';input.type=show?'text':'password';btn.textContent=show?'Hide':'Show'}
 function logoutDemo(){wpStorage.removeItem('wp_demo_authenticated');document.getElementById('loginPassword').value='';document.getElementById('loginError').classList.remove('show');document.getElementById('washpilotApp').classList.add('auth-hidden');document.getElementById('loginScreen').style.display='grid';document.getElementById('loginUsername').focus()}
 let forgotUsername='';
@@ -1332,22 +1345,19 @@ function loadState(){try{let d=wpStorage.getItem('washpilot_demo_data')||wpStora
 function save(){if(window.wpRealWorkspaceActive&&window.wpRealBusinessId){wpStorage.setItem('wp_real_workspace_data_'+window.wpRealBusinessId,JSON.stringify(state));wpStorage.setItem('wp_real_workspace_plan_'+window.wpRealBusinessId,currentPlan);return;}wpStorage.setItem('washpilot_demo_data',JSON.stringify(state));wpStorage.setItem('wp_plan',currentPlan);}
 function demoPassword(){return wpStorage.getItem('wp_demo_password')||wpStorage.getItem('wb_demo_password')||'washpilot123'}
 function setLoginRole(role){
- demoLoginRole=role;
- document.getElementById('businessLoginTab')?.classList.toggle('active',role==='business');
- document.getElementById('staffLoginTab')?.classList.toggle('active',role==='staff');
- document.getElementById('platformLoginTab')?.classList.toggle('active',role==='platform');
- const picker=document.getElementById('staffRolePicker');if(picker)picker.style.display=role==='staff'?'block':'none';
- if(role==='staff')demoStaffRole=document.getElementById('staffDemoRole')?.value||'cashier';
- const accounts={owner:['owner',demoPassword(),'Business owner workspace'],cashier:['cashier','washcashier123','Process washes, payments and customer records.'],washer:['washer','washwasher123','View assigned vehicles and update wash progress.'],supervisor:['supervisor','washsupervisor123','Oversee the queue, team and daily operations.'],admin:['admin','pilotadmin123','Manage subscriptions, customer businesses and platform revenue.']};
- const key=role==='platform'?'admin':role==='staff'?demoStaffRole:'owner';const [u,pw,noteText]=accounts[key];
+ if(role!=='business')return;
+ demoLoginRole='business';
+ demoStaffRole='owner';
+ const picker=document.getElementById('staffRolePicker');if(picker)picker.style.display='none';
+ const u='owner',pw=demoPassword(),noteText='Explore the carwash owner workspace using sample data.';
  const uname=document.getElementById('demoUsernameHint'),pass=document.getElementById('demoPasswordHint'),note=document.getElementById('demoRoleNote');
  if(uname)uname.textContent=u;if(pass)pass.textContent=pw;if(note)note.textContent=noteText;
  const ui=document.getElementById('loginUsername'),pi=document.getElementById('loginPassword');if(ui)ui.value=u;if(pi)pi.value=pw;
  const h=document.querySelector('.login-heading h2'),p=document.querySelector('.login-heading p');
- if(h)h.textContent=role==='platform'?'Sign in to platform administration':role==='staff'?'Sign in to your staff workspace':'Sign in to your carwash workspace';
- if(p)p.textContent=role==='platform'?'Access the WashPilot platform owner control center.':role==='staff'?'Choose your staff role to open a focused workspace.':'Manage your carwash with a simple daily workspace.';
+ if(h)h.textContent='Sign in to your carwash workspace';
+ if(p)p.textContent='Explore the WashPilot owner workspace using sample data.';
 }
-function setStaffDemoRole(role){demoStaffRole=role;setLoginRole('staff')}
+function setStaffDemoRole(){setLoginRole('business')}
 function handleLogin(e){
  if(e&&typeof e.preventDefault==='function')e.preventDefault();
  const ui=document.getElementById('loginUsername'),pi=document.getElementById('loginPassword'),error=document.getElementById('loginError');
@@ -1806,11 +1816,11 @@ function logoutDemo(){
     if(authMode==='demo'){
       const u=($('loginUsername')?.value||'').trim().toLowerCase(),p=$('loginPassword')?.value||'';
       loginError('');
-      const keys={owner:{u:'owner',p:typeof demoPassword==='function'?demoPassword():'washpilot123'},cashier:{u:'cashier',p:'washcashier123'},washer:{u:'washer',p:'washwasher123'},supervisor:{u:'supervisor',p:'washsupervisor123'},admin:{u:'admin',p:'pilotadmin123'}};
-      const k=demoLoginRole==='platform'?'admin':demoLoginRole==='staff'?demoStaffRole:'owner',acc=keys[k];
+      const keys={owner:{u:'owner',p:typeof demoPassword==='function'?demoPassword():'washpilot123'}};
+      const k='owner',acc=keys[k];
       if(!acc||u!==acc.u||p!==acc.p)return loginError('The username or password is incorrect. Please check the selected demo workspace.');
       try{
-        currentRole=k==='admin'?'platform':'business';currentStaffRole=k==='admin'?'owner':k;
+        currentRole='business';currentStaffRole='owner';
         if(['cashier','washer'].includes(k))viewMode='easy';
         wpStorage.setItem('wp_demo_authenticated','1');wpStorage.setItem('wp_demo_role',currentRole);wpStorage.setItem('wp_demo_staff_role',currentStaffRole);
         currentPage=k==='admin'?'platform':k==='washer'?'queue':'dashboard';
