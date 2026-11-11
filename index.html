@@ -529,6 +529,21 @@ body.platform-mode .mobile-bottom-nav{display:none!important}
   }
 }
 
+
+/* Navigation must never be interactive behind the login screen */
+@media screen and (max-width: 900px) {
+  #washpilotApp.auth-hidden ~ .mobile-bottom-nav {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+  #washpilotApp:not(.auth-hidden) ~ .mobile-bottom-nav {
+    visibility: visible;
+    pointer-events: auto;
+  }
+  .mobile-bottom-nav button { touch-action: manipulation; }
+}
+
 </style>
 </head>
 <body>
