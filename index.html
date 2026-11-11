@@ -919,7 +919,7 @@ function ticketDateOf(t){if(t.createdAt){const d=new Date(t.createdAt);if(!Numbe
 function isToday(t){return ticketDateOf(t)===today()}
 function isPaymentCollected(t){if(t.status==='Cancelled'||t.status==='Refunded')return false;if(t.financialStatus)return t.financialStatus==='Paid';return Boolean(t.payment&&t.status==='Completed')}
 function totalSales(list){return list.filter(isPaymentCollected).reduce((s,t)=>s+Number(t.total||0),0)}
-function paymentDateOf(t){const stamp=t.paidAt||t.completedAt;if(stamp){const d=new Date(stamp);if(!Number.isNaN(d.getTime()))return dateKey(d)}if(t.paymentDate&&/^\d{4}-\d{2}-\d{2}$/.test(t.paymentDate))return t.paymentDate;if(t.createdAt){const d=new Date(t.createdAt);if(!Number.isNaN(d.getTime()))return dateKey(d)}return t.date||''}
+function paymentDateOf(t){if(t.paymentDate&&/^\d{4}-\d{2}-\d{2}$/.test(t.paymentDate))return t.paymentDate;const stamp=t.paidAt||t.completedAt;if(stamp){const d=new Date(stamp);if(!Number.isNaN(d.getTime()))return dateKey(d)}if(t.createdAt){const d=new Date(t.createdAt);if(!Number.isNaN(d.getTime()))return dateKey(d)}return t.date||''}
 function paidTransactionsBetween(start,end){return state.transactions.filter(t=>isPaymentCollected(t)&&paymentDateOf(t)>=start&&paymentDateOf(t)<=end)}
 function totalCollectedBetween(start,end){return totalSales(paidTransactionsBetween(start,end))}
 function planRank(p){return ({starter:1,business:2,pro:3})[p]||1}
