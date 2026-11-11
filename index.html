@@ -583,6 +583,56 @@ body.platform-mode .mobile-bottom-nav{display:none!important}
 @media(prefers-reduced-motion:reduce){.wp-public *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 html{scroll-behavior:smooth;scroll-padding-top:85px}
 
+
+/* REAL TRIAL SIGNUP + ACCOUNT ACCESS */
+.wp-auth-switch{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:11px;background:#eff3f8;margin:0 0 24px}
+.wp-auth-switch button{height:37px;border:0;border-radius:8px;background:transparent;color:#728199;font-size:11px;font-weight:750}
+.wp-auth-switch button.active{background:#fff;color:#1d4779;box-shadow:0 2px 8px rgba(19,43,73,.08)}
+.wp-login-signup{text-align:center;color:#8997a9;font-size:11px;margin-top:19px}
+.wp-login-signup button,.wp-signup-login button{border:0;background:transparent;color:#286bd1;font-weight:800;font-size:11px;padding:3px}
+.wp-signup-backdrop{position:fixed;inset:0;z-index:180;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(4,16,34,.68);backdrop-filter:blur(7px);overflow-y:auto}
+.wp-signup-backdrop.show{display:flex}
+.wp-signup-card{position:relative;width:min(100%,620px);max-height:min(92dvh,900px);overflow:auto;background:#fff;border-radius:20px;padding:30px 34px;box-shadow:0 32px 100px rgba(2,12,28,.34);color:#152d49}
+.wp-signup-close{position:absolute;right:17px;top:15px;width:34px;height:34px;border:1px solid #e4eaf2;border-radius:50%;background:#fff;color:#7a8ba0;font-size:22px;line-height:1}
+.wp-signup-brand img{display:block;width:170px;height:auto;border-radius:4px}
+.wp-signup-kicker{display:flex;align-items:center;gap:8px;color:#3d80ba;font-size:9px;font-weight:850;letter-spacing:1.3px;margin-top:25px}
+.wp-signup-kicker span{width:7px;height:7px;border-radius:50%;background:#25bd83;box-shadow:0 0 0 4px #e7faf2}
+.wp-signup-card h2{font:800 29px/1.15 'Plus Jakarta Sans',Inter,sans-serif;letter-spacing:-1.2px;margin:11px 0 7px}
+.wp-signup-lede{font-size:11px;line-height:1.7;color:#7b8a9d;margin:0 0 20px;max-width:480px}
+.wp-signup-fields{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.wp-signup-fields label{display:grid;gap:7px;font-size:10px;color:#41546d;font-weight:750;min-width:0}
+.wp-signup-fields .wp-signup-wide{grid-column:1/-1}
+.wp-signup-fields input{width:100%;height:44px;border:1px solid #dce5ef;border-radius:9px;padding:0 12px;font-size:12px;color:#182f4b;outline:none;background:#fff}
+.wp-signup-fields input:focus{border-color:#5e96e9;box-shadow:0 0 0 3px rgba(59,119,220,.10)}
+.wp-signup-fields input::placeholder{color:#a5b0bf}
+.wp-signup-error,.wp-signup-success{display:none;padding:10px 12px;border-radius:9px;font-size:10px;line-height:1.6;margin-top:13px}
+.wp-signup-error.show{display:block;background:#fff0f0;color:#b83b47}
+.wp-signup-success.show{display:block;background:#edf9f3;color:#19794f}
+.wp-signup-submit{width:100%;height:48px;border:0;border-radius:10px;background:linear-gradient(105deg,#2e70e7,#39b9e9);color:#fff;font-size:11px;font-weight:850;margin-top:15px;display:flex;align-items:center;justify-content:center;gap:20px;box-shadow:0 9px 20px rgba(39,111,211,.2)}
+.wp-signup-submit:disabled{opacity:.58;cursor:wait}
+.wp-signup-submit span{font-size:17px}
+.wp-signup-terms{font-size:9px;line-height:1.6;color:#9aa6b5;text-align:center;margin:12px 0 0}
+.wp-signup-login{text-align:center;font-size:10px;color:#8c99aa;border-top:1px solid #edf1f6;margin-top:18px;padding-top:15px}
+.wp-trial-portal{min-height:100vh;background:radial-gradient(ellipse at 80% 0%,rgba(65,170,220,.18),transparent 35%),linear-gradient(145deg,#071a33,#0d3155);padding:38px 18px;color:#fff;display:grid;place-items:center;font-family:Inter,sans-serif}
+.wp-trial-wrap{width:min(100%,850px);margin:auto}
+.wp-trial-brand{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:33px}
+.wp-trial-brand img{width:190px;max-width:45%;height:auto;border-radius:4px}
+.wp-trial-signout{border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.07);color:#e1edf9;border-radius:9px;padding:10px 13px;font-size:10px;font-weight:750}
+.wp-trial-card{border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:clamp(24px,5vw,45px);background:rgba(255,255,255,.07);box-shadow:0 25px 85px rgba(0,0,0,.2);backdrop-filter:blur(16px)}
+.wp-trial-status{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(92,230,178,.28);background:rgba(56,195,143,.12);color:#8de7c5;border-radius:20px;padding:8px 11px;font-size:9px;font-weight:850;letter-spacing:1px}
+.wp-trial-status i{width:7px;height:7px;border-radius:50%;background:#62dfac}
+.wp-trial-card h1{font:800 clamp(30px,5vw,45px)/1.12 'Plus Jakarta Sans',Inter,sans-serif;letter-spacing:-1.8px;margin:19px 0 8px}
+.wp-trial-card>p{font-size:12px;line-height:1.8;color:#b8cce0;max-width:600px;margin:0}
+.wp-trial-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin:26px 0}
+.wp-trial-meta>div{padding:15px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);border-radius:11px;min-width:0}
+.wp-trial-meta small{display:block;color:#9ab5cf;font-size:8px;letter-spacing:.8px;font-weight:800}
+.wp-trial-meta b{display:block;color:#fff;font:750 17px 'Plus Jakarta Sans',Inter,sans-serif;margin-top:7px;overflow-wrap:anywhere}
+.wp-trial-note{border-left:3px solid #59c9ed;background:rgba(63,165,220,.10);padding:13px 15px;color:#d5e5f5;font-size:10px;line-height:1.7;border-radius:0 9px 9px 0}
+.wp-trial-preview{margin-top:22px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.wp-trial-preview button{border:0;background:#fff;color:#173b62;border-radius:9px;padding:13px 16px;font-size:10px;font-weight:850}
+.wp-trial-preview span{font-size:9px;color:#91abc5}
+@media(max-width:600px){.wp-signup-backdrop{padding:10px;align-items:flex-start}.wp-signup-card{padding:23px 18px;margin:10px 0;border-radius:16px;max-height:calc(100dvh - 20px)}.wp-signup-fields{grid-template-columns:1fr;gap:11px}.wp-signup-fields .wp-signup-wide{grid-column:auto}.wp-signup-brand img{width:145px}.wp-signup-card h2{font-size:26px}.wp-trial-meta{grid-template-columns:1fr}.wp-trial-meta>div{display:flex;align-items:center;justify-content:space-between;gap:12px}.wp-trial-meta b{font-size:14px;margin:0;text-align:right}.wp-trial-brand{margin-bottom:22px}}
+
 </style>
 </head>
 <body>
@@ -593,7 +643,7 @@ html{scroll-behavior:smooth;scroll-padding-top:85px}
     <nav class="wp-site-links" aria-label="Main navigation">
       <a href="#wp-features">Features</a><a href="#wp-how">How it works</a><a href="#wp-pricing">Pricing</a><a href="#wp-about">About</a><a href="#wp-faq">FAQ</a>
     </nav>
-    <div class="wp-nav-actions"><button class="wp-nav-signin" type="button" onclick="showLoginScreen()">Sign in</button><a class="wp-nav-cta" href="#wp-pricing">Explore plans <span>↗</span></a><button class="wp-menu-toggle" type="button" aria-label="Open navigation" onclick="togglePublicMenu()">☰</button></div>
+    <div class="wp-nav-actions"><button class="wp-nav-signin" type="button" onclick="showLoginScreen()">Sign in</button><button class="wp-nav-cta" type="button" onclick="openTrialSignup()">Start free trial <span>↗</span></button><button class="wp-menu-toggle" type="button" aria-label="Open navigation" onclick="togglePublicMenu()">☰</button></div>
   </header>
 
   <main id="top">
@@ -603,7 +653,7 @@ html{scroll-behavior:smooth;scroll-padding-top:85px}
           <div class="wp-kicker"><span class="wp-kicker-dot"></span> CARWASH MANAGEMENT, REIMAGINED</div>
           <h1>More shine.<br><em>Less stress.</em><br>Total control.</h1>
           <p class="wp-hero-lede">The all-in-one workspace for running a smarter carwash. Keep every wash moving, every payment visible, and every day organized.</p>
-          <div class="wp-hero-actions"><button class="wp-btn-primary" type="button" onclick="showLoginScreen()">Explore the demo <span>→</span></button><a class="wp-btn-secondary" href="#wp-pricing">See plans and pricing <span>↓</span></a></div>
+          <div class="wp-hero-actions"><button class="wp-btn-primary" type="button" onclick="openTrialSignup()">Start 7-day free trial <span>→</span></button><a class="wp-btn-secondary" href="#wp-pricing">See plans and pricing <span>↓</span></a></div>
           <div class="wp-hero-proof"><div class="wp-proof-avatars"><span>W</span><span>P</span><span>+</span></div><div><b>Made for the people behind every wash.</b><small>Owners · Cashiers · Wash teams</small></div></div>
         </div>
         <div class="wp-hero-visual" aria-label="Illustration of the WashPilot operations dashboard">
@@ -650,9 +700,9 @@ html{scroll-behavior:smooth;scroll-padding-top:85px}
       <div class="wp-section-head wp-pricing-head"><div><span class="wp-eyebrow">SIMPLE MONTHLY PRICING</span><h2>Choose the level<br><em>that moves you forward.</em></h2></div><p>Start with the essentials. Add more capability as your team and operation grow. Every plan is billed monthly.</p></div>
       <div class="wp-trial-banner"><span class="wp-trial-icon">✦</span><div><b>Try WashPilot with a 7-day full-feature trial.</b><small>Explore the complete toolkit before choosing the plan that fits your operation.</small></div><span class="wp-trial-tag">7 DAYS FREE</span></div>
       <div class="wp-price-grid">
-        <article class="wp-price-card"><div class="wp-plan-head"><span>01 / START SIMPLE</span><span class="wp-plan-spark">✳</span></div><h3>Starter</h3><p class="wp-plan-desc">The essentials for keeping daily carwash operations organized.</p><div class="wp-price"><b>₱499</b><span>/ month</span></div><div class="wp-price-rule"></div><div class="wp-includes">WHAT'S INCLUDED</div><ul><li>Core point of sale</li><li>Wash queue and status tracking</li><li>Services and pricing</li><li>Transactions and payment records</li><li>Customer and vehicle history</li></ul><button class="wp-plan-button" type="button" onclick="previewLandingPlan('starter')">Preview Starter <span>→</span></button></article>
-        <article class="wp-price-card wp-price-featured"><div class="wp-popular">GROWING TEAMS</div><div class="wp-plan-head"><span>02 / BUILD MOMENTUM</span><span class="wp-plan-spark">✳</span></div><h3>Business</h3><p class="wp-plan-desc">More visibility and control for a growing carwash team.</p><div class="wp-price"><b>₱1,299</b><span>/ month</span></div><div class="wp-price-rule"></div><div class="wp-includes">EVERYTHING IN STARTER, PLUS</div><ul><li>Employee management</li><li>Expense tracking</li><li>Staff analytics</li><li>More tools for team oversight</li></ul><button class="wp-plan-button wp-plan-button-light" type="button" onclick="previewLandingPlan('business')">Preview Business <span>→</span></button></article>
-        <article class="wp-price-card"><div class="wp-plan-head"><span>03 / SCALE OPERATIONS</span><span class="wp-plan-spark">✳</span></div><h3>Pro</h3><p class="wp-plan-desc">Advanced operational tools for ambitious, multi-location businesses.</p><div class="wp-price"><b>₱1,999</b><span>/ month</span></div><div class="wp-price-rule"></div><div class="wp-includes">EVERYTHING IN BUSINESS, PLUS</div><ul><li>Inventory management</li><li>Service recipes</li><li>Branch management</li><li>Advanced operations tools</li></ul><button class="wp-plan-button" type="button" onclick="previewLandingPlan('pro')">Preview Pro <span>→</span></button></article>
+        <article class="wp-price-card"><div class="wp-plan-head"><span>01 / START SIMPLE</span><span class="wp-plan-spark">✳</span></div><h3>Starter</h3><p class="wp-plan-desc">The essentials for keeping daily carwash operations organized.</p><div class="wp-price"><b>₱499</b><span>/ month</span></div><div class="wp-price-rule"></div><div class="wp-includes">WHAT'S INCLUDED</div><ul><li>Core point of sale</li><li>Wash queue and status tracking</li><li>Services and pricing</li><li>Transactions and payment records</li><li>Customer and vehicle history</li></ul><button class="wp-plan-button" type="button" onclick="openTrialSignup('starter')">Start free trial <span>→</span></button></article>
+        <article class="wp-price-card wp-price-featured"><div class="wp-popular">GROWING TEAMS</div><div class="wp-plan-head"><span>02 / BUILD MOMENTUM</span><span class="wp-plan-spark">✳</span></div><h3>Business</h3><p class="wp-plan-desc">More visibility and control for a growing carwash team.</p><div class="wp-price"><b>₱1,299</b><span>/ month</span></div><div class="wp-price-rule"></div><div class="wp-includes">EVERYTHING IN STARTER, PLUS</div><ul><li>Employee management</li><li>Expense tracking</li><li>Staff analytics</li><li>More tools for team oversight</li></ul><button class="wp-plan-button wp-plan-button-light" type="button" onclick="openTrialSignup('business')">Start free trial <span>→</span></button></article>
+        <article class="wp-price-card"><div class="wp-plan-head"><span>03 / SCALE OPERATIONS</span><span class="wp-plan-spark">✳</span></div><h3>Pro</h3><p class="wp-plan-desc">Advanced operational tools for ambitious, multi-location businesses.</p><div class="wp-price"><b>₱1,999</b><span>/ month</span></div><div class="wp-price-rule"></div><div class="wp-includes">EVERYTHING IN BUSINESS, PLUS</div><ul><li>Inventory management</li><li>Service recipes</li><li>Branch management</li><li>Advanced operations tools</li></ul><button class="wp-plan-button" type="button" onclick="openTrialSignup('pro')">Start free trial <span>→</span></button></article>
       </div>
       <div class="wp-price-note"><span>✓</span> Straightforward monthly plans <span>✓</span> Choose the tier that fits your business <span>✓</span> Upgrade as you grow</div>
     </section>
@@ -673,7 +723,7 @@ html{scroll-behavior:smooth;scroll-padding-top:85px}
       </div>
     </section>
 
-    <section class="wp-final-cta"><div><span class="wp-eyebrow wp-eyebrow-light">READY FOR A BETTER-RUN WASH?</span><h2>Make every wash<br><em>count.</em></h2><p>See how WashPilot brings your daily operation together.</p></div><div class="wp-final-actions"><button class="wp-btn-primary wp-btn-white" type="button" onclick="showLoginScreen()">Explore the demo <span>→</span></button><a href="#wp-pricing">Compare monthly plans</a></div><div class="wp-final-glow"></div></section>
+    <section class="wp-final-cta"><div><span class="wp-eyebrow wp-eyebrow-light">READY FOR A BETTER-RUN WASH?</span><h2>Make every wash<br><em>count.</em></h2><p>See how WashPilot brings your daily operation together.</p></div><div class="wp-final-actions"><button class="wp-btn-primary wp-btn-white" type="button" onclick="openTrialSignup()">Start your free trial <span>→</span></button><a href="#wp-pricing">Compare monthly plans</a></div><div class="wp-final-glow"></div></section>
   </main>
   <footer class="wp-footer"><div class="wp-footer-brand"><img src="washpilot-logo.svg" alt="WashPilot"><p>More shine. Less stress. Total control.</p></div><div class="wp-footer-links"><a href="#wp-features">Features</a><a href="#wp-pricing">Pricing</a><a href="#wp-about">About</a><a href="#wp-faq">FAQ</a><button type="button" onclick="showLoginScreen()">Sign in</button></div><small>© 2026 WashPilot Management Solutions. All rights reserved.</small></footer>
 </section>
@@ -695,16 +745,21 @@ html{scroll-behavior:smooth;scroll-padding-top:85px}
   <div class="login-panel">
     <div class="login-form-wrap">
       <button class="login-return" type="button" onclick="showLandingPage()">← Back to website</button>
+      <div class="wp-auth-switch" role="tablist" aria-label="Sign in type">
+        <button id="wpAccountTab" class="active" type="button" role="tab" aria-selected="true" onclick="setLoginMode('account')">My account</button>
+        <button id="wpDemoTab" type="button" role="tab" aria-selected="false" onclick="setLoginMode('demo')">Demo workspace</button>
+      </div>
       <div class="login-mobile-brand"><img class="brand-lockup" src="washpilot-logo.svg" alt="WashPilot Management Solutions" /></div>
-      <div class="login-heading"><div class="login-welcome">WELCOME BACK</div><h2>Sign in to your account</h2><p>Enter your username and password to access your workspace.</p></div>
+      <div class="login-heading"><div class="login-welcome">WELCOME BACK</div><h2 id="wpLoginHeading">Sign in to your account</h2><p id="wpLoginDescription">Use your registered email address and password to access your WashPilot account.</p></div>
       <form id="loginForm" autocomplete="on">
-        <div class="login-field"><label for="loginUsername">Username</label><input class="login-input" id="loginUsername" name="username" type="text" placeholder="Enter your username" autocomplete="username" required></div>
+        <div class="login-field"><label id="wpLoginIdentityLabel" for="loginUsername">Email address</label><input class="login-input" id="loginUsername" name="email" type="email" placeholder="you@yourbusiness.com" autocomplete="email" required></div>
         <div class="login-field"><label for="loginPassword">Password</label><div class="login-input-wrap"><input class="login-input has-toggle" id="loginPassword" name="password" type="password" placeholder="Enter your password" autocomplete="current-password" required><button class="login-toggle" type="button" onclick="toggleLoginPassword()" id="loginPasswordToggle">Show</button></div></div>
-        <div class="login-form-row"><button type="button" class="login-link" onclick="openForgotPassword()">Forgot password?</button></div>
+        <div class="login-form-row" id="wpForgotRow" style="display:none"><button type="button" class="login-link" onclick="openForgotPassword()">Forgot password?</button></div>
         <div class="login-error" id="loginError" role="alert"></div>
         <button class="login-submit" type="submit" id="loginSubmitButton">Sign in <span aria-hidden="true">→</span></button>
       </form>
-      <div class="login-demo">
+      <div class="wp-login-signup" id="wpLoginSignup">New to WashPilot? <button type="button" onclick="openTrialSignup()">Start your 7-day free trial</button></div>
+      <div class="login-demo" id="wpLoginDemo" style="display:none">
         <div class="login-demo-title">Choose a demo workspace</div>
         <div class="login-role-switch"><button type="button" id="businessLoginTab" class="active" onclick="setLoginRole('business')">Owner</button><button type="button" id="staffLoginTab" onclick="setLoginRole('staff')">Staff</button><button type="button" id="platformLoginTab" onclick="setLoginRole('platform')">Platform Admin</button></div>
         <div class="field" id="staffRolePicker"><label for="staffDemoRole">Staff workspace</label><select id="staffDemoRole" onchange="setStaffDemoRole(this.value)"><option value="cashier">Cashier</option><option value="washer">Washer</option><option value="supervisor">Supervisor</option></select></div>
@@ -761,6 +816,31 @@ html{scroll-behavior:smooth;scroll-padding-top:85px}
   <button data-mobile-page="queue" onclick="go('queue')"><span class="nav-ico">◷</span><span>Queue</span></button>
   <button data-mobile-page="transactions" onclick="go('transactions')"><span class="nav-ico">▤</span><span>Records</span></button>
 </nav>
+<div class="wp-signup-backdrop" id="wpSignupBackdrop" onclick="signupBackdropClose(event)" aria-hidden="true">
+  <section class="wp-signup-card" role="dialog" aria-modal="true" aria-labelledby="wpSignupTitle">
+    <button class="wp-signup-close" type="button" aria-label="Close" onclick="closeTrialSignup()">×</button>
+    <div class="wp-signup-brand"><img src="washpilot-logo.svg" alt="WashPilot Management Solutions"></div>
+    <div class="wp-signup-kicker"><span></span> 7 DAYS · FULL ACCESS</div>
+    <h2 id="wpSignupTitle">Start your free trial.</h2>
+    <p class="wp-signup-lede">Create your owner account and set up your carwash. Your full-feature trial starts after email verification.</p>
+    <form id="wpSignupForm" onsubmit="submitTrialSignup(event)" novalidate>
+      <div class="wp-signup-fields">
+        <label class="wp-signup-wide">Carwash / business name<input id="wpSignupBusiness" name="business" type="text" placeholder="e.g. Shine Auto Care" minlength="2" maxlength="100" required></label>
+        <label>Owner full name<input id="wpSignupOwner" name="owner" type="text" placeholder="Your full name" minlength="2" maxlength="100" required></label>
+        <label>Contact number<input id="wpSignupPhone" name="phone" type="tel" placeholder="+63 9XX XXX XXXX" maxlength="30" required></label>
+        <label class="wp-signup-wide">Business address<input id="wpSignupAddress" name="address" type="text" placeholder="City, province" maxlength="180" required></label>
+        <label class="wp-signup-wide">Email address<input id="wpSignupEmail" name="email" type="email" placeholder="you@yourbusiness.com" autocomplete="email" required></label>
+        <label>Password<input id="wpSignupPassword" name="password" type="password" placeholder="At least 8 characters" minlength="8" autocomplete="new-password" required></label>
+        <label>Confirm password<input id="wpSignupConfirm" name="confirm" type="password" placeholder="Re-enter password" minlength="8" autocomplete="new-password" required></label>
+      </div>
+      <div class="wp-signup-error" id="wpSignupError" role="alert" aria-live="polite"></div>
+      <div class="wp-signup-success" id="wpSignupSuccess" role="status" aria-live="polite"></div>
+      <button class="wp-signup-submit" id="wpSignupSubmit" type="submit">Create account & start trial <span>→</span></button>
+      <p class="wp-signup-terms">No payment is collected during the 7-day full-access trial.</p>
+    </form>
+    <div class="wp-signup-login">Already registered? <button type="button" onclick="closeTrialSignup();showLoginScreen();setLoginMode('account')">Sign in</button></div>
+  </section>
+</div>
 <div class="forgot-backdrop" id="forgotBackdrop" onclick="forgotBackdropClose(event)"><div class="forgot-card" id="forgotCard" role="dialog" aria-modal="true" aria-labelledby="forgotTitle"><div id="forgotContent"></div></div></div>
 <div class="modal-backdrop" id="modalBackdrop" onclick="backdropClose(event)"><div class="modal" id="modal"></div></div>
 <div class="toast" id="toast"></div>
