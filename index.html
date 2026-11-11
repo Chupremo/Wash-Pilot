@@ -1515,8 +1515,12 @@ function logoutDemo(){
       if(error)throw error;
       if(data.session)await activateTrial(data.session.user);
       else{
-        $('publicLanding')&&($('publicLanding').style.display='block');
-        $('loginScreen')&&($('loginScreen').style.display='none');
+        wpStorage.removeItem('wp_demo_authenticated');wpStorage.removeItem('wb_demo_authenticated');
+        wpStorage.removeItem('wp_demo_role');wpStorage.removeItem('wp_demo_staff_role');
+        const landing=$('publicLanding'),login=$('loginScreen'),app=$('washpilotApp');
+        if(landing)landing.style.display='block';
+        if(login){login.hidden=true;login.style.display='none';}
+        if(app){app.hidden=true;app.classList.add('auth-hidden');app.style.display='none';}
       }
     }catch(err){console.warn('WashPilot auth initialization:',err);}
     setAuthMode('account');
