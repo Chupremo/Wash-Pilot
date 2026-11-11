@@ -1373,7 +1373,7 @@ function logoutDemo(){
       const meta={full_name:owner,business_name:business,business_slug:safeSlug(business),business_phone:phone,business_address:address,intended_plan:selectedSignupPlan,signup_source:'washpilot_public_landing'};
       const {data,error}=await getClient().auth.signUp({
         email,password,
-        options:{data:meta,emailRedirectTo:window.location.origin+window.location.pathname}
+        options:{data:meta,emailRedirectTo:'https://washpilot-management.vercel.app/'}
       });
       if(error)throw error;
       window.closeTrialSignup();
@@ -1382,7 +1382,7 @@ function logoutDemo(){
       }else{
         window.showLoginScreen();setAuthMode('account');
         if($('wpLoginHeading'))$('wpLoginHeading').textContent='Check your email to verify';
-        if($('wpLoginDescription'))$('wpLoginDescription').textContent='We sent a confirmation link to '+email+'. Open it to verify your account, then return here and sign in. Your 7-day full-access trial starts after verification.';
+        if($('wpLoginDescription'))$('wpLoginDescription').textContent='We sent a confirmation link to '+email+'. After confirming, return to https://washpilot-management.vercel.app and sign in with this email and your password. Your 7-day full-access trial starts after your first sign-in.';
         if($('loginUsername'))$('loginUsername').value=email;
         if($('loginPassword'))$('loginPassword').value='';
       }
