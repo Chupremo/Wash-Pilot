@@ -1469,7 +1469,7 @@ function logoutDemo(){
       const meta={full_name:owner,business_name:business,business_slug:safeSlug(business),business_phone:phone,business_address:address,intended_plan:selectedSignupPlan,signup_source:'washpilot_public_landing'};
       const {data,error}=await getClient().auth.signUp({
         email,password,
-        options:{data:meta,emailRedirectTo:'https://washpilot-management.vercel.app/'}
+        options:{data:meta,emailRedirectTo:window.location.origin}
       });
       if(error)throw error;
       window.closeTrialSignup();
