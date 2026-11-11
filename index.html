@@ -844,6 +844,7 @@ html{scroll-behavior:smooth;scroll-padding-top:85px}
 <div class="forgot-backdrop" id="forgotBackdrop" onclick="forgotBackdropClose(event)"><div class="forgot-card" id="forgotCard" role="dialog" aria-modal="true" aria-labelledby="forgotTitle"><div id="forgotContent"></div></div></div>
 <div class="modal-backdrop" id="modalBackdrop" onclick="backdropClose(event)"><div class="modal" id="modal"></div></div>
 <div class="toast" id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // Safari/file-origin-safe demo storage. If persistent browser storage is unavailable,
 // keep the demo working for the current page session using an in-memory fallback.
@@ -1277,5 +1278,222 @@ function logoutDemo(){
 }
 
 </script>
+<script>
+(() => {
+  'use strict';
+  const SUPABASE_URL = 'https://spqvdjknfeylorrjbhfm.supabase.co';
+  const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_mXS2SCnBvioY38EL3a-6UA_yGkBXe0c';
+  let client = null;
+  let authMode = 'account';
+  let selectedSignupPlan = 'starter';
+  const $ = id => document.getElementById(id);
+
+  function getClient() {
+    if (client) return client;
+    if (!window.supabase || typeof window.supabase.createClient !== 'function') {
+      throw new Error('The account service could not load. Please refresh and try again.');
+    }
+    client = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'implicit' }
+    });
+    return client;
+  }
+  function loginError(message) {
+    const el = $('loginError');
+    if (!el) return;
+    el.textContent = message || '';
+    el.classList.toggle('show', !!message);
+  }
+  function signupMessage(kind, message) {
+    const err=$('wpSignupError'), ok=$('wpSignupSuccess');
+    if (err) { err.classList.toggle('show',kind==='error'); err.textContent=kind==='error'?message:''; }
+    if (ok) { ok.classList.toggle('show',kind==='success'); ok.textContent=kind==='success'?message:''; }
+  }
+  function safeSlug(name) {
+    const base=String(name||'carwash').normalize('NFKD').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,42)||'carwash';
+    const suffix=(window.crypto&&crypto.randomUUID?crypto.randomUUID().replace(/-/g,'').slice(0,8):Math.random().toString(36).slice(2,10));
+    return (base+'-'+suffix).slice(0,60);
+  }
+  function esc(s) {
+    return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function setAuthMode(mode) {
+    authMode=mode==='demo'?'demo':'account';
+    const demo=authMode==='demo';
+    $('wpAccountTab')?.classList.toggle('active',!demo);
+    $('wpDemoTab')?.classList.toggle('active',demo);
+    $('wpAccountTab')?.setAttribute('aria-selected',String(!demo));
+    $('wpDemoTab')?.setAttribute('aria-selected',String(demo));
+    if($('wpLoginHeading'))$('wpLoginHeading').textContent=demo?'Explore the demo workspace':'Sign in to your account';
+    if($('wpLoginDescription'))$('wpLoginDescription').textContent=demo?'Use a sample workspace to explore the interface.':'Use your registered email address and password to access your WashPilot account.';
+    if($('wpLoginIdentityLabel'))$('wpLoginIdentityLabel').textContent=demo?'Username':'Email address';
+    const input=$('loginUsername');
+    if(input){input.type=demo?'text':'email';input.name=demo?'username':'email';input.placeholder=demo?'Enter your username':'you@yourbusiness.com';input.autocomplete=demo?'username':'email';input.value='';}
+    if($('wpLoginDemo'))$('wpLoginDemo').style.display=demo?'block':'none';
+    if($('wpLoginSignup'))$('wpLoginSignup').style.display=demo?'none':'block';
+    if($('wpForgotRow'))$('wpForgotRow').style.display=demo?'':'none';
+    if($('loginSubmitButton'))$('loginSubmitButton').innerHTML=(demo?'Sign in to demo':'Sign in')+' <span aria-hidden="true">→</span>';
+    loginError('');
+    if(demo&&typeof setLoginRole==='function')setLoginRole('business');
+  }
+  window.setLoginMode=setAuthMode;
+  window.showLoginScreen=function(){
+    const landing=$('publicLanding'),login=$('loginScreen');
+    if(landing)landing.style.display='none';
+    if(login){login.hidden=false;login.style.display='grid';}
+    document.body.dataset.washpilotLoginOpen='1';
+    window.scrollTo({top:0,behavior:'smooth'});
+    setAuthMode('account');
+  };
+  window.openTrialSignup=function(plan){
+    selectedSignupPlan=['starter','business','pro'].includes(plan)?plan:'starter';
+    const form=$('wpSignupForm');if(form)form.reset();
+    signupMessage('','');
+    const box=$('wpSignupBackdrop');
+    if(box){box.classList.add('show');box.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';}
+    setTimeout(()=> $('wpSignupBusiness')?.focus(),35);
+  };
+  window.closeTrialSignup=function(){
+    const box=$('wpSignupBackdrop');
+    if(box){box.classList.remove('show');box.setAttribute('aria-hidden','true');document.body.style.overflow='';}
+  };
+  window.signupBackdropClose=function(e){if(e.target&&e.target.id==='wpSignupBackdrop')window.closeTrialSignup();};
+
+  window.submitTrialSignup=async function(e){
+    e.preventDefault();
+    const business=$('wpSignupBusiness').value.trim(), owner=$('wpSignupOwner').value.trim();
+    const phone=$('wpSignupPhone').value.trim(), address=$('wpSignupAddress').value.trim();
+    const email=$('wpSignupEmail').value.trim().toLowerCase();
+    const password=$('wpSignupPassword').value, confirm=$('wpSignupConfirm').value;
+    if(business.length<2||owner.length<2||phone.length<6||!address||!email)return signupMessage('error','Please complete all business and owner details.');
+    if(password.length<8)return signupMessage('error','Use a password with at least 8 characters.');
+    if(password!==confirm)return signupMessage('error','Your passwords do not match.');
+    const submit=$('wpSignupSubmit');submit.disabled=true;submit.textContent='Creating your account…';signupMessage('','');
+    try{
+      const meta={full_name:owner,business_name:business,business_slug:safeSlug(business),business_phone:phone,business_address:address,intended_plan:selectedSignupPlan,signup_source:'washpilot_public_landing'};
+      const {data,error}=await getClient().auth.signUp({
+        email,password,
+        options:{data:meta,emailRedirectTo:window.location.origin+window.location.pathname}
+      });
+      if(error)throw error;
+      window.closeTrialSignup();
+      if(data.session){
+        await activateTrial(data.user||data.session.user);
+      }else{
+        window.showLoginScreen();setAuthMode('account');
+        if($('wpLoginHeading'))$('wpLoginHeading').textContent='Check your email to verify';
+        if($('wpLoginDescription'))$('wpLoginDescription').textContent='We sent a confirmation link to '+email+'. Open it to verify your account, then return here and sign in. Your 7-day full-access trial starts after verification.';
+        if($('loginUsername'))$('loginUsername').value=email;
+        if($('loginPassword'))$('loginPassword').value='';
+      }
+    }catch(err){
+      let msg=err&&err.message?err.message:'We could not create your account. Please try again.';
+      if(/redirect|url.*not.*allowed/i.test(msg))msg+=' Add https://washpilot-management.vercel.app/** under Supabase Authentication → URL Configuration → Redirect URLs, then retry.';
+      signupMessage('error',msg);
+    }finally{
+      submit.disabled=false;submit.innerHTML='Create account & start trial <span>→</span>';
+    }
+  };
+
+  async function activateTrial(user){
+    if(!user||!user.id)throw new Error('Your account session is missing. Please sign in again.');
+    const sb=getClient(),meta=user.user_metadata||{},businessName=String(meta.business_name||'').trim();
+    if(!businessName)throw new Error('We could not find your business details. Please create your account again or contact support.');
+    const {data:businessId,error:rpcError}=await sb.rpc('create_business_with_trial',{
+      p_name:businessName,p_slug:String(meta.business_slug||safeSlug(businessName)),
+      p_contact_email:user.email||null,p_contact_phone:meta.business_phone||null,p_address:meta.business_address||null
+    });
+    if(rpcError)throw rpcError;
+    const {data:business,error:businessError}=await sb.from('businesses').select('id,name,status,created_at').eq('id',businessId).single();
+    if(businessError)throw businessError;
+    const {data:subscription,error:subscriptionError}=await sb.from('subscriptions').select('plan_code,status,trial_starts_at,trial_ends_at,current_period_ends_at').eq('business_id',businessId).single();
+    if(subscriptionError)throw subscriptionError;
+    renderTrialAccount(user,business,subscription);
+  }
+  function renderTrialAccount(user,business,subscription){
+    $('publicLanding')?.remove();$('loginScreen')?.remove();
+    $('washpilotApp')?.classList.add('auth-hidden');document.querySelector('.mobile-bottom-nav')?.remove();
+    let portal=$('wpTrialPortal');
+    if(!portal){portal=document.createElement('section');portal.id='wpTrialPortal';portal.className='wp-trial-portal';document.body.appendChild(portal);}
+    const end=new Date(subscription.trial_ends_at);
+    const remaining=Math.max(0,Math.ceil((end.getTime()-Date.now())/86400000));
+    const dateText=Number.isNaN(end.getTime())?'Not available':end.toLocaleDateString('en-PH',{month:'long',day:'numeric',year:'numeric'});
+    const status=subscription.status==='trialing'?'TRIAL ACTIVE':String(subscription.status||'ACCOUNT CREATED').toUpperCase();
+    portal.innerHTML=
+      '<div class="wp-trial-wrap">'+
+        '<div class="wp-trial-brand"><img src="washpilot-logo.svg" alt="WashPilot"><button class="wp-trial-signout" type="button" onclick="washPilotSignOut()">Sign out</button></div>'+
+        '<div class="wp-trial-card">'+
+          '<span class="wp-trial-status"><i></i>'+esc(status)+'</span>'+
+          '<h1>Welcome to WashPilot, '+esc(user.user_metadata?.full_name||'there')+'.</h1>'+
+          '<p>Your owner account and business trial are set up. Here are your trial details.</p>'+
+          '<div class="wp-trial-meta">'+
+            '<div><small>BUSINESS</small><b>'+esc(business.name)+'</b></div>'+
+            '<div><small>TRIAL TIME LEFT</small><b>'+remaining+' day'+(remaining===1?'':'s')+'</b></div>'+
+            '<div><small>TRIAL ENDS</small><b>'+esc(dateText)+'</b></div>'+
+          '</div>'+
+          '<div class="wp-trial-note"><b>Your trial includes full Pro-level access for 7 days.</b><br>No payment is collected during the trial. After it expires, choose Starter (₱499), Business (₱1,299), or Pro (₱1,999) and submit payment for manual verification.</div>'+
+          '<div class="wp-trial-preview"><button type="button" onclick="washPilotOpenDemoPreview()">Open interface preview</button><span>Preview uses sample data and is separate from your new account’s business records.</span></div>'+
+        '</div>'+
+      '</div>';
+  }
+  window.washPilotSignOut=async function(){
+    try{await getClient().auth.signOut();}catch(_){}
+    $('wpTrialPortal')?.remove();document.body.dataset.washpilotLoginOpen='0';
+    if($('publicLanding')){$('publicLanding').style.display='block';window.scrollTo({top:0,behavior:'smooth'});}
+    else window.location.reload();
+  };
+  window.washPilotOpenDemoPreview=function(){
+    $('wpTrialPortal')?.remove();
+    if($('publicLanding'))$('publicLanding').style.display='none';
+    if($('loginScreen')){$('loginScreen').hidden=false;$('loginScreen').style.display='grid';}
+    document.body.dataset.washpilotLoginOpen='1';setAuthMode('demo');
+  };
+
+  window.handleLogin=async function(e){
+    if(e&&e.preventDefault)e.preventDefault();
+    if(authMode==='demo'){
+      const u=($('loginUsername')?.value||'').trim().toLowerCase(),p=$('loginPassword')?.value||'';
+      loginError('');
+      const keys={owner:{u:'owner',p:typeof demoPassword==='function'?demoPassword():'washpilot123'},cashier:{u:'cashier',p:'washcashier123'},washer:{u:'washer',p:'washwasher123'},supervisor:{u:'supervisor',p:'washsupervisor123'},admin:{u:'admin',p:'pilotadmin123'}};
+      const k=demoLoginRole==='platform'?'admin':demoLoginRole==='staff'?demoStaffRole:'owner',acc=keys[k];
+      if(!acc||u!==acc.u||p!==acc.p)return loginError('The username or password is incorrect. Please check the selected demo workspace.');
+      try{
+        currentRole=k==='admin'?'platform':'business';currentStaffRole=k==='admin'?'owner':k;
+        if(['cashier','washer'].includes(k))viewMode='easy';
+        wpStorage.setItem('wp_demo_authenticated','1');wpStorage.setItem('wp_demo_role',currentRole);wpStorage.setItem('wp_demo_staff_role',currentStaffRole);
+        currentPage=k==='admin'?'platform':k==='washer'?'queue':'dashboard';
+        setWashPilotAuthVisibility(true);renderNav();render();
+      }catch(err){loginError(err.message||'Could not open the demo workspace.');}
+      return;
+    }
+    const email=($('loginUsername')?.value||'').trim().toLowerCase(),password=$('loginPassword')?.value||'';
+    if(!email||!password)return loginError('Enter your email address and password.');
+    const btn=$('loginSubmitButton');if(btn){btn.disabled=true;btn.textContent='Signing in…';}
+    loginError('');
+    try{
+      const {data,error}=await getClient().auth.signInWithPassword({email,password});
+      if(error)throw error;
+      await activateTrial(data.user||data.session?.user);
+    }catch(err){loginError(err&&err.message?err.message:'We could not sign you in.');}
+    finally{if(btn){btn.disabled=false;btn.innerHTML='Sign in <span aria-hidden="true">→</span>';}}
+  };
+
+  async function initRealAuth(){
+    try{
+      const {data,error}=await getClient().auth.getSession();
+      if(error)throw error;
+      if(data.session)await activateTrial(data.session.user);
+      else{
+        $('publicLanding')&&($('publicLanding').style.display='block');
+        $('loginScreen')&&($('loginScreen').style.display='none');
+      }
+    }catch(err){console.warn('WashPilot auth initialization:',err);}
+    setAuthMode('account');
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initRealAuth,{once:true});
+  else initRealAuth();
+})();
+</script>
+
 </body>
 </html>
