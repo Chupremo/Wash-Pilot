@@ -2520,7 +2520,8 @@ function openRealWorkspace(user,business,subscription){
   };
   const pageByPath = Object.fromEntries(Object.entries(pagePaths).map(([key,path])=>[path,key]));
   const normalize = path => {
-    let value=String(path||'/').split('?')[0].split('#')[0].replace(/\\/+$/,'');
+    let value=String(path||'/').split('?')[0].split('#')[0];
+    while(value.length>1&&value.endsWith('/'))value=value.slice(0,-1);
     return (value||'/').toLowerCase();
   };
   const setPath = (path,replace) => {
