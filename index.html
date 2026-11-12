@@ -972,6 +972,36 @@ tbody tr:hover td{background:#f5f9ff}
 .wp-hub-locked .hub-icon{background:#fff1d9!important;color:#8a4d00!important}
 @media(max-width:600px){.wp-locked-plan{align-items:flex-start;flex-direction:column}.wp-locked-page .actions{display:grid;grid-template-columns:1fr}.wp-locked-page .actions .btn{width:100%}}
 
+
+@media (min-width:761px){
+ .app{grid-template-columns:300px minmax(0,1fr)!important}
+ .sidebar{width:300px;min-width:300px;padding:22px 15px}
+ .nav button[data-page]{width:100%;min-width:0;gap:10px}
+ .nav button[data-page] .badge{white-space:nowrap;flex:0 0 auto;min-width:max-content;line-height:1;padding:7px 10px!important;font-size:10px;letter-spacing:.02em}
+}
+.wp-plan-lock-badge{display:inline-flex!important;align-items:center;justify-content:center;white-space:nowrap!important;flex:0 0 auto!important;min-width:max-content!important;line-height:1!important;padding:7px 10px!important;border-radius:999px!important;background:#fff0d8!important;color:#8a4d00!important;border:1px solid #f3d7a5!important;font-size:10px!important;letter-spacing:.02em!important}
+.wp-billing-plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;align-items:stretch}
+.wp-billing-plan{display:flex;flex-direction:column;gap:12px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow);min-width:0}
+.wp-billing-plan.is-current{border:2px solid #2270cf;background:#f8fbff}.wp-billing-plan.is-lower{opacity:.82}
+.wp-billing-plan-top{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;font-weight:800}
+.wp-billing-price{font-size:28px;font-weight:850;letter-spacing:-.8px;color:var(--ink)}
+.wp-billing-price small{font-size:11px;font-weight:500;color:var(--muted);margin-left:5px;letter-spacing:0}
+.wp-billing-plan p{font-size:12px;color:var(--muted);line-height:1.6;min-height:55px;margin:0}
+.wp-billing-plan ul{list-style:none;padding:0;margin:0 0 6px;display:grid;gap:8px;flex:1}
+.wp-billing-plan li{font-size:11px;color:#40516b;padding-left:18px;position:relative;line-height:1.5}
+.wp-billing-plan li:before{content:'✓';position:absolute;left:0;color:#168b62;font-weight:900}
+.wp-billing-plan .btn{width:100%;margin-top:auto}
+.wp-upgrade-summary{display:grid;grid-template-columns:1fr auto;gap:8px;padding:14px;background:#f5f8fd;border:1px solid #e3eaf4;border-radius:12px;margin-bottom:14px;font-size:12px}
+.wp-upgrade-summary span{color:#65758c}.wp-upgrade-summary strong{font-size:20px;color:#1b4e8e}
+.wp-payment-instructions{padding:16px;border:1px solid #dfe8f3;border-radius:12px;background:#f9fbfe;margin-bottom:16px;display:grid;gap:8px}
+.wp-payment-instructions-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.wp-payment-instructions-head span{font-size:9px;font-weight:800;padding:5px 8px;border-radius:20px;background:#e5f8ed;color:#19764e}
+.wp-payment-instructions>strong{font-size:19px;color:#154b83}.wp-payment-instructions p{font-size:12px;line-height:1.6;color:#586980;margin:0}
+.wp-payment-unconfigured{background:#fff5e4;border:1px solid #f2d9a8;color:#83510b!important;padding:10px;border-radius:9px}
+.wp-gcash-qr{width:150px;height:150px;object-fit:contain;border-radius:10px;border:1px solid #e1e7f0;background:#fff}
+@media(max-width:1000px){.wp-billing-plans{grid-template-columns:1fr 1fr}}
+@media(max-width:760px){.wp-billing-plans{grid-template-columns:1fr}.wp-billing-plan p{min-height:0}.wp-billing-plan{padding:16px}.wp-plan-lock-badge{font-size:9px!important;padding:6px 8px!important}}
+
 </style>
 </head>
 <body>
@@ -1133,7 +1163,7 @@ tbody tr:hover td{background:#f5f9ff}
 <main class="main">
 <header class="topbar">
   <div class="topbar-left" style="display:flex;align-items:center;gap:10px"><button class="mobile-menu" onclick="toggleSidebar()">☰</button><img class="topbar-brand-icon" src="washpilot-logo.svg" alt="WashPilot" /><div class="crumb" id="crumb">Dashboard<small id="crumbSub">Welcome back! Here's your business overview.</small></div></div>
-  <div class="top-actions"><div class="mode-switch" id="modeSwitch" role="group" aria-label="Display mode"><button type="button" id="easyModeButton" onclick="setViewMode('easy')">Easy</button><button type="button" id="advancedModeButton" onclick="setViewMode('advanced')">Advanced</button></div><button class="pill wp-tour-launch" id="wpTourLaunch" type="button" onclick="openWashPilotTourChooser()" title="Choose a guided walkthrough">▶ Guided Tour</button><button class="avatar" type="button" onclick="logoutDemo()" title="Sign out" aria-label="Sign out">BO</button></div>
+  <div class="top-actions"><button class="pill wp-tour-launch" id="wpTourLaunch" type="button" onclick="openWashPilotTourChooser()" title="Choose a guided walkthrough">▶ Guided Tour</button><button class="avatar" type="button" onclick="logoutDemo()" title="Sign out" aria-label="Sign out">BO</button></div>
 </header>
 <div class="content" id="content"></div>
 </main>
@@ -1432,7 +1462,7 @@ document.getElementById('planSelect')?.addEventListener('change',e=>setPlan(e.ta
    ========================================================= */
 let currentRole='business';
 let currentStaffRole=window.wpStorage.getItem('wp_demo_staff_role')||'owner';
-let viewMode=window.wpStorage.getItem('wp_view_mode')||'easy';
+let viewMode='advanced';
 let demoLoginRole='business';
 let demoStaffRole='cashier';
 let tenantSearch='';
@@ -1530,7 +1560,7 @@ function initAuth(){
  if(ok){currentPage=currentRole==='platform'?'platform':currentStaffRole==='washer'?'queue':'dashboard';renderNav();render()}else setLoginRole('business');
 }
 function logoutDemo(){window.wpStorage.removeItem('wp_demo_authenticated');window.wpStorage.removeItem('wb_demo_authenticated');window.wpStorage.removeItem('wp_demo_role');window.wpStorage.removeItem('wp_demo_staff_role');document.getElementById('loginPassword').value='';document.getElementById('loginError').classList.remove('show');setWashPilotAuthVisibility(false);setLoginRole('business');document.getElementById('loginUsername').focus()}
-function setViewMode(mode){if(!['easy','advanced'].includes(mode))return;if(currentStaffRole==='washer'||currentStaffRole==='cashier')return;viewMode=mode;window.wpStorage.setItem('wp_view_mode',mode);if(mode==='easy'&&['loyalty','recipes','reconcile','subscription','addons','employees','expenses','reports','inventory','branches','catalog'].includes(currentPage))currentPage='managementHub';renderNav();render();}
+function setViewMode(){viewMode='advanced';window.wpStorage.setItem('wp_view_mode','advanced');renderNav();render();}
 function canAccessRolePage(page){
  if(currentRole==='platform')return ['platform','tenants','platformBilling'].includes(page);
  const permissions={owner:null,supervisor:['dashboard','newwash','queue','transactions','customers','catalog','employees','reports','reconcile','managementHub','addons','inventory','recipes','expenses','branches','loyalty','subscription'],cashier:['dashboard','newwash','queue','transactions','customers'],washer:['queue']};
@@ -1538,22 +1568,21 @@ function canAccessRolePage(page){
 }
 function renderNav(){
  const isPlatform=currentRole==='platform',isOwner=currentRole==='business'&&currentStaffRole==='owner',isSupervisor=currentRole==='business'&&currentStaffRole==='supervisor';
- const activePlan=effectivePlan();
- document.body.classList.toggle('platform-mode',isPlatform);document.body.classList.toggle('easy-mode',viewMode==='easy'&&!isPlatform);document.body.classList.toggle('advanced-mode',viewMode==='advanced'&&!isPlatform);
+ const activePlan=effectivePlan();viewMode='advanced';
+ document.body.classList.toggle('platform-mode',isPlatform);document.body.classList.remove('easy-mode');document.body.classList.toggle('advanced-mode',!isPlatform);
  document.getElementById('ownerWorkspaceGroup').style.display=isPlatform?'none':'';
- document.getElementById('managementNavGroup').style.display=(!isPlatform&&(isOwner||isSupervisor)&&viewMode==='advanced')?'':'none';
- document.getElementById('easyToolsGroup').style.display=(!isPlatform&&(isOwner||isSupervisor)&&viewMode==='easy')?'':'none';
+ document.getElementById('managementNavGroup').style.display=(!isPlatform&&(isOwner||isSupervisor))?'':'none';
+ document.getElementById('easyToolsGroup').style.display='none';
  document.getElementById('platformNavGroup').style.display=isPlatform?'block':'none';
- document.getElementById('modeSwitch').style.display=(!isPlatform&&(isOwner||isSupervisor))?'inline-flex':'none';
- document.getElementById('easyModeButton').classList.toggle('active',viewMode==='easy');document.getElementById('advancedModeButton').classList.toggle('active',viewMode==='advanced');
- const planSelect=document.getElementById('planSelect');if(planSelect)planSelect.style.display=isOwner&&viewMode==='advanced'&&!window.wpRealWorkspaceActive?'':'none';
- const resetDemoButton=document.querySelector('.reset-demo-button');if(resetDemoButton)resetDemoButton.style.display=isOwner&&viewMode==='advanced'&&!window.wpRealWorkspaceActive?'':'none';
+ const modeSwitch=document.getElementById('modeSwitch');if(modeSwitch)modeSwitch.style.display='none';
+ const planSelect=document.getElementById('planSelect');if(planSelect)planSelect.style.display='none';
+ const resetDemoButton=document.querySelector('.reset-demo-button');if(resetDemoButton)resetDemoButton.style.display='none';
  const sidePlan=document.getElementById('sidePlan'),sideText=document.getElementById('sidePlanText');
  sidePlan.textContent=isPlatform?'PLATFORM ADMIN':isOwner?activePlan.toUpperCase()+' PLAN':currentStaffRole.toUpperCase();
- sideText.textContent=isPlatform?'Central control for all subscribed businesses.':isOwner?'Daily operations workspace · '+planName(planRank(activePlan))+' plan · '+(viewMode==='easy'?'Easy Mode':'Advanced Mode'):currentStaffRole==='washer'?'Assigned vehicles and service progress.':currentStaffRole==='cashier'?'New washes, payments and customer records.':'Team operations and daily oversight.';
+ sideText.textContent=isPlatform?'Central control for all subscribed businesses.':isOwner?'Daily operations workspace · '+planName(planRank(activePlan))+' plan':currentStaffRole==='washer'?'Assigned vehicles and service progress.':currentStaffRole==='cashier'?'New washes, payments and customer records.':'Team operations and daily oversight.';
  document.querySelector('.top-actions .avatar').textContent=isPlatform?'SA':isOwner?'BO':currentStaffRole==='supervisor'?'SU':currentStaffRole==='cashier'?'CA':'WA';
  document.querySelectorAll('.nav button[data-page]').forEach(b=>{
-  const page=b.dataset.page,allowedRole=canAccessRolePage(page),locked=isOwner&&!allowed(page)&&page!=='managementHub'&&page!=='subscription';
+  const page=b.dataset.page,allowedRole=canAccessRolePage(page),locked=!isPlatform&&(isOwner||isSupervisor)&&!allowed(page)&&!['managementHub','subscription'].includes(page);
   b.style.display=allowedRole?'flex':'none';b.classList.toggle('active',page===currentPage);
   let tag=b.querySelector('.badge');
   if(locked){
@@ -1574,7 +1603,7 @@ function render(){
  const subs=currentRole==='platform'?{platform:pageSubs.platform,tenants:pageSubs.tenants,platformBilling:pageSubs.platformBilling}:pageSubs;
  document.getElementById('crumb').innerHTML=(names[currentPage]||'Dashboard')+`<small id="crumbSub">${subs[currentPage]||''}</small>`;
  const planSelect=document.getElementById('planSelect');if(planSelect)planSelect.value=currentPlan;const c=document.getElementById('content');
- if(currentRole==='platform'){const pp={platform:platformDashboard,tenants:tenantsPage,platformBilling:platformBillingPage};c.innerHTML=pp[currentPage]();return}
+ if(currentRole==='platform'){const pp={platform:platformDashboard,tenants:tenantsPage,platformBilling:platformBillingPage};c.innerHTML=pp[currentPage]();if(currentPage==='platformBilling')loadPlatformBillingRequests();return}
  if(currentPage==='managementHub'){c.innerHTML=managementHubPage();return}
  if(!allowed(currentPage)){c.innerHTML=lockedPage();return}
  const pages={dashboard:dashboardPage,newwash:newWashPage,queue:queuePage,transactions:transactionsPage,customers:customersPage,catalog:catalogPage,addons:addonsPage,employees:employeesPage,expenses:expensesPage,reports:reportsPage,inventory:inventoryPage,branches:branchesPage,loyalty:loyaltyPage,recipes:recipesPage,reconcile:reconcilePage,subscription:subscriptionPage};
@@ -1583,6 +1612,7 @@ function render(){
   const markup=pageRenderer();
   if(typeof markup!=='string'||!markup.trim())throw new Error('The '+(names[currentPage]||'Dashboard')+' renderer returned empty content.');
   c.innerHTML=markup;
+  if(currentPage==='subscription')loadMyBillingRequests();
  }catch(renderError){
   console.error('WashPilot dashboard render failed:',renderError);
   const message=renderError&&renderError.message?renderError.message:'An unexpected error occurred while loading this screen.';
@@ -1683,9 +1713,73 @@ function openStartShiftModal(){openModal(`<div class="modal-head"><h2>Open cashi
 function startShift(e){e.preventDefault();let f=new FormData(e.target);if(state.shift?.open){toast('A shift is already open.');return}state.shift={id:'SH-'+Date.now().toString().slice(-7),open:true,openedAt:new Date().toISOString(),openingCash:Number(f.get('openingCash')),openedBy:f.get('cashier')};save();closeModal();render();toast('Cashier shift opened.')}
 function openCloseShiftModal(){if(!state.shift?.open){toast('No active shift.');return}let p=currentShiftPayments();openModal(`<div class="modal-head"><h2>Close and reconcile shift</h2><button class="close" onclick="closeModal()">×</button></div><div class="inline-note">Expected cash: <b>${money(p.Cash)}</b> · Expected GCash: <b>${money(p.GCash)}</b> · Expected Maya: <b>${money(p.Maya)}</b></div><form onsubmit="closeShift(event)" style="margin-top:13px"><div class="form-grid"><div class="field"><label>Counted cash</label><input name="cash" type="number" min="0" step="0.01" value="${p.Cash}" required></div><div class="field"><label>Verified GCash</label><input name="gcash" type="number" min="0" step="0.01" value="${p.GCash}" required></div><div class="field"><label>Verified Maya</label><input name="maya" type="number" min="0" step="0.01" value="${p.Maya}" required></div><div class="field"><label>Other / card verified</label><input name="other" type="number" min="0" step="0.01" value="${p.Card+p.Other}" required></div></div><div class="field" style="margin-top:10px"><label>Variance explanation (required when totals differ)</label><textarea name="notes" rows="2" placeholder="Explain any overage or shortage"></textarea></div><div class="field" style="margin-top:10px"><label>Closed by</label><input name="cashier" value="Demo Owner" required></div><div class="actions" style="justify-content:flex-end;margin-top:16px"><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn">Save closeout</button></div></form>`)}
 function closeShift(e){e.preventDefault();let f=new FormData(e.target),p=currentShiftPayments(),countedCash=Number(f.get('cash')),variance=countedCash-p.Cash,notes=f.get('notes').trim();let electronic=Number(f.get('gcash'))+Number(f.get('maya'))+Number(f.get('other')),expectedElectronic=p.GCash+p.Maya+p.Card+p.Other;if((Math.abs(variance)>.009||Math.abs(electronic-expectedElectronic)>.009)&&!notes){toast('Please explain the reconciliation variance.');return}let close={id:state.shift.id,openedAt:state.shift.openedAt,closedAt:new Date().toISOString(),openingCash:state.shift.openingCash,expectedCash:p.Cash,countedCash,variance,expectedElectronic,countedElectronic:electronic,closedBy:f.get('cashier'),notes};state.shiftClosings.unshift(close);state.shifts.push(close);state.shift={open:false,id:null};save();closeModal();render();toast('Shift closeout saved with variance audit.')}
-function subscriptionPage(){if(window.wpRealWorkspaceActive){const plan=window.wpRealSubscription?.plan_code||currentPlan;const prices={basic:0,standard:499,premium:899};const price=prices[plan]??0;const sub=window.wpRealSubscription||{};const status=String(sub.status||'active').replace(/_/g,' ').toUpperCase();return pageHead('Subscription & Billing','Your WashPilot plan and billing details.')+`<div class="grid stats">${stat('Current Plan',plan.toUpperCase(),'Subscription tier','✓','green')}${stat('Account Status',status,'Business access','▣')}${stat('Monthly Plan Price',price===0?'Free':money(price),price===0?'Free forever':'PHP per month','₱','purple')}${stat('Branch Allowance',plan==='premium'?'Multiple':'One branch',plan==='premium'?'Multi-location access':'Single-location plan','◷')}</div><section class="panel"><div class="panel-head"><h3>Available plans</h3><span class="subtle">No trial · No setup fee</span></div><div class="recipe-list"><div class="recipe-row"><div><b>Basic · Free forever</b><br><small>One branch, core POS, wash queue, services, add-ons, transactions, receipts and customer history.</small></div>${plan==='basic'?'<span class="status Active">CURRENT</span>':''}</div><div class="recipe-row"><div><b>Standard · ₱499/month</b><br><small>One branch plus inventory, expenses, staff tools, attendance, analytics and reports.</small></div>${plan==='standard'?'<span class="status Active">CURRENT</span>':''}</div><div class="recipe-row"><div><b>Premium · ₱899/month</b><br><small>Everything in Standard plus multiple branches, consolidated reporting, branch managers and transfers.</small></div>${plan==='premium'?'<span class="status Active">CURRENT</span>':''}</div></div><div class="inline-note" style="margin-top:14px">Basic is free forever. Paid-plan activation and payment verification can be handled by your platform administrator.</div></section><section class="panel" style="margin-top:15px"><div class="panel-head"><h3>Billing history</h3></div><div class="empty">No invoices or payment records yet.</div></section>`;}return pageHead('Subscription & Billing','Manage your plan and review billing information.')+`<section class="panel"><div class="panel-head"><h3>Available plans</h3></div><p>Basic · Free forever | Standard · ₱499/month | Premium · ₱899/month</p></section>`;}
-function openPlanModal(){openModal(`<div class="modal-head"><h2>Change subscription plan</h2><button class="close" onclick="closeModal()">×</button></div><div class="recipe-list"><div class="recipe-row"><b>Basic · Free forever</b></div><div class="recipe-row"><b>Standard · ₱499/month</b></div><div class="recipe-row"><b>Premium · ₱899/month</b></div></div><p class="inline-note">Contact your platform administrator to request a paid-plan upgrade.</p>`)}
-function changeOwnerPlan(e){e?.preventDefault?.();toast('Contact your platform administrator to change your plan.');}
+function subscriptionPage(){
+ if(!window.wpRealWorkspaceActive)return pageHead('Subscription & Billing','Sign in with a registered business account to manage billing.')+`<section class="panel"><div class="empty">Live subscription management is available to registered business accounts.</div></section>`;
+ const plan=effectivePlan(),rank=planRank(plan),prices={basic:0,standard:499,premium:899},sub=window.wpRealSubscription||{};
+ const status=String(sub.status||'active').replace(/_/g,' ').toUpperCase();
+ const tiers=[
+  {code:'basic',name:'Basic',price:0,desc:'Core POS, wash queue, services, add-ons, transactions, receipts and customer history.',features:['One branch','Core carwash operations','Daily sales summary']},
+  {code:'standard',name:'Standard',price:499,desc:'More visibility and control for a growing single-location team.',features:['Everything in Basic','Employees and staff tools','Expenses, inventory and reports','Add-on analytics and loyalty']},
+  {code:'premium',name:'Premium',price:899,desc:'Complete operational control for multi-branch carwash businesses.',features:['Everything in Standard','Multiple branches','Service recipes and branch-level controls']}
+ ];
+ const cards=tiers.map(t=>{
+  const current=t.code===plan,lower=planRank(t.code)<rank,upgrade=planRank(t.code)>rank;
+  return `<article class="wp-billing-plan ${current?'is-current':''} ${lower?'is-lower':''}">
+   <div class="wp-billing-plan-top"><span>${t.name}</span>${current?'<span class="status Completed">CURRENT PLAN</span>':lower?'<span class="status">INCLUDED</span>':''}</div>
+   <div class="wp-billing-price">${t.price===0?'Free':money(t.price)}<small>${t.price===0?'forever':'/ month'}</small></div>
+   <p>${t.desc}</p><ul>${t.features.map(x=>'<li>'+esc(x)+'</li>').join('')}</ul>
+   ${current?'<button class="btn ghost" disabled>Current plan</button>':upgrade?`<button class="btn" onclick="openPlanUpgradeModal('${t.code}')">Select ${t.name} <span>→</span></button>`:'<button class="btn ghost" disabled>Already included</button>'}
+  </article>`;
+ }).join('');
+ return pageHead('Subscription & Billing','Select a higher plan and submit payment for administrator verification.')+
+  `<div class="grid stats">${stat('Current Plan',plan.toUpperCase(),'Subscription tier','✓','green')}${stat('Account Status',status,'Business access','▣')}${stat('Monthly Plan Price',prices[plan]===0?'Free':money(prices[plan]),prices[plan]===0?'Free forever':'PHP per month','₱','purple')}${stat('Branch Allowance',plan==='premium'?'Multiple':'One branch',plan==='premium'?'Multi-location access':'Single-location plan','◷')}</div>
+  <section class="wp-billing-plans">${cards}</section>
+  <section class="panel" style="margin-top:16px"><div class="panel-head"><h3>Payment requests</h3><span class="subtle">Upgrade receipts and review status</span></div><div id="wpMyBillingRequests" class="empty">Loading payment request history…</div></section>
+  <section class="panel" style="margin-top:16px"><div class="panel-head"><h3>Billing terms</h3></div><p class="subtle" style="line-height:1.7">Paid plans are billed monthly. Select a higher plan, send the exact amount to the GCash account shown in the payment form, and upload your receipt. Features unlock only after payment approval. A rejected upgrade leaves your existing plan unchanged.</p></section>`;
+}
+async function openPlanUpgradeModal(planCode){
+ const code=normalizePlan(planCode),rank=planRank(code);
+ if(!window.wpRealWorkspaceActive||rank<=planRank(effectivePlan())||!['standard','premium'].includes(code)){toast('Choose a higher plan from your registered workspace.');return;}
+ const price=code==='standard'?499:899,name=planName(rank);
+ openModal(`<div class="modal-head"><h2>Upgrade to ${name}</h2><button class="close" onclick="closeModal()">×</button></div><div class="empty">Loading payment instructions…</div>`);
+ try{
+  const settings=await window.washPilotBillingApi.getPaymentSettings();
+  const history=await window.washPilotBillingApi.getMyRequests(window.wpRealBusinessId);
+  if(history.find(x=>x.status==='pending'))throw new Error('A payment request is already waiting for review. Please wait until it has been reviewed.');
+  const configured=!!(settings.gcash_number&&settings.gcash_account_name);
+  const qr=settings.qr_image_url?'<img class="wp-gcash-qr" src="'+esc(settings.qr_image_url)+'" alt="GCash payment QR code">':'';
+  document.getElementById('modal').innerHTML=`<div class="modal-head"><h2>Upgrade to ${name}</h2><button class="close" onclick="closeModal()">×</button></div>
+   <div class="wp-upgrade-summary"><span>Selected plan</span><b>${name}</b><span>Amount due</span><strong>${money(price)}</strong></div>
+   <section class="wp-payment-instructions"><div class="wp-payment-instructions-head"><b>GCash payment details</b><span>${configured?'READY':'NOT CONFIGURED'}</span></div>
+   ${configured?qr+'<b>'+esc(settings.gcash_account_name)+'</b><strong>'+esc(settings.gcash_number)+'</strong><p>'+esc(settings.payment_instructions||'Send the exact amount and upload your receipt.')+'</p>':'<p class="wp-payment-unconfigured">The WashPilot administrator has not configured GCash receiving details yet. You can select a plan, but payment submission will be enabled after the receiving account and QR code are added in Platform Billing.</p>'}</section>
+   <form onsubmit="submitPlanUpgrade(event,'${code}',${price})">
+    <div class="field"><label>GCash reference number *</label><input name="reference" type="text" minlength="4" maxlength="100" placeholder="Enter your GCash reference number" required></div>
+    <div class="field"><label>Payment receipt / screenshot *</label><input name="proof" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" required><small class="subtle">JPG, PNG, WebP or PDF · Up to 10 MB</small></div>
+    <div class="actions" style="justify-content:flex-end;margin-top:18px"><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn" ${configured?'':'disabled'} type="submit">Submit payment for verification</button></div>
+   </form>`;
+ }catch(err){
+  document.getElementById('modal').innerHTML=`<div class="modal-head"><h2>Upgrade to ${name}</h2><button class="close" onclick="closeModal()">×</button></div><div class="inline-note">${esc(err.message||'Could not load payment details.')}</div><div class="actions" style="justify-content:flex-end;margin-top:16px"><button class="btn ghost" onclick="closeModal()">Close</button></div>`;
+ }
+}
+async function submitPlanUpgrade(e,planCode,amount){
+ e.preventDefault();const form=e.currentTarget,submit=form.querySelector('button[type="submit"]');
+ if(submit){submit.disabled=true;submit.textContent='Submitting…';}
+ try{
+  await window.washPilotBillingApi.submitUpgrade({businessId:window.wpRealBusinessId,planCode,amount,paymentReference:form.elements.reference.value.trim(),file:form.elements.proof.files?.[0]});
+  closeModal();toast('Payment request submitted. Your existing plan remains active until an administrator approves the upgrade.');
+  render();loadMyBillingRequests();
+ }catch(err){
+  alert(err.message||'We could not submit your payment request.');
+  if(submit){submit.disabled=false;submit.textContent='Submit payment for verification';}
+ }
+}
+async function loadMyBillingRequests(){
+ const el=document.getElementById('wpMyBillingRequests');if(!el||!window.wpRealBusinessId||!window.washPilotBillingApi)return;
+ try{
+  const rows=await window.washPilotBillingApi.getMyRequests(window.wpRealBusinessId);
+  el.innerHTML=rows.length?'<div class="table-wrap"><table><thead><tr><th>Plan</th><th>Amount</th><th>Submitted</th><th>Status</th><th>Admin note</th></tr></thead><tbody>'+rows.map(r=>'<tr><td><b>'+esc(planName(planRank(r.plan_code)))+'</b></td><td>'+money(r.amount)+'</td><td>'+dateLabel(String(r.submitted_at).slice(0,10))+'</td><td>'+statusPill(String(r.status).toUpperCase())+'</td><td>'+esc(r.reviewer_note||'—')+'</td></tr>').join('')+'</tbody></table></div>':'<div class="empty">No upgrade payment requests yet.</div>';
+ }catch(err){el.innerHTML='<div class="empty">Payment request history is unavailable: '+esc(err.message)+'</div>';}
+}
 function platformDashboard(){let ts=platformData.tenants,active=ts.filter(t=>t.status==='Active'),trials=ts.filter(t=>t.status==='Trial'),past=ts.filter(t=>t.status==='Past Due'),mrr=active.reduce((a,t)=>a+Number(t.mrr||0),0),paid=platformData.invoices.filter(i=>i.status==='Paid').reduce((a,i)=>a+i.amount,0);return `<div class="admin-banner"><div><h2>WashPilot Platform Control Center</h2><p>Central administration for customer businesses, subscriptions and recurring revenue.</p></div><span class="admin-pill">SUPER ADMIN · DEMO</span></div>${pageHead('Platform Overview','Your SaaS business at a glance.',`<button class="btn" onclick="openTenantModal()">＋ Add business</button>`)}<div class="grid stats">${stat('Active Businesses',active.length,'Paying subscribers','▣','green')}${stat('Monthly Recurring Revenue',money(mrr),'Active monthly subscriptions','₱','green')}${stat('Trial Accounts',trials.length,'Potential subscribers','◷','purple')}${stat('Past Due Accounts',past.length,'Follow up on collections','!','amber')}</div><div class="grid two"><section class="panel"><div class="panel-head"><h3>Business account health</h3><button class="btn ghost small" onclick="go('tenants')">Manage businesses</button></div>${[['Active',active.length,'#159b69'],['Trial',trials.length,'#3568f5'],['Past Due',past.length,'#d58a18'],['Suspended',ts.filter(t=>t.status==='Suspended').length,'#d84f5b']].map(a=>`<div style="margin:13px 0"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px"><b>${a[0]}</b><span>${a[1]} businesses</span></div><div class="progress"><span style="width:${ts.length?a[1]/ts.length*100:0}%;background:${a[2]}"></span></div></div>`).join('')}</section><section class="panel"><div class="panel-head"><h3>Collection snapshot</h3><button class="btn ghost small" onclick="go('platformBilling')">View billing</button></div><div class="mini-card"><small>Paid invoices recorded</small><strong>${money(paid)}</strong><small>Demo invoice records only</small></div><div class="mini-card" style="margin-top:9px"><small>Overdue invoices</small><strong>${platformData.invoices.filter(i=>i.status==='Overdue').length}</strong><small>Requires owner follow-up</small></div><div class="inline-note" style="margin-top:12px">MRR is calculated from Active tenant plans only. Trials, past-due and suspended accounts are excluded.</div></section></div><section class="panel" style="margin-top:15px"><div class="panel-head"><h3>Recently added businesses</h3><button class="btn ghost small" onclick="go('tenants')">View all</button></div>${tenantTable(ts.slice().sort((a,b)=>b.created.localeCompare(a.created)).slice(0,4),false)}</section>`}
 function tenantTable(rows,actions=true){return `<div class="table-wrap"><table><thead><tr><th>Business</th><th>Owner</th><th>Plan</th><th>Status</th><th>Branches</th><th>Monthly fee</th><th>Renewal</th>${actions?'<th>Actions</th>':''}</tr></thead><tbody>${rows.map(t=>`<tr><td><div class="tenant-cell"><span class="tenant-logo">${esc(t.name.split(/\s+/).map(x=>x[0]).slice(0,2).join(''))}</span><div><b>${esc(t.name)}</b><small>${esc(t.id)} · ${esc(t.location)}</small></div></div></td><td><b>${esc(t.owner)}</b><br><span class="subtle">${esc(t.email)}</span></td><td><span class="badge">${esc(t.plan.toUpperCase())}</span></td><td>${statusPill(t.status)}</td><td>${t.branches}</td><td class="amount">${money(t.status==='Active'?t.mrr:0)}</td><td>${dateLabel(t.renewal)}</td>${actions?`<td><button class="btn ghost small" onclick="openTenantEditModal('${t.id}')">Manage</button></td>`:''}</tr>`).join('')}</tbody></table></div>`}
 function tenantsPage(){let rows=platformData.tenants.filter(t=>[t.name,t.owner,t.email,t.location,t.id,t.status,t.plan].join(' ').toLowerCase().includes(tenantSearch.toLowerCase()));return `${pageHead('Customer Businesses','Create accounts, update plans, handle overdue payments and suspend access.',`<button class="btn" onclick="openTenantModal()">＋ Add business</button>`)}<section class="panel"><div class="toolbar"><input class="search" style="max-width:340px" placeholder="Search business, owner, email or ID..." value="${esc(tenantSearch)}" oninput="tenantSearch=this.value;render()"><span class="subtle">${rows.length} of ${platformData.tenants.length} businesses</span></div>${tenantTable(rows,true)}</section>`}
@@ -1694,8 +1788,51 @@ function saveTenant(e){e.preventDefault();let f=new FormData(e.target),plan=f.ge
 function openTenantEditModal(id){let t=platformData.tenants.find(x=>x.id===id);if(!t)return;openModal(`<div class="modal-head"><h2>Manage ${esc(t.name)}</h2><button class="close" onclick="closeModal()">×</button></div><div class="summary-line"><span>Owner</span><b>${esc(t.owner)}</b></div><div class="summary-line"><span>Email</span><b>${esc(t.email)}</b></div><div class="summary-line"><span>Current status</span><b>${esc(t.status)}</b></div><form onsubmit="updateTenant(event,'${t.id}')" style="margin-top:13px"><div class="field"><label>Subscription plan</label><select name="plan"><option value="basic" ${t.plan==='starter'?'selected':''}>Basic · Free forever</option><option value="standard" ${t.plan==='business'?'selected':''}>Standard · ₱499</option><option value="premium" ${t.plan==='pro'?'selected':''}>Premium · ₱899</option></select></div><div class="field" style="margin-top:10px"><label>Account status</label><select name="status">${['Active','Trial','Past Due','Suspended','Cancelled'].map(x=>`<option ${t.status===x?'selected':''}>${x}</option>`).join('')}</select></div><div class="actions" style="justify-content:flex-end;margin-top:16px"><button type="button" class="btn ghost" onclick="recordTenantPayment('${t.id}')">Record payment</button><button class="btn">Save changes</button></div></form><p class="subtle">Suspending an account in the real system must revoke business access server-side, not merely hide UI navigation.</p>`)}
 function updateTenant(e,id){e.preventDefault();let t=platformData.tenants.find(x=>x.id===id),f=new FormData(e.target);t.plan=f.get('plan');t.status=f.get('status');t.mrr=t.status==='Active'?({starter:499,business:1299,pro:1999})[t.plan]:0;savePlatformData();closeModal();render();toast('Business subscription updated.')}
 function recordTenantPayment(id){let t=platformData.tenants.find(x=>x.id===id);t.status='Active';t.mrr=({starter:499,business:1299,pro:1999})[t.plan];t.renewal=isoAgo(-30);let inv={id:'INV-'+Date.now().toString().slice(-7),tenantId:id,tenant:t.name,date:today(),due:today(),amount:t.mrr,status:'Paid',method:'Manual demo'};platformData.invoices.unshift(inv);savePlatformData();closeModal();render();toast('Demo payment marked as paid. No real money was collected.')}
-function platformBillingPage(){let inv=platformData.invoices,p=inv.filter(i=>i.status==='Paid').reduce((a,i)=>a+i.amount,0),due=inv.filter(i=>['Overdue','Pending'].includes(i.status)).reduce((a,i)=>a+i.amount,0);return `${pageHead('Billing & Revenue','Monitor invoices and collections across all WashPilot customer businesses.') }<div class="grid stats">${stat('Collected',money(p),'Paid demo invoices','₱','green')}${stat('Outstanding',money(due),'Overdue and pending invoices','₱','amber')}${stat('Invoices',inv.length,'All billing records','▤')}${stat('Active MRR',money(platformData.tenants.filter(t=>t.status==='Active').reduce((a,t)=>a+t.mrr,0)),'Current recurring run rate','↗','purple')}</div><section class="panel"><div class="panel-head"><h3>Subscription invoices</h3><span class="subtle">All businesses</span></div><div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Business</th><th>Issued</th><th>Due</th><th>Amount</th><th>Status</th><th>Method</th><th></th></tr></thead><tbody>${inv.map(i=>`<tr><td><b>${esc(i.id)}</b></td><td>${esc(i.tenant)}</td><td>${dateLabel(i.date)}</td><td>${dateLabel(i.due)}</td><td class="amount">${money(i.amount)}</td><td>${statusPill(i.status)}</td><td>${esc(i.method)}</td><td>${i.status!=='Paid'?`<button class="btn ghost small" onclick="recordTenantPayment('${i.tenantId}')">Mark paid</button>`:''}</td></tr>`).join('')}</tbody></table></div></section><div class="inline-note" style="margin-top:14px">Collection actions here are simulated. Production billing needs a gateway checkout, signed webhooks, invoice IDs, idempotency, failed-payment retries and an immutable audit log.</div>`}
-function resetDemo(){if(!confirm('Reset this browser demo, including tenant directory, transactions, loyalty and billing previews?'))return;window.wpStorage.removeItem('washpilot_demo_data');window.wpStorage.removeItem('wp_platform_data');window.wpStorage.removeItem('wp_plan');state=structuredClone(initial);currentPlan='starter';platformData=structuredClone(platformSeed);ensureDemoState();save();savePlatformData();selectedMain='Basic Car Wash';selectedAddons=[];transactionSearch='';tenantSearch='';renderNav();render();toast('WashPilot demo data reset.')}
+function platformBillingPage(){
+ let inv=platformData.invoices,p=inv.filter(i=>i.status==='Paid').reduce((a,i)=>a+i.amount,0),due=inv.filter(i=>['Overdue','Pending'].includes(i.status)).reduce((a,i)=>a+i.amount,0);
+ return `${pageHead('Billing & Revenue','Verify customer plan upgrades and configure payment receiving details.')}
+ <section class="panel"><div class="panel-head"><h3>GCash receiving details</h3><span class="subtle">Shown to business owners at upgrade checkout</span></div>
+ <form id="wpBillingSettingsForm" onsubmit="savePlatformBillingSettings(event)">
+  <div class="grid two"><div class="field"><label>GCash account name</label><input name="gcash_account_name" required></div><div class="field"><label>GCash mobile number</label><input name="gcash_number" type="tel" required></div>
+  <div class="field"><label>GCash QR image URL (optional)</label><input name="qr_image_url" type="url" placeholder="https://…"></div><div class="field"><label>Payment instructions</label><input name="payment_instructions"></div></div>
+  <div class="actions" style="justify-content:flex-end;margin-top:12px"><button class="btn" type="submit">Save payment details</button></div>
+ </form></section>
+ <section class="panel" style="margin-top:16px"><div class="panel-head"><h3>Live upgrade and reactivation requests</h3><span class="subtle">Supabase payment submissions</span></div><div id="wpPlatformBillingRequests" class="empty">Loading payment requests…</div></section>
+ <section class="panel" style="margin-top:16px"><div class="panel-head"><h3>Demo invoice preview</h3><span class="subtle">Local sample data only</span></div>
+ <div class="grid stats">${stat('Collected',money(p),'Paid demo invoices','₱','green')}${stat('Outstanding',money(due),'Overdue and pending invoices','₱','amber')}${stat('Invoices',inv.length,'Demo billing records','▤')}${stat('Active MRR',money(platformData.tenants.filter(t=>t.status==='Active').reduce((a,t)=>a+t.mrr,0)),'Demo recurring run rate','↗','purple')}</div><div class="inline-note">These sample invoices are not real charges. Live payment requests and approval actions are shown above.</div></section>`;
+}
+async function loadPlatformBillingRequests(){
+ const el=document.getElementById('wpPlatformBillingRequests');if(!el||!window.washPilotBillingApi)return;
+ try{
+  const [rows,settings]=await Promise.all([window.washPilotBillingApi.listAdminRequests(),window.washPilotBillingApi.getPaymentSettings()]);
+  const form=document.getElementById('wpBillingSettingsForm');
+  if(form){form.elements.gcash_account_name.value=settings.gcash_account_name||'';form.elements.gcash_number.value=settings.gcash_number||'';form.elements.qr_image_url.value=settings.qr_image_url||'';form.elements.payment_instructions.value=settings.payment_instructions||'';}
+  if(!rows.length){el.innerHTML='<div class="empty">No customer payment requests yet.</div>';return;}
+  el.innerHTML='<div class="table-wrap"><table><thead><tr><th>Business</th><th>Request</th><th>Plan</th><th>Amount</th><th>Reference</th><th>Submitted</th><th>Status</th><th>Proof</th><th>Action</th></tr></thead><tbody>'+
+   rows.map(r=>'<tr><td><b>'+esc(r.business_name)+'</b></td><td>'+esc(r.request_type||'reactivation')+'</td><td>'+esc(planName(planRank(r.plan_code)))+'</td><td>'+money(r.amount)+'</td><td>'+esc(r.payment_reference)+'</td><td>'+dateLabel(String(r.submitted_at).slice(0,10))+'</td><td>'+statusPill(String(r.status).toUpperCase())+'</td><td><button class="btn ghost small" onclick="viewUpgradeProof(\''+esc(r.proof_object_path)+'\')">View receipt</button></td><td>'+(r.status==='pending'?'<button class="btn success small" onclick="reviewPlatformBillingRequest(\''+r.id+'\',true)">Approve</button> <button class="btn danger small" onclick="reviewPlatformBillingRequest(\''+r.id+'\',false)">Reject</button>':'—')+'</td></tr>').join('')+'</tbody></table></div>';
+ }catch(err){el.innerHTML='<div class="empty">Could not load live requests. Sign in as a WashPilot platform administrator to review payments. '+esc(err.message)+'</div>';}
+}
+async function savePlatformBillingSettings(e){
+ e.preventDefault();const form=e.currentTarget,btn=form.querySelector('button[type="submit"]');if(btn){btn.disabled=true;btn.textContent='Saving…';}
+ try{
+  await window.washPilotBillingApi.savePaymentSettings({gcash_account_name:form.elements.gcash_account_name.value.trim(),gcash_number:form.elements.gcash_number.value.trim(),qr_image_url:form.elements.qr_image_url.value.trim(),payment_instructions:form.elements.payment_instructions.value.trim()});
+  toast('GCash payment details saved.');loadPlatformBillingRequests();
+ }catch(err){alert(err.message||'Could not save GCash details.');}
+ finally{if(btn){btn.disabled=false;btn.textContent='Save payment details';}}
+}
+async function viewUpgradeProof(path){
+ try{const url=await window.washPilotBillingApi.createProofUrl(path);window.open(url,'_blank','noopener');}
+ catch(err){alert(err.message||'Could not open payment proof.');}
+}
+async function reviewPlatformBillingRequest(id,approve){
+ const note=window.prompt(approve?'Optional approval note:':'Reason for rejecting this payment:','');if(note===null)return;
+ try{
+  await window.washPilotBillingApi.reviewRequest(id,approve,note);
+  toast(approve?'Payment approved. The selected plan is now active.':'Payment rejected. The business keeps its previous plan.');
+  loadPlatformBillingRequests();
+ }catch(err){alert(err.message||'Could not review this request.');}
+}
+function resetDemo(){function resetDemo(){if(!confirm('Reset this browser demo, including tenant directory, transactions, loyalty and billing previews?'))return;window.wpStorage.removeItem('washpilot_demo_data');window.wpStorage.removeItem('wp_platform_data');window.wpStorage.removeItem('wp_plan');state=structuredClone(initial);currentPlan='starter';platformData=structuredClone(platformSeed);ensureDemoState();save();savePlatformData();selectedMain='Basic Car Wash';selectedAddons=[];transactionSearch='';tenantSearch='';renderNav();render();toast('WashPilot demo data reset.')}
 // Existing owner actions remain available. Run one safe state migration before the first render.
 ensureDemoState();
 
@@ -1904,8 +2041,8 @@ function openRealWorkspace(user,business,subscription){
     // Remove only the exact legacy demo fixtures; preserve owner-created records.
     workspace=removeDemoFixturesFromWorkspace(workspace);
     window.wpRealWorkspaceActive=true;window.wpRealBusinessId=businessId;window.wpRealBusiness=business;window.wpRealSubscription=subscription;window.wpRealOwnerName=user.user_metadata?.full_name||user.email||'Owner';
-    state=workspace;currentRole='business';currentStaffRole='owner';viewMode='easy';currentPlan=normalizePlan(subscription.plan_code||'basic');subscription.plan_code=currentPlan;currentPage='dashboard';selectedMain=state.services.find(s=>s.type==='main'&&s.active)?.name||'';selectedAddons=[];transactionSearch='';
-    window.wpStorage.removeItem('wp_demo_authenticated');window.wpStorage.removeItem('wb_demo_authenticated');window.wpStorage.removeItem('wp_demo_role');window.wpStorage.removeItem('wp_demo_staff_role');window.wpStorage.setItem('wp_real_business_id',businessId);window.wpStorage.setItem('wp_view_mode','easy');window.wpStorage.setItem('wp_real_workspace_plan_'+businessId,currentPlan);
+    state=workspace;currentRole='business';currentStaffRole='owner';viewMode='advanced';currentPlan=normalizePlan(subscription.plan_code||'basic');subscription.plan_code=currentPlan;currentPage='dashboard';selectedMain=state.services.find(s=>s.type==='main'&&s.active)?.name||'';selectedAddons=[];transactionSearch='';
+    window.wpStorage.removeItem('wp_demo_authenticated');window.wpStorage.removeItem('wb_demo_authenticated');window.wpStorage.removeItem('wp_demo_role');window.wpStorage.removeItem('wp_demo_staff_role');window.wpStorage.setItem('wp_real_business_id',businessId);window.wpStorage.setItem('wp_view_mode','advanced');window.wpStorage.setItem('wp_real_workspace_plan_'+businessId,currentPlan);
     if(typeof selectedHomeRange!=='undefined')selectedHomeRange=1;window.wpStorage.setItem('wp_home_range','1');
     const portal=document.getElementById('wpTrialPortal');if(portal)portal.remove();
     const landing=document.getElementById('publicLanding'),login=document.getElementById('loginScreen'),app=document.getElementById('washpilotApp');
@@ -2002,6 +2139,45 @@ function openRealWorkspace(user,business,subscription){
       await activateTrial(data.user||data.session?.user);
     }catch(err){loginError(err&&err.message?err.message:'We could not sign you in.');}
     finally{if(btn){btn.disabled=false;btn.innerHTML='Sign in <span aria-hidden="true">→</span>';}}
+  };
+
+  window.washPilotBillingApi = {
+    async getPaymentSettings(){
+      const {data,error}=await getClient().from('billing_payment_settings').select('gcash_account_name,gcash_number,qr_image_url,payment_instructions').eq('id',true).maybeSingle();
+      if(error)throw error;return data||{};
+    },
+    async getMyRequests(businessId){
+      const {data,error}=await getClient().from('payment_reactivation_requests').select('id,plan_code,amount,payment_method,payment_reference,status,submitted_at,reviewer_note,request_type').eq('business_id',businessId).order('submitted_at',{ascending:false}).limit(10);
+      if(error)throw error;return data||[];
+    },
+    async submitUpgrade({businessId,planCode,amount,paymentReference,file}){
+      if(!file)throw new Error('Please attach your payment receipt or screenshot.');
+      if(file.size>10*1024*1024)throw new Error('Payment proof must be 10 MB or smaller.');
+      const allowed=['image/jpeg','image/png','image/webp','application/pdf'];
+      if(!allowed.includes(file.type))throw new Error('Upload a JPG, PNG, WebP image, or PDF receipt.');
+      const sb=getClient(),ext=({'image/jpeg':'jpg','image/png':'png','image/webp':'webp','application/pdf':'pdf'})[file.type];
+      const token=window.crypto?.randomUUID?window.crypto.randomUUID():Math.random().toString(36).slice(2);
+      const objectPath=businessId+'/'+Date.now()+'-'+token+'.'+ext;
+      const {error:uploadError}=await sb.storage.from('washpilot-payment-proofs').upload(objectPath,file,{upsert:false,contentType:file.type});
+      if(uploadError)throw uploadError;
+      const {data,error}=await sb.rpc('submit_plan_upgrade_request',{p_business_id:businessId,p_plan_code:planCode,p_payment_method:'GCash',p_payment_reference:paymentReference,p_amount:amount,p_proof_object_path:objectPath});
+      if(error){try{await sb.storage.from('washpilot-payment-proofs').remove([objectPath]);}catch(_){}throw error;}
+      return {requestId:data,objectPath};
+    },
+    async listAdminRequests(){
+      const sb=getClient();
+      const {data,error}=await sb.from('payment_reactivation_requests').select('id,business_id,plan_code,amount,payment_method,payment_reference,proof_object_path,status,submitted_at,reviewer_note,request_type,previous_plan_code').order('submitted_at',{ascending:false}).limit(50);
+      if(error)throw error;
+      const rows=data||[],ids=[...new Set(rows.map(x=>x.business_id))];let names={};
+      if(ids.length){const {data:businesses,error:businessError}=await sb.from('businesses').select('id,name').in('id',ids);if(businessError)throw businessError;(businesses||[]).forEach(b=>names[b.id]=b.name);}
+      return rows.map(r=>Object.assign({},r,{business_name:names[r.business_id]||'Carwash business'}));
+    },
+    async createProofUrl(path){const {data,error}=await getClient().storage.from('washpilot-payment-proofs').createSignedUrl(path,1800);if(error)throw error;return data.signedUrl;},
+    async reviewRequest(requestId,approve,note){const {error}=await getClient().rpc('review_reactivation_request',{p_request_id:requestId,p_approve:!!approve,p_reviewer_note:note||null});if(error)throw error;return true;},
+    async savePaymentSettings(settings){
+      const {data,error}=await getClient().from('billing_payment_settings').update({gcash_account_name:settings.gcash_account_name||null,gcash_number:settings.gcash_number||null,qr_image_url:settings.qr_image_url||null,payment_instructions:settings.payment_instructions||'Send the exact amount using GCash, then upload your payment receipt.',updated_at:new Date().toISOString()}).eq('id',true).select().single();
+      if(error)throw error;return data;
+    }
   };
 
   async function initRealAuth(){
