@@ -1832,7 +1832,7 @@ async function reviewPlatformBillingRequest(id,approve){
   loadPlatformBillingRequests();
  }catch(err){alert(err.message||'Could not review this request.');}
 }
-function resetDemo(){function resetDemo(){if(!confirm('Reset this browser demo, including tenant directory, transactions, loyalty and billing previews?'))return;window.wpStorage.removeItem('washpilot_demo_data');window.wpStorage.removeItem('wp_platform_data');window.wpStorage.removeItem('wp_plan');state=structuredClone(initial);currentPlan='starter';platformData=structuredClone(platformSeed);ensureDemoState();save();savePlatformData();selectedMain='Basic Car Wash';selectedAddons=[];transactionSearch='';tenantSearch='';renderNav();render();toast('WashPilot demo data reset.')}
+function resetDemo(){if(!confirm('Reset this browser demo, including tenant directory, transactions, loyalty and billing previews?'))return;window.wpStorage.removeItem('washpilot_demo_data');window.wpStorage.removeItem('wp_platform_data');window.wpStorage.removeItem('wp_plan');state=structuredClone(initial);currentPlan='starter';platformData=structuredClone(platformSeed);ensureDemoState();save();savePlatformData();selectedMain='Basic Car Wash';selectedAddons=[];transactionSearch='';tenantSearch='';renderNav();render();toast('WashPilot demo data reset.')}
 // Existing owner actions remain available. Run one safe state migration before the first render.
 ensureDemoState();
 
