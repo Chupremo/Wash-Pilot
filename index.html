@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#071a33" />
 <meta name="description" content="Run a smarter carwash with WashPilot. Manage wash queues, payments, customers, staff, inventory, and branches with simple monthly plans." />
-<link rel="icon" type="image/png" href="washpilot-logo.svg" />
+<link rel="icon" type="image/svg+xml" href="washpilot-logo.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700;750;800&family=Plus+Jakarta+Sans:wght@500;600;650;700;750;800&display=swap" rel="stylesheet">
@@ -1611,7 +1611,7 @@ async function savePasswordRecovery(e){
   if(typeof window.wpUpdatePassword!=='function')throw new Error('The password update service is not available. Please refresh and try again.');
   await window.wpUpdatePassword(password);
   const panel=document.getElementById('forgotContent');
-  if(panel)panel.innerHTML='<div class="forgot-icon">✓</div><h3>Password updated</h3><p>Your WashPilot password has been changed successfully.</p><div class="forgot-actions"><button class="btn" type="button" <a class="btn" href="/dashboard">Continue to WashPilot</a></div>';
+  if(panel)panel.innerHTML='<div class="forgot-icon">✓</div><h3>Password updated</h3><p>Your WashPilot password has been changed successfully. You can now continue to your WashPilot workspace.</p><div class="forgot-actions"><a class="btn" href="/dashboard">Continue to WashPilot</a></div>';
  }catch(err){
   if(error){error.textContent=err&&err.message?err.message:'We could not update your password. Request a new reset link and try again.';error.classList.add('show');}
   if(button){button.disabled=false;button.textContent='Update password';}
@@ -2169,6 +2169,8 @@ async function persistFacilityProfile(form){
  if(form.elements.opening_time.value>=form.elements.closing_time.value){btns.forEach(b=>b.disabled=false);toast('Closing time must be later than opening time.');return;}
  const selectedLat=Number(document.getElementById('wpFacilityLatitude')?.value),selectedLng=Number(document.getElementById('wpFacilityLongitude')?.value),selectedPlaceId=document.getElementById('wpFacilityPlaceId')?.value||'';
  const hasVerifiedGooglePlace=!!selectedPlaceId&&Number.isFinite(selectedLat)&&Number.isFinite(selectedLng);
+ const addressChanged=form.elements.address.value.trim()!==(window.wpFacilityCurrent.address||'').trim();
+ if((addressChanged||!window.wpFacilityCurrent.google_place_id)&&!hasVerifiedGooglePlace){btns.forEach(b=>b.disabled=false);toast('Select the exact facility address from Google Maps before saving.');return;}
  try{
   await window.washPilotBookingApi.updateMyFacility({
    name:form.elements.name.value.trim(),slug:form.elements.slug.value.trim().toLowerCase(),phone:form.elements.phone.value.trim(),address:form.elements.address.value.trim(),
@@ -2608,7 +2610,7 @@ function logoutDemo(){
   function setAuthMode(){authMode='account';if($('wpLoginHeading'))$('wpLoginHeading').textContent='Sign in to your account';if($('wpLoginDescription'))$('wpLoginDescription').textContent='Use your registered email address and password to access your WashPilot account.';if($('wpLoginIdentityLabel'))$('wpLoginIdentityLabel').textContent='Email address';const input=$('loginUsername');if(input){input.type='email';input.name='email';input.placeholder='you@yourbusiness.com';input.autocomplete='email';}if($('wpForgotRow'))$('wpForgotRow').style.display='';if($('loginSubmitButton'))$('loginSubmitButton').innerHTML='Sign in <span aria-hidden="true">→</span>';loginError('');}
   window.setLoginMode=setAuthMode;
   window.wpRequestPasswordReset=async function(email){
-    const {error}=await getClient().auth.resetPasswordForEmail(email,{redirectTo:window.location.origin});
+    const {error}=await getClient().auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+'/?wpRecovery=1'});
     if(error)throw error;
   };
   window.wpUpdatePassword=async function(password){
@@ -2671,6 +2673,7 @@ async function initGooglePlaceAutocomplete(config){
   autocomplete.style.width='100%';
   host.appendChild(autocomplete);
   address.style.display='none';
+  address.addEventListener('input',()=>{if(!address.value.trim()||address.value.trim()!==(window.wpFacilityCurrent?.address||'')){if(lat)lat.value='';if(lng)lng.value='';if(placeId)placeId.value='';if(status){status.textContent='Select the exact address from Google Maps suggestions to save a verified location.';status.classList.remove('is-selected');}}});
   autocomplete.addEventListener('gmp-select',async event=>{
    try{
     const place=event.placePrediction.toPlace();
@@ -2702,6 +2705,7 @@ window.submitTrialSignup=async function(e){
     const latitude=Number($('wpSignupLatitude')?.value),longitude=Number($('wpSignupLongitude')?.value),googlePlaceId=$('wpSignupPlaceId')?.value||'';
     if(business.length<2||owner.length<2||phone.length<6||!address||!email||!openingTime||!closingTime)return signupMessage('error','Please complete all business and owner details.');
     const hasVerifiedGooglePlace=!!googlePlaceId&&Number.isFinite(latitude)&&Number.isFinite(longitude);
+    if(!hasVerifiedGooglePlace)return signupMessage('error',window.WP_GOOGLE_MAPS_BROWSER_KEY?'Please select your exact business address from the Google Maps suggestions.':'Google Maps is not connected yet. The site administrator must configure the restricted Google Maps API key before registration.');
     if(openingTime>=closingTime)return signupMessage('error','Closing time must be later than opening time.');
     if(password.length<8)return signupMessage('error','Use a password with at least 8 characters.');
     if(password!==confirm)return signupMessage('error','Your passwords do not match.');
