@@ -2308,9 +2308,13 @@ function openRealWorkspace(user,business,subscription){
     if(landing)landing.style.display='none';if(login){login.hidden=true;login.style.display='none';}if(app){app.hidden=false;app.classList.remove('auth-hidden');app.style.display='grid';}
     document.body.classList.add('washpilot-authenticated');document.body.classList.remove('platform-mode');document.body.dataset.washpilotLoginOpen='0';
     save();
-    // Always land authenticated business owners directly on the dashboard.
-    currentPage='dashboard';
-    go('dashboard');
+    // Respect the protected page the owner originally requested before signing in.
+    // Fall back to the dashboard only when there was no valid deep-link target.
+    const requestedPage=window.wpRequestedRoutePage;
+    const allowedPages=new Set(['dashboard','newwash','queue','transactions','customers','bookings','listing','catalog','addons','employees','expenses','reports','inventory','branches','loyalty','recipes','reconcile','subscription','managementHub']);
+    const destination=allowedPages.has(requestedPage)?requestedPage:'dashboard';
+    currentPage=destination;
+    go(destination);
     window.scrollTo({top:0,behavior:'instant'});
   }
   function renderTrialAccount(user,business,subscription){
@@ -2861,6 +2865,7 @@ async function submitPublicBooking(e){
   };
   const pageForCurrentPath = () => pageByPath[normalize(location.pathname)]||null;
   let requestedAppPage = pageForCurrentPath();
+  window.wpRequestedRoutePage=requestedAppPage||null;
   window.wpRouteIsWorkspace=!!requestedAppPage;
   window.wpRouteIsLogin=normalize(location.pathname)==='/login';
   const isAuthenticated = () => !!(
@@ -2926,9 +2931,17 @@ async function submitPublicBooking(e){
   }
   function applyRoute(){
     const path=normalize(location.pathname);
+    if(path==='/booking'){
+      setPath('/bookings',true);
+      requestedAppPage='bookings';
+      window.wpRequestedRoutePage='bookings';
+      applyRoute();
+      return;
+    }
     const appPage=pageByPath[path];
     if(appPage){
       requestedAppPage=appPage;
+      window.wpRequestedRoutePage=appPage;
       window.wpRouteIsWorkspace=true;window.wpRouteIsLogin=false;
       setTitle(pageTitles[appPage]||'Workspace','Manage your carwash with WashPilot.');
       if(isAuthenticated()){
@@ -2947,6 +2960,7 @@ async function submitPublicBooking(e){
       return;
     }
     if(path==='/login'){
+      window.wpRequestedRoutePage=null;
       if(isAuthenticated()){
         requestedAppPage='dashboard';
         setPath(pagePaths.dashboard,true);
@@ -2959,6 +2973,7 @@ async function submitPublicBooking(e){
       return;
     }
     if(path==='/signup'){
+      window.wpRequestedRoutePage=null;
       if(isAuthenticated()){
         requestedAppPage='dashboard';
         setPath(pagePaths.dashboard,true);
@@ -3030,7 +3045,7 @@ async function submitPublicBooking(e){
     };
   }
 
-  const routePaths=new Set(['/','/features','/business','/businesses','/how-it-works','/pricing','/about','/faq','/login','/signup',...Object.values(pagePaths)]);
+  const routePaths=new Set(['/','/features','/business','/businesses','/how-it-works','/pricing','/about','/faq','/login','/signup','/booking',...Object.values(pagePaths)]);
   document.addEventListener('click',function(event){
     if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
     const anchor=event.target.closest&&event.target.closest('a[href]');
