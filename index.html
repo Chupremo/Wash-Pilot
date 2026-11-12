@@ -2401,8 +2401,12 @@ function openRealWorkspace(user,business,subscription){
     try{
       const {data,error}=await getClient().auth.getSession();
       if(error)throw error;
-      if(data.session)await activateTrial(data.session.user);
-      else{
+      if(data.session){
+        // Keep public routes public even when the visitor has an existing Supabase session.
+        // Workspace initialization belongs only on protected app routes or the explicit login route.
+        if(window.wpRouteIsWorkspace||window.wpRouteIsLogin)await activateTrial(data.session.user);
+        else window.wpPublicSessionUser=data.session.user;
+      }else{
         window.wpStorage.removeItem('wp_demo_authenticated');window.wpStorage.removeItem('wb_demo_authenticated');
         window.wpStorage.removeItem('wp_demo_role');window.wpStorage.removeItem('wp_demo_staff_role');
         const landing=$('publicLanding'),login=$('loginScreen'),app=$('washpilotApp');
