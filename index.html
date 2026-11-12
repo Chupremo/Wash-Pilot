@@ -1739,8 +1739,6 @@ function render(){
   if(currentPage==='subscription')loadMyBillingRequests();
   if(currentPage==='listing')loadFacilityListing();
   if(currentPage==='bookings')loadFacilityBookings();
-   if(currentPage==='listing')loadFacilityListing();
-   if(currentPage==='bookings')loadFacilityBookings();
  }catch(renderError){
   console.error('WashPilot dashboard render failed:',renderError);
   const message=renderError&&renderError.message?renderError.message:'An unexpected error occurred while loading this screen.';
