@@ -1002,15 +1002,88 @@ tbody tr:hover td{background:#f5f9ff}
 @media(max-width:1000px){.wp-billing-plans{grid-template-columns:1fr 1fr}}
 @media(max-width:760px){.wp-billing-plans{grid-template-columns:1fr}.wp-billing-plan p{min-height:0}.wp-billing-plan{padding:16px}.wp-plan-lock-badge{font-size:9px!important;padding:6px 8px!important}}
 
+
+/* =========================================================
+   WASHPILOT FLAT COLOR SYSTEM
+   Solid surfaces only — no gradients or gradient text
+   ========================================================= */
+:root{
+  --navy:#0b1830!important;
+  --navy2:#142846!important;
+  --blue:#3568f5!important;
+  --cyan:#278bc5!important;
+  --ink:#17243a!important;
+  --muted:#738198!important;
+  --line:#e7edf5!important;
+  --bg:#f5f7fb!important;
+  --card:#ffffff!important;
+  --green:#13966c!important;
+  --red:#d84f5b!important;
+  --amber:#c98517!important;
+  --purple:#7358d8!important;
+  --grad:#3568f5!important;
+  --grad-lite:#edf3ff!important;
+  --grad-deep:#0b1830!important;
+  --g1:#3568f5!important;
+  --g2:#278bc5!important;
+  --g3:#13966c!important;
+}
+*,*::before,*::after{background-image:none!important}
+body{background-color:#f5f7fb!important;color:#17243a!important}
+.sidebar,.login-visual,.admin-banner,.easy-welcome,.wp-about,.wp-final-cta,.wp-trial-portal{background-color:#0b1830!important}
+.sidebar{background:#0b1830!important}
+.nav button.active{background:#203a5f!important}
+.side-foot{background:#142846!important}
+.logo,.login-brand-mark,.wp-dash-mark,.wp-tour-choice-icon,.wp-signup-kicker span{background:#3568f5!important}
+.avatar{background:#e7f0ff!important;color:#2d5db3!important}
+.btn,.login-submit,.wp-btn-primary,.wp-signup-submit,.wp-tour-next{background:#3568f5!important;color:#fff!important}
+.btn.success{background:#13966c!important}
+.btn.secondary,.wp-tour-launch{background:#edf3ff!important;color:#2c56a1!important}
+.btn.ghost{background:#fff!important;color:#58677d!important}
+.btn.danger{background:#fff2f2!important;color:#c94c57!important}
+.bar,.progress span,.wp-tour-progress span{background:#3568f5!important}
+.chart,.wp-mini-chart{background-color:#fff!important}
+.summary{background:#f5f8fd!important}
+.locked .lock{background:#edf4ff!important}
+.login-panel{background:#fff!important}
+.login-role-switch button.active{background:#3568f5!important}
+.login-demo{background:#f2f6fc!important}
+.wp-hero{background:#0b1830!important;color:#fff!important}
+#publicLanding .wp-hero{background:#0b1830!important;color:#fff!important}
+.wp-hero h1,.wp-hero h1 em{background:none!important;color:#fff!important;-webkit-text-fill-color:#fff!important}
+.wp-hero h1 em{color:#7dc9f7!important;-webkit-text-fill-color:#7dc9f7!important}
+.wp-btn-primary{background:#3568f5!important}
+.wp-feature-card{background:#fff!important}
+.wp-feature-large{background:#edf3ff!important}
+.wp-pricing{background:#fff!important}
+.wp-price-featured{background:#102846!important;color:#fff!important}
+.wp-about{background:#0b1830!important;color:#fff!important}
+.wp-about-card{background:#3568f5!important}
+.wp-final-cta{background:#142846!important;color:#fff!important}
+.wp-final-cta h2 em{background:none!important;color:#fff!important;-webkit-text-fill-color:#fff!important}
+.wp-final-glow{display:none!important}
+.wp-mini-chart i,.wp-ico-blue,.wp-ico-cyan,.wp-ico-violet,.wp-ico-green,.wp-ico-amber,.wp-ico-navy{background:#3568f5!important;color:#fff!important}
+.wp-q-blue{background:#3568f5!important}
+.wp-q-green,.wp-float-chip .wp-check{background:#13966c!important}
+.wp-q-amber{background:#c98517!important}
+.wp-flow-mini i{background:#3568f5!important}
+.wp-steps article>span{background:none!important;color:#3568f5!important;-webkit-text-fill-color:#3568f5!important}
+.wp-faq-list details[open]{background:#f5f8fd!important}
+.wp-signup-submit{background:#3568f5!important}
+.wp-tour-choice-icon{background:#3568f5!important}
+.login-feature-metric b{background:none!important;color:#fff!important;-webkit-text-fill-color:#fff!important}
+.page-head h1{background:none!important;color:#17243a!important;-webkit-text-fill-color:#17243a!important}
+::-webkit-scrollbar-thumb{background:#b7c9ec!important}
+
 </style>
 </head>
 <body>
 
 <section class="wp-public" id="publicLanding" aria-label="WashPilot subscription landing page">
   <header class="wp-site-nav">
-    <a class="wp-site-brand" href="#top" aria-label="WashPilot home"><img src="washpilot-logo.svg" alt="WashPilot Management Solutions"></a>
+    <a class="wp-site-brand" href="/" aria-label="WashPilot home"><img src="washpilot-logo.svg" alt="WashPilot Management Solutions"></a>
     <nav class="wp-site-links" aria-label="Main navigation">
-      <a href="#wp-features">Features</a><a href="#wp-how">How it works</a><a href="#wp-pricing">Pricing</a><a href="#wp-about">About</a><a href="#wp-faq">FAQ</a>
+      <a href="/features">Features</a><a href="/how-it-works">How it works</a><a href="/pricing">Pricing</a><a href="/about">About</a><a href="/faq">FAQ</a>
     </nav>
     <div class="wp-nav-actions"><button class="wp-nav-cta" type="button" onclick="showLoginScreen()">Sign in <span>↗</span></button><button class="wp-menu-toggle" type="button" aria-label="Open navigation" onclick="togglePublicMenu()">☰</button></div>
   </header>
@@ -1022,7 +1095,7 @@ tbody tr:hover td{background:#f5f9ff}
           <div class="wp-kicker"><span class="wp-kicker-dot"></span> CARWASH MANAGEMENT, REIMAGINED</div>
           <h1>More shine.<br><em>Less stress.</em><br>Total control.</h1>
           <p class="wp-hero-lede">The all-in-one workspace for running a smarter carwash. Keep every wash moving, every payment visible, and every day organized.</p>
-          <div class="wp-hero-actions"><a class="wp-btn-primary" href="#wp-pricing">Explore plans <span>→</span></a><a class="wp-btn-secondary" href="#wp-how">See how it works <span>↓</span></a></div>
+          <div class="wp-hero-actions"><a class="wp-btn-primary" href="/pricing">Explore plans <span>→</span></a><a class="wp-btn-secondary" href="/how-it-works">See how it works <span>↓</span></a></div>
           <div class="wp-hero-proof"><div class="wp-proof-avatars"><span>W</span><span>P</span><span>+</span></div><div><b>Made for the people behind every wash.</b><small>Owners · Cashiers · Wash teams</small></div></div>
         </div>
         <div class="wp-hero-visual" aria-label="Illustration of the WashPilot operations dashboard">
@@ -1060,7 +1133,7 @@ tbody tr:hover td{background:#f5f9ff}
     </section>
 
     <section class="wp-how" id="wp-how">
-      <div class="wp-how-inner"><div class="wp-how-intro"><span class="wp-eyebrow wp-eyebrow-light">A SIMPLE DAILY FLOW</span><h2>From the first rinse<br>to the final receipt.</h2><p>WashPilot helps your team follow a clearer process, so your operation feels easier to manage throughout the day.</p><a class="wp-how-cta" href="#wp-features">Explore the features <span>→</span></a></div>
+      <div class="wp-how-inner"><div class="wp-how-intro"><span class="wp-eyebrow wp-eyebrow-light">A SIMPLE DAILY FLOW</span><h2>From the first rinse<br>to the final receipt.</h2><p>WashPilot helps your team follow a clearer process, so your operation feels easier to manage throughout the day.</p><a class="wp-how-cta" href="/features">Explore the features <span>→</span></a></div>
         <div class="wp-steps"><article><span>01</span><div><h3>Register the wash</h3><p>Add the vehicle, select the service, and capture any extras before the wash begins.</p></div><b>＋</b></article><article><span>02</span><div><h3>Move through the queue</h3><p>Update the wash status as your team completes each stage of service.</p></div><b>◷</b></article><article><span>03</span><div><h3>Complete and collect</h3><p>Finish the service, collect payment, and keep the transaction in your records.</p></div><b>✓</b></article></div>
       </div>
     </section>
@@ -1078,7 +1151,7 @@ tbody tr:hover td{background:#f5f9ff}
 
     <section class="wp-about" id="wp-about">
       <div class="wp-about-art"><div class="wp-about-orbit"></div><div class="wp-about-card"><span>WASHPILOT</span><b>POWER YOUR<br>CARWASH<br>BUSINESS.</b><small>OPERATIONS · PEOPLE · PERFORMANCE</small><i>✳</i></div></div>
-      <div class="wp-about-copy"><span class="wp-eyebrow wp-eyebrow-light">ABOUT WASHPILOT</span><h2>Built around the<br>real work of a carwash.</h2><p>Running a carwash takes coordination. Vehicles arrive, teams move, services change, and payments need to be recorded. WashPilot brings those everyday moving parts into one practical management workspace.</p><p>Our goal is simple: help carwash owners spend less time chasing updates and more time improving the business.</p><a class="wp-about-link" href="#wp-pricing">Explore plans <span>→</span></a></div>
+      <div class="wp-about-copy"><span class="wp-eyebrow wp-eyebrow-light">ABOUT WASHPILOT</span><h2>Built around the<br>real work of a carwash.</h2><p>Running a carwash takes coordination. Vehicles arrive, teams move, services change, and payments need to be recorded. WashPilot brings those everyday moving parts into one practical management workspace.</p><p>Our goal is simple: help carwash owners spend less time chasing updates and more time improving the business.</p><a class="wp-about-link" href="/pricing">Explore plans <span>→</span></a></div>
     </section>
 
     <section class="wp-faq" id="wp-faq">
@@ -1092,9 +1165,9 @@ tbody tr:hover td{background:#f5f9ff}
       </div>
     </section>
 
-    <section class="wp-final-cta"><div><span class="wp-eyebrow wp-eyebrow-light">READY FOR A BETTER-RUN WASH?</span><h2>Make every wash<br><em>count.</em></h2><p>See how WashPilot brings your daily operation together.</p></div><div class="wp-final-actions"><a class="wp-btn-primary wp-btn-white" href="#wp-pricing">Compare plans <span>→</span></a><a href="#wp-pricing">Compare monthly plans</a></div><div class="wp-final-glow"></div></section>
+    <section class="wp-final-cta"><div><span class="wp-eyebrow wp-eyebrow-light">READY FOR A BETTER-RUN WASH?</span><h2>Make every wash<br><em>count.</em></h2><p>See how WashPilot brings your daily operation together.</p></div><div class="wp-final-actions"><a class="wp-btn-primary wp-btn-white" href="/pricing">Compare plans <span>→</span></a><a href="/pricing">Compare monthly plans</a></div><div class="wp-final-glow"></div></section>
   </main>
-  <footer class="wp-footer"><div class="wp-footer-brand"><img src="washpilot-logo.svg" alt="WashPilot"><p>More shine. Less stress. Total control.</p></div><div class="wp-footer-links"><a href="#wp-features">Features</a><a href="#wp-pricing">Pricing</a><a href="#wp-about">About</a><a href="#wp-faq">FAQ</a></div><small>© 2026 WashPilot Management Solutions. All rights reserved.</small></footer>
+  <footer class="wp-footer"><div class="wp-footer-brand"><img src="washpilot-logo.svg" alt="WashPilot"><p>More shine. Less stress. Total control.</p></div><div class="wp-footer-links"><a href="/features">Features</a><a href="/pricing">Pricing</a><a href="/about">About</a><a href="/faq">FAQ</a></div><small>© 2026 WashPilot Management Solutions. All rights reserved.</small></footer>
 </section>
 
 <section class="login-screen" id="loginScreen" style="display:none" aria-label="WashPilot sign in">
@@ -2205,6 +2278,7 @@ function openRealWorkspace(user,business,subscription){
         if(landing)landing.style.display='block';
         if(login){login.hidden=true;login.style.display='none';}
         if(app){app.hidden=true;app.classList.add('auth-hidden');app.style.display='none';}
+        if((window.wpRouteIsWorkspace||window.wpRouteIsLogin)&&typeof window.wpShowLoginForRoute==='function')window.wpShowLoginForRoute();
       }
     }catch(err){console.warn('WashPilot auth initialization:',err);}
     setAuthMode('account');
@@ -2387,5 +2461,260 @@ function openRealWorkspace(user,business,subscription){
  }
 })();
 </script>
+
+<script>
+/* WashPilot clean URL routing. All sections still share the existing authenticated workspace,
+   but each screen has its own path and supports browser back/forward navigation. */
+(function(){
+  'use strict';
+  const pagePaths = {
+    dashboard:'/dashboard',
+    newwash:'/new-wash',
+    queue:'/service-queue',
+    transactions:'/transactions',
+    customers:'/customers',
+    catalog:'/services-pricing',
+    addons:'/add-on-analytics',
+    employees:'/employees',
+    expenses:'/expenses',
+    reports:'/reports',
+    inventory:'/inventory',
+    branches:'/branches',
+    loyalty:'/loyalty-packages',
+    recipes:'/service-recipes',
+    reconcile:'/shift-reconciliation',
+    subscription:'/subscription-billing',
+    managementHub:'/business-management',
+    platform:'/platform/overview',
+    tenants:'/platform/businesses',
+    platformBilling:'/platform/billing-revenue'
+  };
+  const pageTitles = {
+    dashboard:'Dashboard',
+    newwash:'New Wash',
+    queue:'Service Queue',
+    transactions:'Transactions',
+    customers:'Customers & Vehicles',
+    catalog:'Services & Pricing',
+    addons:'Add-on Analytics',
+    employees:'Employees',
+    expenses:'Expenses',
+    reports:'Reports',
+    inventory:'Inventory',
+    branches:'Branches',
+    loyalty:'Loyalty & Packages',
+    recipes:'Service Recipes',
+    reconcile:'Shift & Reconciliation',
+    subscription:'Subscription & Billing',
+    managementHub:'Business Management',
+    platform:'Platform Overview',
+    tenants:'Customer Businesses',
+    platformBilling:'Platform Billing & Revenue'
+  };
+  const publicSections = {
+    '/features':{slug:'features',id:'wp-features',title:'Features'},
+    '/how-it-works':{slug:'how',id:'wp-how',title:'How It Works'},
+    '/pricing':{slug:'pricing',id:'wp-pricing',title:'Pricing'},
+    '/about':{slug:'about',id:'wp-about',title:'About'},
+    '/faq':{slug:'faq',id:'wp-faq',title:'Frequently Asked Questions'}
+  };
+  const pageByPath = Object.fromEntries(Object.entries(pagePaths).map(([key,path])=>[path,key]));
+  const normalize = path => {
+    let value=String(path||'/').split('?')[0].split('#')[0].replace(/\\/+$/,'');
+    return (value||'/').toLowerCase();
+  };
+  const setPath = (path,replace) => {
+    const next=normalize(path);
+    if(normalize(location.pathname)===next)return;
+    history[replace?'replaceState':'pushState']({washpilot:true},'',next);
+  };
+  const pageForCurrentPath = () => pageByPath[normalize(location.pathname)]||null;
+  let requestedAppPage = pageForCurrentPath();
+  window.wpRouteIsWorkspace=!!requestedAppPage;
+  window.wpRouteIsLogin=normalize(location.pathname)==='/login';
+  const isAuthenticated = () => !!(
+    document.body.classList.contains('washpilot-authenticated') ||
+    window.wpRealWorkspaceActive ||
+    window.wpRealPlatformAdminActive ||
+    window.wpStorage?.getItem('wp_demo_authenticated')==='1' ||
+    window.wpStorage?.getItem('wb_demo_authenticated')==='1'
+  );
+  const originalGo=window.go;
+  const originalRender=window.render;
+  const originalShowLogin=window.showLoginScreen;
+  const originalOpenSignup=window.openTrialSignup;
+  window.wpShowLoginForRoute=function(){if(typeof originalShowLogin==='function')return originalShowLogin.apply(window,arguments);};
+  window.wpOpenSignupForRoute=function(){if(typeof originalOpenSignup==='function')return originalOpenSignup.apply(window,arguments);};
+
+  function setTitle(title,description){
+    document.title='WashPilot | '+title;
+    const meta=document.querySelector('meta[name="description"]');
+    if(meta&&description)meta.setAttribute('content',description);
+  }
+  function hideWorkspace(){
+    const app=document.getElementById('washpilotApp');
+    const login=document.getElementById('loginScreen');
+    if(app){app.hidden=true;app.style.display='none';app.classList.add('auth-hidden');}
+    if(login){login.hidden=true;login.style.display='none';}
+    document.body.dataset.washpilotLoginOpen='0';
+  }
+  function showPublicPage(slug){
+    const landing=document.getElementById('publicLanding');
+    hideWorkspace();
+    if(landing)landing.style.display='block';
+    document.body.classList.add('wp-public-route');
+    document.body.classList.remove('wp-login-route');
+    const main=document.getElementById('top');
+    if(main){
+      Array.from(main.children).forEach(el=>{
+        if(slug==='home'){
+          el.style.display=(el.classList.contains('wp-hero')||el.classList.contains('wp-value-strip')||el.classList.contains('wp-final-cta'))?'':'none';
+        }else{
+          const section=publicSections['/'+slug];
+          el.style.display=section&&el.id===section.id?'':'none';
+        }
+      });
+    }
+    const label=slug==='home'?'Home':(Object.values(publicSections).find(x=>x.slug===slug)?.title||'Home');
+    setTitle(label,slug==='home'
+      ?'WashPilot helps carwash owners manage daily operations, teams, payments and business performance.'
+      :'Explore '+label+' from WashPilot Carwash Management Solutions.');
+    document.querySelector('.wp-site-links')?.classList.remove('open');
+  }
+  function showLoginRoute(){
+    const landing=document.getElementById('publicLanding');
+    if(landing)landing.style.display='none';
+    const app=document.getElementById('washpilotApp');
+    if(app){app.hidden=true;app.style.display='none';app.classList.add('auth-hidden');}
+    document.body.dataset.washpilotLoginOpen='1';
+    document.body.classList.remove('wp-public-route');
+    document.body.classList.add('wp-login-route');
+    window.wpShowLoginForRoute();
+    setTitle('Sign In','Sign in to your WashPilot carwash management workspace.');
+  }
+  function applyRoute(){
+    const path=normalize(location.pathname);
+    const appPage=pageByPath[path];
+    if(appPage){
+      requestedAppPage=appPage;
+      window.wpRouteIsWorkspace=true;window.wpRouteIsLogin=false;
+      setTitle(pageTitles[appPage]||'Workspace','Manage your carwash with WashPilot.');
+      if(isAuthenticated()){
+        const landing=document.getElementById('publicLanding');
+        const login=document.getElementById('loginScreen');
+        const app=document.getElementById('washpilotApp');
+        if(landing)landing.style.display='none';
+        if(login){login.hidden=true;login.style.display='none';}
+        if(app){app.hidden=false;app.style.display='grid';app.classList.remove('auth-hidden');}
+        document.body.classList.add('washpilot-authenticated');
+        if(typeof window.go==='function')window.go(appPage);
+      }else{
+        showLoginRoute();
+        window.wpRouteIsWorkspace=true;
+      }
+      return;
+    }
+    if(path==='/login'){
+      if(isAuthenticated()){
+        requestedAppPage='dashboard';
+        setPath(pagePaths.dashboard,true);
+        applyRoute();
+        return;
+      }
+      requestedAppPage=null;
+      window.wpRouteIsWorkspace=false;window.wpRouteIsLogin=true;
+      showLoginRoute();
+      return;
+    }
+    if(path==='/signup'){
+      if(isAuthenticated()){
+        requestedAppPage='dashboard';
+        setPath(pagePaths.dashboard,true);
+        applyRoute();
+        return;
+      }
+      requestedAppPage=null;
+      window.wpRouteIsWorkspace=false;window.wpRouteIsLogin=false;
+      showPublicPage('home');
+      window.wpOpenSignupForRoute();
+      setTitle('Create Account','Create your WashPilot account and set up your carwash workspace.');
+      return;
+    }
+    const section=publicSections[path];
+    if(path!=='/'&&!section){
+      setPath('/',true);
+      requestedAppPage=null;
+      window.wpRouteIsWorkspace=false;window.wpRouteIsLogin=false;
+      showPublicPage('home');
+      return;
+    }
+    requestedAppPage=null;
+    window.wpRouteIsWorkspace=false;window.wpRouteIsLogin=false;
+    showPublicPage(section?section.slug:'home');
+  }
+
+  if(typeof originalGo==='function'){
+    window.go=function(page){
+      if(!pagePaths[page])return originalGo.apply(this,arguments);
+      if(typeof window.canAccessRolePage==='function'&&!window.canAccessRolePage(page))return originalGo.apply(this,arguments);
+      requestedAppPage=page;
+      window.wpRouteIsWorkspace=true;window.wpRouteIsLogin=false;
+      setPath(pagePaths[page],false);
+      const result=originalGo.apply(this,arguments);
+      if(typeof currentPage!=='undefined'&&currentPage!==page){
+        requestedAppPage=currentPage;
+        setPath(pagePaths[currentPage]||pagePaths.dashboard,true);
+      }
+      return result;
+    };
+  }
+  if(typeof originalRender==='function'){
+    window.render=function(){
+      if(requestedAppPage&&isAuthenticated())currentPage=requestedAppPage;
+      const result=originalRender.apply(this,arguments);
+      if(isAuthenticated()&&pagePaths[currentPage]){
+        requestedAppPage=currentPage;
+        window.wpRouteIsWorkspace=true;window.wpRouteIsLogin=false;
+        setPath(pagePaths[currentPage],true);
+      }
+      return result;
+    };
+  }
+  if(typeof originalShowLogin==='function'){
+    window.showLoginScreen=function(){
+      requestedAppPage=null;
+      window.wpRouteIsWorkspace=false;window.wpRouteIsLogin=true;
+      setPath('/login',false);
+      return originalShowLogin.apply(this,arguments);
+    };
+  }
+  if(typeof originalOpenSignup==='function'){
+    window.openTrialSignup=function(){
+      requestedAppPage=null;
+      window.wpRouteIsWorkspace=false;window.wpRouteIsLogin=false;
+      setPath('/signup',false);
+      return originalOpenSignup.apply(this,arguments);
+    };
+  }
+
+  const routePaths=new Set(['/','/features','/how-it-works','/pricing','/about','/faq','/login','/signup',...Object.values(pagePaths)]);
+  document.addEventListener('click',function(event){
+    if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+    const anchor=event.target.closest&&event.target.closest('a[href]');
+    if(!anchor||anchor.target==='_blank'||anchor.hasAttribute('download'))return;
+    let url;
+    try{url=new URL(anchor.getAttribute('href'),location.href);}catch(_){return;}
+    if(url.origin!==location.origin)return;
+    const path=normalize(url.pathname);
+    if(!routePaths.has(path))return;
+    event.preventDefault();
+    setPath(path,false);
+    applyRoute();
+  });
+  window.addEventListener('popstate',applyRoute);
+  applyRoute();
+})();
+</script>
+
 </body>
 </html>
