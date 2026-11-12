@@ -1500,7 +1500,7 @@ function renderNav(){
  document.getElementById('platformNavGroup').style.display=isPlatform?'block':'none';
  document.getElementById('modeSwitch').style.display=(!isPlatform&&(isOwner||isSupervisor))?'inline-flex':'none';
  document.getElementById('easyModeButton').classList.toggle('active',viewMode==='easy');document.getElementById('advancedModeButton').classList.toggle('active',viewMode==='advanced');
- const planSelect=document.getElementById('planSelect');if(planSelect)planSelect.style.display=isOwner&&viewMode==='advanced'&&!window.wpRealWorkspaceActive?'':'none';document.querySelector('.reset-demo-button').style.display=isOwner&&viewMode==='advanced'&&!window.wpRealWorkspaceActive?'':'none';
+ const planSelect=document.getElementById('planSelect');if(planSelect)planSelect.style.display=isOwner&&viewMode==='advanced'&&!window.wpRealWorkspaceActive?'':'none';const resetDemoButton=document.querySelector('.reset-demo-button');if(resetDemoButton)resetDemoButton.style.display=isOwner&&viewMode==='advanced'&&!window.wpRealWorkspaceActive?'':'none';
  const sidePlan=document.getElementById('sidePlan'),sideText=document.getElementById('sidePlanText');
  sidePlan.textContent=isPlatform?'PLATFORM ADMIN':isOwner?currentPlan.toUpperCase()+' PLAN':currentStaffRole.toUpperCase();
  sideText.textContent=isPlatform?'Central control for all subscribed businesses.':isOwner?'Daily operations workspace · '+(viewMode==='easy'?'Easy Mode':'Advanced Mode'):currentStaffRole==='washer'?'Assigned vehicles and service progress.':currentStaffRole==='cashier'?'New washes, payments and customer records.':'Team operations and daily oversight.';
@@ -1522,7 +1522,16 @@ function render(){
  if(currentPage==='managementHub'){c.innerHTML=managementHubPage();return}
  if(!allowed(currentPage)){c.innerHTML=lockedPage();return}
  const pages={dashboard:dashboardPage,newwash:newWashPage,queue:queuePage,transactions:transactionsPage,customers:customersPage,catalog:catalogPage,addons:addonsPage,employees:employeesPage,expenses:expensesPage,reports:reportsPage,inventory:inventoryPage,branches:branchesPage,loyalty:loyaltyPage,recipes:recipesPage,reconcile:reconcilePage,subscription:subscriptionPage};
- c.innerHTML=(pages[currentPage]||dashboardPage)();
+ try{
+  const pageRenderer=pages[currentPage]||dashboardPage;
+  const markup=pageRenderer();
+  if(typeof markup!=='string'||!markup.trim())throw new Error('The '+(names[currentPage]||'Dashboard')+' renderer returned empty content.');
+  c.innerHTML=markup;
+ }catch(renderError){
+  console.error('WashPilot dashboard render failed:',renderError);
+  const message=renderError&&renderError.message?renderError.message:'An unexpected error occurred while loading this screen.';
+  c.innerHTML='<section class="panel" style="margin:24px auto;max-width:760px;padding:28px;border:1px solid #f1c6c6;background:#fffafa"><div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><span style="font-size:24px;color:#c24141">!</span><h2 style="margin:0;color:#172b4d">This workspace could not finish loading</h2></div><p style="color:#52627a;line-height:1.6">WashPilot stopped while preparing this screen. Your business data has not been deleted. Refresh the page, and contact support with this message if the problem continues.</p><div style="padding:12px 14px;border-radius:10px;background:#fff0f0;color:#922d2d;font:12px/1.5 ui-monospace,monospace;overflow-wrap:anywhere">'+esc(message)+'</div><button class="btn" style="margin-top:16px" onclick="render()">Try loading again</button></section>';
+ }
 }
 let selectedHomeRange=Number(window.wpStorage.getItem('wp_home_range')||1);
 function setHomeRange(days){selectedHomeRange=[1,7,14,21,30].includes(Number(days))?Number(days):1;window.wpStorage.setItem('wp_home_range',String(selectedHomeRange));render()}
