@@ -2853,6 +2853,7 @@ async function submitPublicBooking(e){
     '/faq':{slug:'faq',id:'wp-faq',title:'Frequently Asked Questions'}
   };
   const pageByPath = Object.fromEntries(Object.entries(pagePaths).map(([key,path])=>[path,key]));
+  const routeAliases = {'/booking':'/bookings'};
   const normalize = path => {
     let value=String(path||'/').split('?')[0].split('#')[0];
     while(value.length>1&&value.endsWith('/'))value=value.slice(0,-1);
@@ -2863,7 +2864,7 @@ async function submitPublicBooking(e){
     if(normalize(location.pathname)===next)return;
     history[replace?'replaceState':'pushState']({washpilot:true},'',next);
   };
-  const pageForCurrentPath = () => pageByPath[normalize(location.pathname)]||null;
+  const pageForCurrentPath = () => pageByPath[routeAliases[normalize(location.pathname)]||normalize(location.pathname)]||null;
   let requestedAppPage = pageForCurrentPath();
   window.wpRequestedRoutePage=requestedAppPage||null;
   window.wpRouteIsWorkspace=!!requestedAppPage;
