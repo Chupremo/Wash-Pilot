@@ -2050,7 +2050,7 @@ function renderBookingNotificationUi(){
  const mount=document.getElementById('wpDashboardBookingNotifications');
  if(mount){
   mount.innerHTML=count>0
-   ?'<section class="wp-dashboard-booking-alert"><div class="wp-dashboard-booking-alert-icon">!</div><div class="wp-dashboard-booking-alert-copy"><span class="wp-dashboard-booking-alert-kicker">NEW ONLINE BOOKINGS</span><strong>'+count+' booking '+(count===1?'request needs':'requests need')+' your attention</strong><p>Payment proof '+(count===1?'is':'s are')+' waiting for verification. Review the customer details and verify payment before confirming the reservation.</p></div><button type="button" class="btn" onclick="go(\\'bookings\\')">Review bookings <span>→</span></button></section>'
+   ?'<section class="wp-dashboard-booking-alert"><div class="wp-dashboard-booking-alert-icon">!</div><div class="wp-dashboard-booking-alert-copy"><span class="wp-dashboard-booking-alert-kicker">NEW ONLINE BOOKINGS</span><strong>'+count+' booking '+(count===1?'request needs':'requests need')+' your attention</strong><p>Payment proof '+(count===1?'is':'s are')+' waiting for verification. Review the customer details and verify payment before confirming the reservation.</p></div><button type="button" class="btn" onclick="go(\'bookings\')">Review bookings <span>→</span></button></section>'
    :'';
  }
 }
