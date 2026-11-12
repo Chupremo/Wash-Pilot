@@ -1753,7 +1753,7 @@ function render(){
  if(currentRole==='platform'){const pp={platform:platformDashboard,tenants:tenantsPage,platformBilling:platformBillingPage};c.innerHTML=pp[currentPage]();if(currentPage==='platformBilling')loadPlatformBillingRequests();return}
  if(currentPage==='managementHub'){c.innerHTML=managementHubPage();return}
  if(!allowed(currentPage)){c.innerHTML=lockedPage();return}
- const pages={dashboard:dashboardPage,newwash:newWashPage,queue:queuePage,transactions:transactionsPage,customers:customersPage,catalog:catalogPage,addons:addonsPage,employees:employeesPage,expenses:expensesPage,reports:reportsPage,inventory:inventoryPage,branches:branchesPage,loyalty:loyaltyPage,recipes:recipesPage,reconcile:reconcilePage,subscription:subscriptionPage};
+ const pages={dashboard:dashboardPage,newwash:newWashPage,queue:queuePage,transactions:transactionsPage,customers:customersPage,bookings:bookingsPage,listing:facilityListingPage,catalog:catalogPage,addons:addonsPage,employees:employeesPage,expenses:expensesPage,reports:reportsPage,inventory:inventoryPage,branches:branchesPage,loyalty:loyaltyPage,recipes:recipesPage,reconcile:reconcilePage,subscription:subscriptionPage};
  try{
   const pageRenderer=pages[currentPage]||dashboardPage;
   const markup=pageRenderer();
