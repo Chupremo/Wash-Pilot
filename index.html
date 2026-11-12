@@ -1074,7 +1074,7 @@ tbody tr:hover td{background:#f5f9ff}
       
       <div class="login-mobile-brand"><img class="brand-lockup" src="washpilot-logo.svg" alt="WashPilot Management Solutions" /></div>
       <div class="login-heading"><div class="login-welcome">WELCOME BACK</div><h2 id="wpLoginHeading">Sign in to your account</h2><p id="wpLoginDescription">Use your registered email address and password to access your WashPilot account.</p></div>
-      <form id="loginForm" autocomplete="on">
+      <form id="loginForm" autocomplete="on" onsubmit="handleLogin(event); return false;">
         <div class="login-field"><label id="wpLoginIdentityLabel" for="loginUsername">Email address</label><input class="login-input" id="loginUsername" name="email" type="email" placeholder="you@yourbusiness.com" autocomplete="email" required></div>
         <div class="login-field"><label for="loginPassword">Password</label><div class="login-input-wrap"><input class="login-input has-toggle" id="loginPassword" name="password" type="password" placeholder="Enter your password" autocomplete="current-password" required><button class="login-toggle" type="button" onclick="toggleLoginPassword()" id="loginPasswordToggle">Show</button></div></div>
         
@@ -1574,24 +1574,6 @@ function updateTenant(e,id){e.preventDefault();let t=platformData.tenants.find(x
 function recordTenantPayment(id){let t=platformData.tenants.find(x=>x.id===id);t.status='Active';t.mrr=({starter:499,business:1299,pro:1999})[t.plan];t.renewal=isoAgo(-30);let inv={id:'INV-'+Date.now().toString().slice(-7),tenantId:id,tenant:t.name,date:today(),due:today(),amount:t.mrr,status:'Paid',method:'Manual demo'};platformData.invoices.unshift(inv);savePlatformData();closeModal();render();toast('Demo payment marked as paid. No real money was collected.')}
 function platformBillingPage(){let inv=platformData.invoices,p=inv.filter(i=>i.status==='Paid').reduce((a,i)=>a+i.amount,0),due=inv.filter(i=>['Overdue','Pending'].includes(i.status)).reduce((a,i)=>a+i.amount,0);return `${pageHead('Billing & Revenue','Monitor invoices and collections across all WashPilot customer businesses.') }<div class="grid stats">${stat('Collected',money(p),'Paid demo invoices','₱','green')}${stat('Outstanding',money(due),'Overdue and pending invoices','₱','amber')}${stat('Invoices',inv.length,'All billing records','▤')}${stat('Active MRR',money(platformData.tenants.filter(t=>t.status==='Active').reduce((a,t)=>a+t.mrr,0)),'Current recurring run rate','↗','purple')}</div><section class="panel"><div class="panel-head"><h3>Subscription invoices</h3><span class="subtle">All businesses</span></div><div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Business</th><th>Issued</th><th>Due</th><th>Amount</th><th>Status</th><th>Method</th><th></th></tr></thead><tbody>${inv.map(i=>`<tr><td><b>${esc(i.id)}</b></td><td>${esc(i.tenant)}</td><td>${dateLabel(i.date)}</td><td>${dateLabel(i.due)}</td><td class="amount">${money(i.amount)}</td><td>${statusPill(i.status)}</td><td>${esc(i.method)}</td><td>${i.status!=='Paid'?`<button class="btn ghost small" onclick="recordTenantPayment('${i.tenantId}')">Mark paid</button>`:''}</td></tr>`).join('')}</tbody></table></div></section><div class="inline-note" style="margin-top:14px">Collection actions here are simulated. Production billing needs a gateway checkout, signed webhooks, invoice IDs, idempotency, failed-payment retries and an immutable audit log.</div>`}
 function resetDemo(){if(!confirm('Reset this browser demo, including tenant directory, transactions, loyalty and billing previews?'))return;wpStorage.removeItem('washpilot_demo_data');wpStorage.removeItem('wp_platform_data');wpStorage.removeItem('wp_plan');state=structuredClone(initial);currentPlan='starter';platformData=structuredClone(platformSeed);ensureDemoState();save();savePlatformData();selectedMain='Basic Car Wash';selectedAddons=[];transactionSearch='';tenantSearch='';renderNav();render();toast('WashPilot demo data reset.')}
-// Bind the sign-in form once, using the native submit event (Safari/iOS friendly).
-(function bindWashPilotSignIn(){
-  const form = document.getElementById('loginForm');
-  const button = document.getElementById('loginSubmitButton');
-  if (form) {
-    form.addEventListener('submit', function(event) {
-      event.preventDefault();
-      try { handleLogin(event); }
-      catch (err) {
-        const error = document.getElementById('loginError');
-        if (error) { error.textContent = 'Sign-in error: ' + (err && err.message ? err.message : 'Please reload and try again.'); error.classList.add('show'); }
-        console.error('WashPilot sign-in failed:', err);
-      }
-    });
-  }
-  if (button) button.type = 'submit';
-})();
-
 // Existing owner actions remain available. Run one safe state migration before the first render.
 ensureDemoState();
 
