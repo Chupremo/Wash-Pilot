@@ -959,6 +959,19 @@ tbody tr:hover td{background:#f5f9ff}
   #publicLanding .wp-pricing, #publicLanding .wp-faq { padding-left: 16px !important; padding-right: 16px !important; }
 }
 
+
+/* Subscription feature locks */
+.wp-plan-lock-badge{background:#fff0d8!important;color:#8a4d00!important;border:1px solid #f3d7a5!important;opacity:1!important}
+.wp-locked-page{max-width:760px;margin:32px auto;padding:clamp(22px,4vw,38px);border:1px solid #dce5f1}
+.wp-locked-icon{width:58px;height:58px;display:grid;place-items:center;border-radius:16px;background:#fff1d9;font-size:27px;margin-bottom:18px}
+.wp-locked-page h1{font-size:clamp(24px,4vw,32px);margin:16px 0 10px;color:#172b4d}
+.wp-locked-page>p{color:#5b6b82;line-height:1.7;max-width:610px}
+.wp-locked-plan{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:16px 18px;margin-top:20px;border:1px solid #e5eaf2;border-radius:12px;background:#f8fafc}
+.wp-locked-plan div{display:grid;gap:4px}.wp-locked-plan small{color:#69788d}.wp-locked-plan>span,.wp-hub-tier{font-size:11px;font-weight:800;color:#8a4d00;background:#fff0d8;padding:6px 9px;border-radius:20px;white-space:nowrap}
+.wp-hub-locked{border:1px solid #ead9b8!important;background:#fffdfa!important}
+.wp-hub-locked .hub-icon{background:#fff1d9!important;color:#8a4d00!important}
+@media(max-width:600px){.wp-locked-plan{align-items:flex-start;flex-direction:column}.wp-locked-page .actions{display:grid;grid-template-columns:1fr}.wp-locked-page .actions .btn{width:100%}}
+
 </style>
 </head>
 <body>
@@ -1285,12 +1298,29 @@ function totalSales(list){return list.filter(isPaymentCollected).reduce((s,t)=>s
 function paymentDateOf(t){if(t.paymentDate&&/^\d{4}-\d{2}-\d{2}$/.test(t.paymentDate))return t.paymentDate;const stamp=t.paidAt||t.completedAt;if(stamp){const d=new Date(stamp);if(!Number.isNaN(d.getTime()))return dateKey(d)}if(t.createdAt){const d=new Date(t.createdAt);if(!Number.isNaN(d.getTime()))return dateKey(d)}return t.date||''}
 function paidTransactionsBetween(start,end){return state.transactions.filter(t=>isPaymentCollected(t)&&paymentDateOf(t)>=start&&paymentDateOf(t)<=end)}
 function totalCollectedBetween(start,end){return totalSales(paidTransactionsBetween(start,end))}
-function planRank(p){return ({basic:1,standard:2,premium:3})[p]||1}
-function minPlan(page){return ['employees','expenses','inventory'].includes(page)?2:1}
-function allowed(page){return planRank(currentPlan)>=minPlan(page)}
-const pageNames={dashboard:'Dashboard',newwash:'New Wash',queue:'Service Queue',transactions:'Transactions',customers:'Customers & Vehicles',catalog:'Services & Pricing',addons:'Add-on Analytics',employees:'Employees',expenses:'Expenses',reports:'Reports',inventory:'Inventory',branches:'Branches'};
-const pageSubs={dashboard:'Welcome back! Here is your business overview.',newwash:'Record a vehicle, select services and collect payment.',queue:'Keep every vehicle moving through the wash process.',transactions:'Review, search and manage recorded transactions.',customers:'Automatic vehicle history based on plate number.',catalog:'Manage your main services, coating packages and add-ons.',addons:'See which extras increase your average transaction value.',employees:'Manage staff accounts and performance.',expenses:'Record operating costs and understand your net earnings.',reports:'Review sales, payment mix and business performance.',inventory:'Monitor supplies, stock levels and usage.',branches:'Manage locations and compare branch performance.'};
-function setPlan(p){currentPlan=p;save();const planSelect=document.getElementById('planSelect');if(planSelect)planSelect.value=p;renderNav();render()}
+function normalizePlan(p){const value=String(p||'basic').toLowerCase();return ({starter:'basic',business:'standard',pro:'premium'})[value]||(['basic','standard','premium'].includes(value)?value:'basic')}
+function effectivePlan(){return window.wpRealWorkspaceActive?normalizePlan(window.wpRealSubscription?.plan_code||'basic'):normalizePlan(currentPlan)}
+function planRank(p){return ({basic:1,standard:2,premium:3})[normalizePlan(p)]||1}
+function minPlan(page){
+ if(['branches','recipes'].includes(page))return 3;
+ if(['employees','expenses','inventory','reports','addons','loyalty','reconcile'].includes(page))return 2;
+ return 1;
+}
+function planName(tier){return ({1:'Basic',2:'Standard',3:'Premium'})[tier]||'Basic'}
+function planPrice(tier){return ({1:'Free',2:'₱499/month',3:'₱899/month'})[tier]||'Free'}
+function allowed(page){return planRank(effectivePlan())>=minPlan(page)}
+const pageNames={dashboard:'Dashboard',newwash:'New Wash',queue:'Service Queue',transactions:'Transactions',customers:'Customers & Vehicles',catalog:'Services & Pricing',addons:'Add-on Analytics',employees:'Employees',expenses:'Expenses',reports:'Reports',inventory:'Inventory',branches:'Branches',loyalty:'Loyalty & Packages',recipes:'Service Recipes',reconcile:'Shift & Reconciliation',subscription:'Subscription & Billing',managementHub:'Business Management'};
+const pageSubs={dashboard:'Welcome back! Here is your business overview.',newwash:'Record a vehicle, select services and collect payment.',queue:'Keep every vehicle moving through the wash process.',transactions:'Review, search and manage recorded transactions.',customers:'Automatic vehicle history based on plate number.',catalog:'Manage your main services, prices and add-ons.',addons:'See which extras increase your average transaction value.',employees:'Manage staff accounts and performance.',expenses:'Record operating costs and understand your net earnings.',reports:'Review sales, payment mix and business performance.',inventory:'Monitor supplies, stock levels and usage.',branches:'Manage locations and compare branch performance.',loyalty:'Manage rewards and prepaid wash packages.',recipes:'Configure supply usage for each service.',reconcile:'Balance cashier payments and the cash drawer.',subscription:'Review your current plan and available upgrades.',managementHub:'See included tools and features available to unlock.'};
+function setPlan(p){
+ if(window.wpRealWorkspaceActive){
+  currentPlan=effectivePlan();
+  toast('Your registered plan can only change after a subscription upgrade is approved.');
+  renderNav();render();return;
+ }
+ currentPlan=normalizePlan(p);save();
+ const planSelect=document.getElementById('planSelect');if(planSelect)planSelect.value=currentPlan;
+ renderNav();render();
+}
 function renderNav(){document.querySelectorAll('.nav button').forEach(b=>{let p=b.dataset.page;b.classList.toggle('active',p===currentPage);let tag=b.querySelector('.badge');if(tag){tag.style.opacity=allowed(p)?'.45':'1'}});document.querySelectorAll('[data-mobile-page]').forEach(b=>b.classList.toggle('active',b.dataset.mobilePage===currentPage));document.getElementById('sidePlan').textContent=currentPlan.toUpperCase()+' PLAN';document.getElementById('sidePlanText').textContent=currentPlan==='starter'?'Tools to organize daily carwash operations.':currentPlan==='business'?'Staff, expenses and profitability tools unlocked.':'Advanced controls for multi-branch operations.'}
 function go(page){currentPage=page;renderNav();render();document.getElementById('sidebar').classList.remove('open');document.body.classList.remove('sidebar-visible')}
 function toggleSidebar(){const sidebar=document.getElementById('sidebar');const open=sidebar.classList.toggle('open');document.body.classList.toggle('sidebar-visible',open)}
@@ -1305,7 +1335,22 @@ function stat(label,value,note,ico,color='blue'){return `<div class="stat"><div 
 function statusPill(s){return `<span class="status ${s}">${s}</span>`}
 function queueHtml(t){return `<div class="queue-item"><div class="plate">${esc(t.plate)}</div><div class="queue-info"><b>${esc(t.vehicle)} · ${esc(t.main)}</b><small>${esc(t.employee||'Staff')} · ${money(t.total)}</small></div>${statusPill(t.status)}<button class="btn ghost small" onclick="cycleStatus('${t.id}')">Update</button></div>`}
 function render(){document.getElementById('crumb').innerHTML=pageNames[currentPage]+`<small id="crumbSub">${pageSubs[currentPage]}</small>`;const planSelect=document.getElementById('planSelect');if(planSelect)planSelect.value=currentPlan;let c=document.getElementById('content');if(!allowed(currentPage)){c.innerHTML=lockedPage();return}let pages={dashboard:dashboardPage,newwash:newWashPage,queue:queuePage,transactions:transactionsPage,customers:customersPage,catalog:catalogPage,addons:addonsPage,employees:employeesPage,expenses:expensesPage,reports:reportsPage,inventory:inventoryPage,branches:branchesPage};c.innerHTML=pages[currentPage]();}
-function lockedPage(){let need=minPlan(currentPage),label='Standard',price='₱499';return `<div class="card locked"><div class="lock">🔒</div><span class="badge">${label} feature</span><h2>${pageNames[currentPage]} is included in ${label}</h2><p>Upgrade the demo plan to ${label} (${price}) to preview this screen and its workflows. Switch plans using the selector in the top-right corner.</p><button class="btn" onclick="setPlan('standard')">Preview ${label}</button></div>`}
+function lockedPage(){
+ const need=minPlan(currentPage),label=planName(need),price=planPrice(need),isRegistered=!!window.wpRealWorkspaceActive;
+ const title=pageNames[currentPage]||'This feature';
+ const action=isRegistered
+  ? `<button class="btn" onclick="go('subscription')">View upgrade options <span aria-hidden="true">→</span></button>`
+  : `<button class="btn" onclick="setPlan('${need===3?'premium':'standard'}')">Preview ${label} in demo <span aria-hidden="true">→</span></button>`;
+ return `<section class="panel wp-locked-page">
+   <div class="wp-locked-icon" aria-hidden="true">🔒</div>
+   <span class="badge">${label.toUpperCase()} PLAN FEATURE</span>
+   <h1>${title} is locked</h1>
+   <p>This feature is available on the <b>${label}</b> plan (${price}). Your current registered plan is <b>${planName(planRank(effectivePlan()))}</b>. Upgrade your subscription to unlock it for this business.</p>
+   <div class="wp-locked-plan"><div><b>${label}</b><small>Required plan · ${price}</small></div><span>🔒 Locked</span></div>
+   <div class="actions" style="margin-top:18px">${action}<button class="btn ghost" onclick="go('dashboard')">Back to dashboard</button></div>
+   ${isRegistered?'<p class="subtle" style="margin-top:14px">Registered workspaces cannot unlock paid features by switching a demo setting. Access changes only when the subscription on your account is updated.</p>':''}
+ </section>`;
+}
 function dashboardPage(){if(viewMode==='easy')return easyDashboardPage();let todayTx=state.transactions.filter(isToday),sales=totalCollectedBetween(today(),today()),vehicles=todayTx.filter(t=>t.status!=='Cancelled').length,expenses=state.expenses.filter(e=>e.date===today()).reduce((s,e)=>s+e.amount,0),week=state.transactions.filter(t=>t.date>=isoAgo(6)&&t.status!=='Cancelled'),month=state.transactions.filter(t=>t.date.slice(0,7)===today().slice(0,7)&&t.status!=='Cancelled');let weekSales=totalCollectedBetween(isoAgo(6),today()),monthSales=totalCollectedBetween(today().slice(0,7)+'-01',today()),avg=vehicles?sales/vehicles:0,waiting=todayTx.filter(t=>t.status==='Waiting').length,washing=todayTx.filter(t=>t.status==='Washing').length,completed=todayTx.filter(t=>t.status==='Completed').length;let days=Array.from({length:7},(_,i)=>{let d=new Date();d.setDate(d.getDate()-(6-i));let key=dateKey(d);return {key,label:d.toLocaleDateString('en-US',{weekday:'short'}),value:totalCollectedBetween(key,key)}});let max=Math.max(1,...days.map(d=>d.value));return `${pageHead('Business Overview','Monitor sales, vehicles, queue activity and daily performance.',`<button class="btn" onclick="go('newwash')">＋ New Wash</button>`)}${dailyKpiStrip()}<div class="grid stats">${stat("Today's Sales",money(sales),`${vehicles} vehicles recorded today`,'₱','green')}${stat('This Week',money(weekSales),'Last 7 days','↗')}${stat('This Month',money(monthSales),'Current month','▣','purple')}${stat('Average per Vehicle',money(avg),'Average transaction value','🚘','amber')}</div><div class="grid two"><section class="panel"><div class="panel-head"><h3>Sales Overview</h3><span class="subtle">Last 7 days</span></div><div class="chart">${days.map(d=>`<div class="bar-wrap"><div class="bar" title="${money(d.value)}" style="height:${Math.max(3,d.value/max*78)}%"></div><span class="bar-label">${d.label}</span></div>`).join('')}</div><div class="grid three" style="margin-top:16px"><div class="mini-card"><small>Waiting</small><strong>${waiting}</strong></div><div class="mini-card"><small>Washing</small><strong>${washing}</strong></div><div class="mini-card"><small>Completed</small><strong>${completed}</strong></div></div></section><section class="panel"><div class="panel-head"><h3>Today's Service Queue</h3><button class="btn ghost small" onclick="go('queue')">View queue</button></div><div class="queue-list">${todayTx.filter(t=>t.status!=='Cancelled').slice(0,4).map(queueHtml).join('')||'<div class="empty">No vehicles in the queue yet.</div>'}</div></section></div><div class="grid two" style="margin-top:16px"><section class="panel"><div class="panel-head"><h3>Recent Transactions</h3><button class="btn ghost small" onclick="go('transactions')">View all</button></div>${transactionTable(state.transactions.slice().sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time)).slice(0,5),false)}</section><section class="panel"><div class="panel-head"><h3>Payment Breakdown</h3><span class="subtle">Today</span></div>${paymentBreakdown(paidTransactionsBetween(today(),today()))}<div class="divider"></div>${planRank(currentPlan)>=2?`<div class="panel-head"><h3>Daily Expenses</h3><strong>${money(expenses)}</strong></div><div class="muted-box"><div style="display:flex;justify-content:space-between;font-size:11px"><span>Estimated net earnings</span><b style="color:var(--green)">${money(sales-expenses)}</b></div><small class="subtle">Gross sales less recorded expenses. Not a full accounting profit calculation.</small></div>`:`<div class="muted-box"><b style="font-size:11px">Want to track expenses and estimated earnings?</b><p class="subtle">Upgrade to Business to record operating costs and see estimated net earnings.</p><button class="btn small" onclick="setPlan('business')">Preview Business</button></div>`}</section></div>`}
 function paymentBreakdown(list){let methods=['Cash','GCash','Maya','Card','Other'];let paid=list.filter(t=>t.status!=='Cancelled'&&(t.financialStatus||'Paid')==='Paid');let total=totalSales(paid);return methods.map((m,i)=>{let v=paid.filter(t=>t.payment===m).reduce((s,t)=>s+Number(t.total||0),0);if(!v)return '';return `<div style="margin:11px 0"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px"><span>${m}</span><b>${money(v)}</b></div><div class="progress"><span style="width:${total?v/total*100:0}%"></span></div></div>`}).join('')||'<div class="empty">No payments recorded yet.</div>'}
 function newWashPage(){let main=state.services.filter(s=>s.type==='main'&&s.active),adds=state.services.filter(s=>s.type==='addon'&&s.active);if(window.wpRealWorkspaceActive&&!main.length)return pageHead('New Wash','Set up your main wash services before creating your first ticket.')+'<section class="panel" style="max-width:720px"><h2 style="margin:0 0 8px">Your service menu is empty</h2><p class="subtle" style="line-height:1.7">Add at least one main service with its price and estimated duration. Optional extras can be added afterward.</p><button class="btn" onclick="catalogTab=\'main\';go(\'catalog\')">Add your first main service</button></section>';return `${pageHead('New Wash','Register a vehicle, select the main service and add any extras.') }<div class="grid two"><div class="grid" style="gap:14px"><section class="form-section"><h3>① Vehicle information</h3><div class="form-grid"><div class="field"><label>Plate number *</label><input id="washPlate" placeholder="e.g. ABC 1234" value=""></div><div class="field"><label>Vehicle type *</label><select id="washVehicle"><option>Sedan</option><option>SUV</option><option>Pickup</option><option>Van</option><option>Motorcycle</option><option>Other</option></select></div></div><div class="field" style="margin-top:12px"><label>Customer name (optional)</label><input id="washCustomer" placeholder="Walk-in customer"></div></section><section class="form-section"><h3>② Select main service</h3><div class="choice-list">${main.map(s=>`<label class="choice ${selectedMain===s.name?'selected':''}"><input type="radio" name="mainService" value="${esc(s.name)}" ${selectedMain===s.name?'checked':''} onchange="selectMain('${esc(s.name)}')"><span class="choice-main"><b>${esc(s.name)}</b><small>${esc(s.description||'')} · ${s.duration} min</small></span><span class="choice-price" data-main-price="${s.id}">${money(servicePriceForSize(s,getSelectedVehicleSize()))}</span></label>`).join('')}</div></section><section class="form-section"><h3>③ Additional services / add-ons <span class="badge">Select multiple</span></h3><div class="choice-list">${adds.map(s=>`<label class="choice ${selectedAddons.includes(s.id)?'selected':''}"><input type="checkbox" ${selectedAddons.includes(s.id)?'checked':''} onchange="toggleAddon(${s.id},this.checked)"><span class="choice-main"><b>${esc(s.name)}</b><small>${esc(s.description||'')}</small></span><span class="choice-price">+ ${money(s.price)}</span></label>`).join('')||'<div class="empty">No active add-ons. Add them in Services & Pricing.</div>'}</div></section><section class="form-section"><h3>④ Payment details</h3><div class="form-grid"><div class="field"><label>Payment method</label><select id="washPayment"><option>Cash</option><option>GCash</option><option>Maya</option><option>Card</option><option>Other</option></select></div>${planRank(currentPlan)>=2?`<div class="field"><label>Assigned staff</label><select id="washEmployee"><option value="">Choose staff</option>${state.employees.filter(e=>e.status==='Active').map(e=>`<option>${esc(e.name)}</option>`).join('')}</select></div>`:''}</div><div class="field" style="margin-top:12px"><label>Notes (optional)</label><input id="washNotes" placeholder="Special instructions"></div></section></div><aside class="panel" style="height:max-content;position:sticky;top:92px"><div class="panel-head"><h3>Transaction Summary</h3><span class="badge">Live total</span></div><div id="washSummary">${washSummaryHtml()}</div><button class="btn success" style="width:100%;margin-top:15px;padding:13px" onclick="saveWash()">Save transaction & record payment</button><p class="subtle" style="line-height:1.5;margin-bottom:0">Saving records the sale, creates a queue entry and updates your dashboard. This demo uses local browser storage.</p></aside></div>`}
@@ -1493,6 +1538,7 @@ function canAccessRolePage(page){
 }
 function renderNav(){
  const isPlatform=currentRole==='platform',isOwner=currentRole==='business'&&currentStaffRole==='owner',isSupervisor=currentRole==='business'&&currentStaffRole==='supervisor';
+ const activePlan=effectivePlan();
  document.body.classList.toggle('platform-mode',isPlatform);document.body.classList.toggle('easy-mode',viewMode==='easy'&&!isPlatform);document.body.classList.toggle('advanced-mode',viewMode==='advanced'&&!isPlatform);
  document.getElementById('ownerWorkspaceGroup').style.display=isPlatform?'none':'';
  document.getElementById('managementNavGroup').style.display=(!isPlatform&&(isOwner||isSupervisor)&&viewMode==='advanced')?'':'none';
@@ -1500,12 +1546,22 @@ function renderNav(){
  document.getElementById('platformNavGroup').style.display=isPlatform?'block':'none';
  document.getElementById('modeSwitch').style.display=(!isPlatform&&(isOwner||isSupervisor))?'inline-flex':'none';
  document.getElementById('easyModeButton').classList.toggle('active',viewMode==='easy');document.getElementById('advancedModeButton').classList.toggle('active',viewMode==='advanced');
- const planSelect=document.getElementById('planSelect');if(planSelect)planSelect.style.display=isOwner&&viewMode==='advanced'&&!window.wpRealWorkspaceActive?'':'none';const resetDemoButton=document.querySelector('.reset-demo-button');if(resetDemoButton)resetDemoButton.style.display=isOwner&&viewMode==='advanced'&&!window.wpRealWorkspaceActive?'':'none';
+ const planSelect=document.getElementById('planSelect');if(planSelect)planSelect.style.display=isOwner&&viewMode==='advanced'&&!window.wpRealWorkspaceActive?'':'none';
+ const resetDemoButton=document.querySelector('.reset-demo-button');if(resetDemoButton)resetDemoButton.style.display=isOwner&&viewMode==='advanced'&&!window.wpRealWorkspaceActive?'':'none';
  const sidePlan=document.getElementById('sidePlan'),sideText=document.getElementById('sidePlanText');
- sidePlan.textContent=isPlatform?'PLATFORM ADMIN':isOwner?currentPlan.toUpperCase()+' PLAN':currentStaffRole.toUpperCase();
- sideText.textContent=isPlatform?'Central control for all subscribed businesses.':isOwner?'Daily operations workspace · '+(viewMode==='easy'?'Easy Mode':'Advanced Mode'):currentStaffRole==='washer'?'Assigned vehicles and service progress.':currentStaffRole==='cashier'?'New washes, payments and customer records.':'Team operations and daily oversight.';
+ sidePlan.textContent=isPlatform?'PLATFORM ADMIN':isOwner?activePlan.toUpperCase()+' PLAN':currentStaffRole.toUpperCase();
+ sideText.textContent=isPlatform?'Central control for all subscribed businesses.':isOwner?'Daily operations workspace · '+planName(planRank(activePlan))+' plan · '+(viewMode==='easy'?'Easy Mode':'Advanced Mode'):currentStaffRole==='washer'?'Assigned vehicles and service progress.':currentStaffRole==='cashier'?'New washes, payments and customer records.':'Team operations and daily oversight.';
  document.querySelector('.top-actions .avatar').textContent=isPlatform?'SA':isOwner?'BO':currentStaffRole==='supervisor'?'SU':currentStaffRole==='cashier'?'CA':'WA';
- document.querySelectorAll('.nav button[data-page]').forEach(b=>{const page=b.dataset.page,allowedRole=canAccessRolePage(page),planOk=page==='managementHub'||allowed(page);b.style.display=allowedRole?'flex':'none';b.classList.toggle('active',page===currentPage);const tag=b.querySelector('.badge');if(tag)tag.style.opacity=planOk?'.45':'1'});
+ document.querySelectorAll('.nav button[data-page]').forEach(b=>{
+  const page=b.dataset.page,allowedRole=canAccessRolePage(page),locked=isOwner&&!allowed(page)&&page!=='managementHub'&&page!=='subscription';
+  b.style.display=allowedRole?'flex':'none';b.classList.toggle('active',page===currentPage);
+  let tag=b.querySelector('.badge');
+  if(locked){
+   if(!tag){tag=document.createElement('span');tag.className='badge';tag.style.marginLeft='auto';b.appendChild(tag);}
+   tag.classList.add('wp-plan-lock-badge');tag.textContent='🔒 '+planName(minPlan(page));
+  }else if(tag?.classList.contains('wp-plan-lock-badge')){tag.remove();}
+  if(tag&&!locked)tag.style.opacity='.45';
+ });
  document.querySelectorAll('[data-mobile-page]').forEach(b=>{const page=b.dataset.mobilePage;b.style.display=canAccessRolePage(page)?'flex':'none';b.classList.toggle('active',page===currentPage)});
  document.querySelector('.mobile-bottom-nav').style.display=isPlatform?'none':'';
 }
@@ -1577,7 +1633,12 @@ function managementHubPage(){
   ['Customers & growth',[['loyalty','Loyalty & Packages','Manage rewards and prepaid wash bundles','★'],['addons','Add-on Analytics','See which extras customers choose','↗'],['customers','Customers & Vehicles','View customer history','♙']]],
   ['Stock & locations',[['inventory','Inventory','Track supplies and stock levels','▣'],['recipes','Service Recipes','Automate supply use per wash','⚗'],['branches','Branches','Manage additional locations','⌂']]]
  ];
- return `${pageHead('Business Management','All your extra tools in one place. You can keep using Easy Mode for everyday work.')}`+sections.map(([heading,tiles])=>`<section class="hub-section"><h3>${heading}</h3><div class="hub-grid">${tiles.filter(([page])=>canAccessRolePage(page)).map(([page,title,desc,ico])=>`<button class="hub-tile" onclick="go('${page}')"><span class="hub-icon">${ico}</span><span><b>${title}</b><small>${desc}${allowed(page)?'':' · Plan upgrade required'}</small></span></button>`).join('')}</div></section>`).join('')+`<div class="inline-note" style="margin-top:18px">You can switch to Advanced Mode at any time to keep all management sections visible in the sidebar.</div>`;
+ return `${pageHead('Business Management','Included tools and paid features available to unlock.')}`+
+ sections.map(([heading,tiles])=>`<section class="hub-section"><h3>${heading}</h3><div class="hub-grid">${tiles.filter(([page])=>canAccessRolePage(page)).map(([page,title,desc,ico])=>{
+  const need=minPlan(page),locked=!allowed(page),tier=planName(need);
+  return `<button class="hub-tile ${locked?'wp-hub-locked':''}" onclick="go('${page}')"><span class="hub-icon">${locked?'🔒':ico}</span><span><b>${title}</b><small>${desc}${locked?' · Locked · Requires '+tier:''}</small></span>${locked?'<span class="wp-hub-tier">'+tier+'</span>':''}</button>`;
+ }).join('')}</div></section>`).join('')+
+ `<div class="inline-note" style="margin-top:18px">Locked features open only after your business subscription is upgraded. Demo plan switching is disabled for registered accounts.</div>`;
 }
 function statusClass(s){return String(s||'').replace(/\s+/g,'-')}
 function statusPill(s){return `<span class="status ${statusClass(s)}">${esc(s)}</span>`}
@@ -1814,13 +1875,36 @@ function logoutDemo(){
     if(subscriptionError)throw new Error('Your business is available, but its subscription could not be loaded: '+subscriptionError.message);
     openRealWorkspace(user,business,subscription);
   }
-  function openRealWorkspace(user,business,subscription){
+  function removeDemoFixturesFromWorkspace(workspace){
+ const result=Object.assign({},workspace||{});
+ const demoTransactionIds=new Set(['WP-1000','WP-1001','WP-1002','WP-1003','WP-1004']);
+ result.transactions=(result.transactions||[]).filter(t=>!demoTransactionIds.has(String(t.id)));
+ const demoStaff=[['Juan Dela Cruz','Washer'],['Mark Santos','Senior Detailer'],['Paolo Reyes','Cashier']];
+ result.employees=(result.employees||[]).filter(e=>!demoStaff.some(([name,role])=>e.name===name&&e.role===role&&[1,2,3].includes(Number(e.id))));
+ const demoExpenses=[['Car shampoo and microfiber',450],['Water and electricity',800]];
+ result.expenses=(result.expenses||[]).filter(e=>!demoExpenses.some(([description,amount])=>e.description===description&&Number(e.amount)===amount&&[1,2].includes(Number(e.id))));
+ const demoInventory=[['Car Shampoo','Liters'],['Tire Black','Liters'],['Microfiber Cloth','Pieces'],['Spray Wax','Bottles']];
+ result.inventory=(result.inventory||[]).filter(e=>!demoInventory.some(([name,unit])=>e.name===name&&e.unit===unit&&[1,2,3,4].includes(Number(e.id))));
+ const demoBranches=[['Main Branch','Lipa City'],['North Branch','Batangas City'],['South Branch','Tanauan City']];
+ result.branches=(result.branches||[]).filter(b=>!demoBranches.some(([name,location])=>b.name===name&&b.location===location&&[1,2,3].includes(Number(b.id))));
+ const sampleServices=typeof seedServices!=='undefined'?seedServices:[];
+ if(sampleServices.length&&Array.isArray(result.services)&&result.services.length===sampleServices.length&&result.services.every(item=>sampleServices.some(seed=>item.id===seed.id&&item.name===seed.name&&item.type===seed.type&&Number(item.price)===Number(seed.price)&&item.description===seed.description)))result.services=[];
+ const demoPackageNames=new Set(['5 Basic Washes','10 Basic Washes','5 Premium Washes']);
+ result.packages=(result.packages||[]).filter(p=>!demoPackageNames.has(p.name));
+ if(result.shift&&result.shift.openedBy==='Demo Owner')result.shift=null;
+ result.shifts=(result.shifts||[]).filter(x=>x.openedBy!=='Demo Owner');
+ result.shiftClosings=(result.shiftClosings||[]).filter(x=>x.closedBy!=='Demo Owner');
+ return result;
+}
+function openRealWorkspace(user,business,subscription){
     const businessId=business.id;const storageKey='wp_real_workspace_data_'+businessId;
     const clean={services:[],transactions:[],employees:[],expenses:[],inventory:[],branches:[],customers:[],recipes:[],inventoryMovements:[],loyaltyLedger:[],packages:[],packageSales:[],shiftClosings:[],shifts:[],shift:null,packageRedemptions:[],subscriptionInvoices:[]};
     let workspace=clean;const stored=window.wpStorage.getItem(storageKey);
     if(stored){try{const parsed=JSON.parse(stored);workspace=Object.assign({},clean,parsed);Object.keys(clean).forEach(k=>{if(Array.isArray(clean[k])&&!Array.isArray(workspace[k]))workspace[k]=[];});if(!Object.prototype.hasOwnProperty.call(workspace,'shift'))workspace.shift=null;}catch(_){workspace=clean;}}
+    // Remove only the exact legacy demo fixtures; preserve owner-created records.
+    workspace=removeDemoFixturesFromWorkspace(workspace);
     window.wpRealWorkspaceActive=true;window.wpRealBusinessId=businessId;window.wpRealBusiness=business;window.wpRealSubscription=subscription;window.wpRealOwnerName=user.user_metadata?.full_name||user.email||'Owner';
-    state=workspace;currentRole='business';currentStaffRole='owner';viewMode='easy';currentPlan=subscription.plan_code||'basic';currentPage='dashboard';selectedMain=state.services.find(s=>s.type==='main'&&s.active)?.name||'';selectedAddons=[];transactionSearch='';
+    state=workspace;currentRole='business';currentStaffRole='owner';viewMode='easy';currentPlan=normalizePlan(subscription.plan_code||'basic');subscription.plan_code=currentPlan;currentPage='dashboard';selectedMain=state.services.find(s=>s.type==='main'&&s.active)?.name||'';selectedAddons=[];transactionSearch='';
     window.wpStorage.removeItem('wp_demo_authenticated');window.wpStorage.removeItem('wb_demo_authenticated');window.wpStorage.removeItem('wp_demo_role');window.wpStorage.removeItem('wp_demo_staff_role');window.wpStorage.setItem('wp_real_business_id',businessId);window.wpStorage.setItem('wp_view_mode','easy');window.wpStorage.setItem('wp_real_workspace_plan_'+businessId,currentPlan);
     if(typeof selectedHomeRange!=='undefined')selectedHomeRange=1;window.wpStorage.setItem('wp_home_range','1');
     const portal=document.getElementById('wpTrialPortal');if(portal)portal.remove();
