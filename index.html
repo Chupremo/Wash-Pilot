@@ -1488,7 +1488,7 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
         <label>Contact number<input id="wpSignupPhone" name="phone" type="tel" placeholder="+63 9XX XXX XXXX" maxlength="30" required></label>
         <label class="wp-signup-wide">Business address
           <div id="wpSignupAddressHost" class="wp-google-place-host"></div>
-          <input id="wpSignupAddress" name="address" type="hidden">
+          <input id="wpSignupAddress" name="address" type="text" placeholder="Enter business address" maxlength="180" required>
           <input id="wpSignupLatitude" type="hidden"><input id="wpSignupLongitude" type="hidden"><input id="wpSignupPlaceId" type="hidden">
           <small id="wpSignupAddressStatus" class="wp-google-place-status">Choose the exact business location from Google Maps suggestions.</small>
         </label>
@@ -2144,7 +2144,7 @@ async function loadFacilityListing(){
   el.innerHTML='<div class="wp-facility-brand-editor"><div id="wpFacilityLogoPreview" class="wp-facility-logo-preview">'+(window.wpFacilityLogoDraft?'<img src="'+esc(window.wpFacilityLogoDraft)+'" alt="Business logo">':'<span>LOGO</span>')+'</div><div class="wp-facility-brand-controls"><b>Business logo</b><p class="wp-form-hint">Shown at the top of your public booking page and business listing.</p><label class="wp-upload-tile wp-logo-upload"><input id="wpFacilityLogoUpload" type="file" accept="image/jpeg,image/png,image/webp" onchange="uploadFacilityLogo(this)"><span>＋ Upload logo</span><small>JPG, PNG or WEBP · 8 MB max</small></label><button type="button" class="btn ghost small" onclick="removeFacilityLogo()">Remove logo</button></div></div>'+'<div class="wp-share-panel"><div><span class="wp-share-kicker">YOUR PUBLIC BOOKING LINK</span><div class="wp-share-url">'+esc(publicUrl)+'</div><div class="wp-share-actions"><button type="button" class="btn small" onclick="copyFacilityLink()">Copy link</button><button type="button" class="btn ghost small" onclick="copyFacilitySlug()">Copy slug</button><a class="btn ghost small" href="'+esc(publicUrl)+'" target="_blank" rel="noopener">Open page ↗</a></div></div><div class="wp-qr-wrap"><div id="wpFacilityQr"></div><button type="button" class="btn ghost small" onclick="downloadFacilityQr()">Download QR</button></div></div>'+
    '<form id="wpFacilityProfileForm" onsubmit="saveFacilityListing(event)"><h3>Facility details</h3><p class="wp-form-hint">Your business-name slug is used in the public link.</p><div class="field wp-public-description-field"><label>Public business description</label><textarea id="wpFacilityPublicDescription" rows="4" maxlength="1200" placeholder="Tell customers what makes your facility special, your equipment, service quality and what they can expect.">'+esc(f.public_description||'')+'</textarea><small>This introduction appears below your logo and facility name on the public booking page.</small></div><div class="grid two">'+
    '<div class="field"><label>Business / facility name</label><input name="name" maxlength="100" required value="'+esc(f.name)+'"></div><div class="field"><label>Public link slug</label><input name="slug" maxlength="50" pattern="[a-zA-Z0-9-]+" required value="'+esc(f.slug)+'"></div>'+
-   '<div class="field"><label>Contact number</label><input name="phone" maxlength="30" value="'+esc(f.phone||'')+'"></div><div class="field"><label>Facility address</label><div id="wpFacilityAddressHost" class="wp-google-place-host"></div><input name="address" id="wpFacilityAddress" type="hidden" value="'+esc(f.address||'')+'"><input id="wpFacilityLatitude" type="hidden" value="'+esc(f.latitude??'')+'"><input id="wpFacilityLongitude" type="hidden" value="'+esc(f.longitude??'')+'"><input id="wpFacilityPlaceId" type="hidden" value="'+esc(f.google_place_id||'')+'"><small id="wpFacilityAddressStatus" class="wp-google-place-status">'+(f.google_place_id?'Saved Google Maps location. Select a new suggestion to move it.':'Choose this facility’s exact location from Google Maps suggestions.')+'</small></div>'+
+   '<div class="field"><label>Contact number</label><input name="phone" maxlength="30" value="'+esc(f.phone||'')+'"></div><div class="field"><label>Facility address</label><div id="wpFacilityAddressHost" class="wp-google-place-host"></div><input name="address" id="wpFacilityAddress" type="text" maxlength="180" required placeholder="Enter facility address" value="'+esc(f.address||'')+'"><input id="wpFacilityLatitude" type="hidden" value="'+esc(f.latitude??'')+'"><input id="wpFacilityLongitude" type="hidden" value="'+esc(f.longitude??'')+'"><input id="wpFacilityPlaceId" type="hidden" value="'+esc(f.google_place_id||'')+'"><small id="wpFacilityAddressStatus" class="wp-google-place-status">'+(f.google_place_id?'Saved Google Maps location. Select a new suggestion to move it.':'Location is not yet verified with Google Maps.')+'</small></div>'+
    '<div class="field"><label>Opening time</label><input name="opening_time" type="time" required value="'+String(f.opening_time||'08:00').slice(0,5)+'"></div><div class="field"><label>Closing time</label><input name="closing_time" type="time" required value="'+String(f.closing_time||'18:00').slice(0,5)+'"></div></div>'+
    '<div class="field" style="margin-top:15px"><label>Operating days</label><div class="wp-days-grid">'+days.map(([d,n])=>'<label><input type="checkbox" name="operating_days" value="'+n+'" '+((f.operating_days||[0,1,2,3,4,5,6]).includes(n)?'checked':'')+'><span>'+d+'</span></label>').join('')+'</div></div>'+
    '<label class="wp-listing-toggle"><input type="checkbox" name="is_listed" '+(f.is_listed?'checked':'')+'><span><b>Show my facility in the public directory</b><small>Basic listings remain visible without a booking button.</small></span></label><div class="actions" style="justify-content:flex-end;margin:18px 0 26px"><button class="btn" type="submit">Save facility details</button></div></form>'+
@@ -2168,7 +2168,7 @@ async function persistFacilityProfile(form){
  if(!days.length){btns.forEach(b=>b.disabled=false);toast('Choose at least one operating day.');return;}
  if(form.elements.opening_time.value>=form.elements.closing_time.value){btns.forEach(b=>b.disabled=false);toast('Closing time must be later than opening time.');return;}
  const selectedLat=Number(document.getElementById('wpFacilityLatitude')?.value),selectedLng=Number(document.getElementById('wpFacilityLongitude')?.value),selectedPlaceId=document.getElementById('wpFacilityPlaceId')?.value||'';
- if(!selectedPlaceId||!Number.isFinite(selectedLat)||!Number.isFinite(selectedLng)){btns.forEach(b=>b.disabled=false);toast('Select the exact facility location from Google Maps before saving.');return;}
+ const hasVerifiedGooglePlace=!!selectedPlaceId&&Number.isFinite(selectedLat)&&Number.isFinite(selectedLng);
  try{
   await window.washPilotBookingApi.updateMyFacility({
    name:form.elements.name.value.trim(),slug:form.elements.slug.value.trim().toLowerCase(),phone:form.elements.phone.value.trim(),address:form.elements.address.value.trim(),
@@ -2699,13 +2699,13 @@ window.submitTrialSignup=async function(e){
     const password=$('wpSignupPassword').value, confirm=$('wpSignupConfirm').value;
     const latitude=Number($('wpSignupLatitude')?.value),longitude=Number($('wpSignupLongitude')?.value),googlePlaceId=$('wpSignupPlaceId')?.value||'';
     if(business.length<2||owner.length<2||phone.length<6||!address||!email||!openingTime||!closingTime)return signupMessage('error','Please complete all business and owner details.');
-    if(!googlePlaceId||!Number.isFinite(latitude)||!Number.isFinite(longitude))return signupMessage('error','Search and select your exact business address from Google Maps suggestions before creating the account.');
+    const hasVerifiedGooglePlace=!!googlePlaceId&&Number.isFinite(latitude)&&Number.isFinite(longitude);
     if(openingTime>=closingTime)return signupMessage('error','Closing time must be later than opening time.');
     if(password.length<8)return signupMessage('error','Use a password with at least 8 characters.');
     if(password!==confirm)return signupMessage('error','Your passwords do not match.');
     const submit=$('wpSignupSubmit');submit.disabled=true;submit.textContent='Creating your account…';signupMessage('','');
     try{
-      const meta={full_name:owner,business_name:business,business_slug:safeSlug(business),business_phone:phone,business_address:address,business_latitude:String(latitude),business_longitude:String(longitude),business_google_place_id:googlePlaceId,opening_time:openingTime,closing_time:closingTime,intended_plan:'basic',signup_source:'washpilot_public_landing'};
+      const meta={full_name:owner,business_name:business,business_slug:safeSlug(business),business_phone:phone,business_address:address,business_latitude:hasVerifiedGooglePlace?String(latitude):'',business_longitude:hasVerifiedGooglePlace?String(longitude):'',business_google_place_id:hasVerifiedGooglePlace?googlePlaceId:'',opening_time:openingTime,closing_time:closingTime,intended_plan:'basic',signup_source:'washpilot_public_landing'};
       const {data,error}=await getClient().auth.signUp({
         email,password,
         options:{data:meta,emailRedirectTo:window.location.origin}
@@ -2995,10 +2995,12 @@ function openRealWorkspace(user,business,subscription){
        p_bank_name:v.bank_name||null,p_bank_account_name:v.bank_account_name||null,p_bank_account_number:v.bank_account_number||null
       });
       if(error)throw error;
-      const locationResult=await getClient().rpc('update_my_facility_location',{
-       p_facility_id:f.id,p_latitude:v.latitude,p_longitude:v.longitude,p_google_place_id:v.google_place_id
-      });
-      if(locationResult.error)throw locationResult.error;
+      if(v.google_place_id&&Number.isFinite(Number(v.latitude))&&Number.isFinite(Number(v.longitude))){
+       const locationResult=await getClient().rpc('update_my_facility_location',{
+        p_facility_id:f.id,p_latitude:v.latitude,p_longitude:v.longitude,p_google_place_id:v.google_place_id
+       });
+       if(locationResult.error)throw locationResult.error;
+      }
       return data?.[0]||null;
     },
     async uploadFacilityPhoto(file,businessId){
