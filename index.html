@@ -1517,7 +1517,7 @@ function render(){
  const names=currentRole==='platform'?{platform:'Platform Overview',tenants:'Customer Businesses',platformBilling:'Billing & Revenue'}:pageNames;
  const subs=currentRole==='platform'?{platform:pageSubs.platform,tenants:pageSubs.tenants,platformBilling:pageSubs.platformBilling}:pageSubs;
  document.getElementById('crumb').innerHTML=(names[currentPage]||'Dashboard')+`<small id="crumbSub">${subs[currentPage]||''}</small>`;
- document.getElementById('planSelect').value=currentPlan;const c=document.getElementById('content');
+ const planSelect=document.getElementById('planSelect');if(planSelect)planSelect.value=currentPlan;const c=document.getElementById('content');
  if(currentRole==='platform'){const pp={platform:platformDashboard,tenants:tenantsPage,platformBilling:platformBillingPage};c.innerHTML=pp[currentPage]();return}
  if(currentPage==='managementHub'){c.innerHTML=managementHubPage();return}
  if(!allowed(currentPage)){c.innerHTML=lockedPage();return}
