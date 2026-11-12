@@ -1587,9 +1587,8 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
         <label>Owner full name<input id="wpSignupOwner" name="owner" type="text" placeholder="Your full name" minlength="2" maxlength="100" required></label>
         <label>Contact number<input id="wpSignupPhone" name="phone" type="tel" placeholder="+63 9XX XXX XXXX" maxlength="30" required></label>
         <label class="wp-signup-wide">Business address
-          <div id="wpSignupAddressPicker" class="wp-google-address-picker"></div>
-          <input id="wpSignupAddress" name="address" type="hidden" required>
-          <small>Search and select the exact Google Maps location for your business.</small>
+          <input id="wpSignupAddress" name="address" type="text" placeholder="Street, barangay, city, province" autocomplete="street-address" maxlength="300" required>
+          <small>Enter your complete business address.</small>
         </label>
         <label>Opening time<input id="wpSignupOpening" name="opening_time" type="time" value="08:00" required></label>
         <label>Closing time<input id="wpSignupClosing" name="closing_time" type="time" value="18:00" required></label>
@@ -2798,7 +2797,7 @@ function logoutDemo(){
     signupMessage('','');
     const box=$('wpSignupBackdrop');
     if(box){box.classList.add('show');box.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';}
-    setTimeout(()=>{ $('wpSignupBusiness')?.focus(); mountGoogleAddressPicker('wpSignupAddressPicker','wpSignupAddress','',null,place=>{wpSignupGooglePlace=place;}); },60);
+    setTimeout(()=>{ $('wpSignupBusiness')?.focus(); },60);
   };
   window.closeTrialSignup=function(){
     const box=$('wpSignupBackdrop');
@@ -2815,13 +2814,12 @@ window.submitTrialSignup=async function(e){
     const email=$('wpSignupEmail').value.trim().toLowerCase();
     const password=$('wpSignupPassword').value, confirm=$('wpSignupConfirm').value;
     if(business.length<2||owner.length<2||phone.length<6||!address||!email||!openingTime||!closingTime)return signupMessage('error','Please complete all business and owner details.');
-    if(!wpSignupGooglePlace)return signupMessage('error','Select your exact business location from the Google Maps suggestions before creating the account.');
     if(openingTime>=closingTime)return signupMessage('error','Closing time must be later than opening time.');
     if(password.length<8)return signupMessage('error','Use a password with at least 8 characters.');
     if(password!==confirm)return signupMessage('error','Your passwords do not match.');
     const submit=$('wpSignupSubmit');submit.disabled=true;submit.textContent='Creating your account…';signupMessage('','');
     try{
-      const meta={full_name:owner,business_name:business,business_slug:safeSlug(business),business_phone:phone,business_address:wpSignupGooglePlace.formattedAddress||address,business_latitude:String(wpSignupGooglePlace.latitude),business_longitude:String(wpSignupGooglePlace.longitude),business_google_place_id:wpSignupGooglePlace.placeId,opening_time:openingTime,closing_time:closingTime,intended_plan:'basic',signup_source:'washpilot_public_landing'};
+      const meta={full_name:owner,business_name:business,business_slug:safeSlug(business),business_phone:phone,business_address:address,opening_time:openingTime,closing_time:closingTime,intended_plan:'basic',signup_source:'washpilot_public_landing'};
       const {data,error}=await getClient().auth.signUp({
         email,password,
         options:{data:meta,emailRedirectTo:window.location.origin}
