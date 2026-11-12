@@ -898,6 +898,67 @@ tbody tr:hover td{background:#f5f9ff}
 .wp-hero-copy>*:nth-child(2){animation-delay:.08s}.wp-hero-copy>*:nth-child(3){animation-delay:.16s}.wp-hero-copy>*:nth-child(4){animation-delay:.24s}.wp-hero-copy>*:nth-child(5){animation-delay:.32s}
 .wp-dashboard-window{animation:wpRise 1s .15s cubic-bezier(.2,.7,.2,1) both}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* WashPilot public landing — mobile readability and touch targets */
+@media (max-width: 760px) {
+  #publicLanding { overflow-x: clip; }
+  #publicLanding * { -webkit-tap-highlight-color: transparent; }
+  #publicLanding .wp-site-header { padding: 10px 14px !important; min-height: 76px; }
+  #publicLanding .wp-brand, #publicLanding .wp-logo { max-width: min(62vw, 244px); }
+  #publicLanding .wp-nav-actions { gap: 8px; }
+  #publicLanding .wp-nav-signin, #publicLanding .wp-nav-cta,
+  #publicLanding .wp-menu-toggle { min-height: 44px; min-width: 44px; }
+  #publicLanding .wp-nav-signin { padding: 10px 13px; font-size: 13px; }
+  #publicLanding .wp-menu-toggle { display: inline-flex; align-items: center; justify-content: center; font-size: 20px; }
+  #publicLanding .wp-hero {
+    color: #10213d !important;
+    background:
+      radial-gradient(ellipse at 10% 20%, rgba(63,133,255,.18), transparent 45%),
+      radial-gradient(ellipse at 85% 65%, rgba(37,204,191,.17), transparent 42%),
+      linear-gradient(145deg,#eaf1ff 0%,#f7faff 58%,#e9fbf8 100%) !important;
+    padding: 38px 20px 34px !important;
+  }
+  #publicLanding .wp-hero-grid { display: flex !important; flex-direction: column !important; gap: 28px !important; min-height: 0 !important; padding: 0 !important; }
+  #publicLanding .wp-hero-copy { width: 100%; padding: 0 !important; }
+  #publicLanding .wp-kicker { color: #244f9e !important; background: rgba(255,255,255,.9) !important; border-color: #d9e5f8 !important; font-size: 10px !important; line-height: 1.45; letter-spacing: 1px !important; }
+  #publicLanding .wp-hero h1 { color: #10213d !important; font-size: clamp(39px, 10vw, 54px) !important; line-height: 1.04 !important; letter-spacing: -2.2px !important; margin: 25px 0 18px !important; overflow-wrap: normal; }
+  #publicLanding .wp-hero h1 em { color: #2878ed !important; }
+  #publicLanding .wp-hero-lede { color: #536781 !important; font-size: 15px !important; line-height: 1.7 !important; }
+  #publicLanding .wp-hero-actions { display: grid !important; grid-template-columns: 1fr !important; gap: 12px !important; margin-top: 25px !important; }
+  #publicLanding .wp-btn-primary { width: 100% !important; min-height: 54px !important; justify-content: center !important; border-radius: 14px !important; font-size: 15px !important; padding: 15px 20px !important; }
+  #publicLanding .wp-btn-secondary { width: 100% !important; min-height: 48px !important; justify-content: center !important; color: #24466f !important; background: rgba(255,255,255,.82) !important; border: 1px solid #d7e3f4 !important; border-radius: 14px !important; font-size: 14px !important; padding: 12px 16px !important; }
+  #publicLanding .wp-btn-secondary span { color: #2878ed !important; }
+  #publicLanding .wp-hero-proof { margin-top: 26px !important; align-items: flex-start !important; }
+  #publicLanding .wp-hero-proof b { color: #385273 !important; font-size: 11px !important; }
+  #publicLanding .wp-hero-proof small { color: #647994 !important; font-size: 12px !important; line-height: 1.5; }
+  #publicLanding .wp-hero-visual, #publicLanding .wp-dashboard-preview { width: 100% !important; max-width: 100% !important; min-width: 0 !important; }
+  #publicLanding .wp-section, #publicLanding .wp-about, #publicLanding .wp-how,
+  #publicLanding .wp-pricing, #publicLanding .wp-faq { padding: 58px 20px !important; }
+  #publicLanding .wp-section h2, #publicLanding .wp-about h2, #publicLanding .wp-how h2,
+  #publicLanding .wp-pricing h2, #publicLanding .wp-faq h2,
+  #publicLanding .wp-final-cta h2 { font-size: clamp(29px, 7.8vw, 38px) !important; line-height: 1.13 !important; letter-spacing: -1.35px !important; }
+  #publicLanding .wp-section p, #publicLanding .wp-about p, #publicLanding .wp-how p,
+  #publicLanding .wp-pricing p, #publicLanding .wp-faq p { font-size: 14px !important; line-height: 1.7 !important; }
+  #publicLanding .wp-how-cta, #publicLanding .wp-about-link {
+    display: inline-flex !important; min-height: 44px !important; align-items: center !important;
+    color: #2866b9 !important; background: transparent !important; font-size: 14px !important;
+    padding: 12px 0 !important; text-decoration: none !important;
+  }
+  #publicLanding .wp-steps article { grid-template-columns: 30px minmax(0,1fr) 34px !important; gap: 10px !important; padding: 17px 14px !important; }
+  #publicLanding .wp-steps h3 { font-size: 15px !important; line-height: 1.35 !important; }
+  #publicLanding .wp-steps p { font-size: 13px !important; line-height: 1.6 !important; }
+  #publicLanding .wp-faq details, #publicLanding .wp-faq summary { font-size: 14px !important; line-height: 1.5 !important; }
+  #publicLanding .wp-final-cta { margin: 0 14px 24px !important; padding: 28px 22px !important; border-radius: 22px !important; }
+  #publicLanding .wp-final-cta .wp-btn-primary { width: 100% !important; }
+  #publicLanding a, #publicLanding button { touch-action: manipulation; }
+}
+@media (max-width: 390px) {
+  #publicLanding .wp-hero { padding-left: 16px !important; padding-right: 16px !important; }
+  #publicLanding .wp-hero h1 { font-size: clamp(36px, 9.5vw, 43px) !important; }
+  #publicLanding .wp-section, #publicLanding .wp-about, #publicLanding .wp-how,
+  #publicLanding .wp-pricing, #publicLanding .wp-faq { padding-left: 16px !important; padding-right: 16px !important; }
+}
+
 </style>
 </head>
 <body>
@@ -1671,13 +1732,13 @@ function logoutDemo(){
       }else{
         window.showLoginScreen();setAuthMode('account');
         if($('wpLoginHeading'))$('wpLoginHeading').textContent='Check your email to verify';
-        if($('wpLoginDescription'))$('wpLoginDescription').textContent='We sent a confirmation link to '+email+'. After confirming, return to https://washpilot-management.vercel.app and sign in with this email and your password. Your free Basic plan will be ready after your first sign-in.';
+        if($('wpLoginDescription'))$('wpLoginDescription').textContent='We sent a confirmation link to '+email+'. After confirming, return to washpilot.shop and sign in with this email and your password. Your free Basic plan will be ready after your first sign-in.';
         if($('loginUsername'))$('loginUsername').value=email;
         if($('loginPassword'))$('loginPassword').value='';
       }
     }catch(err){
       let msg=err&&err.message?err.message:'We could not create your account. Please try again.';
-      if(/redirect|url.*not.*allowed/i.test(msg))msg+=' Add https://washpilot-management.vercel.app/** under Supabase Authentication → URL Configuration → Redirect URLs, then retry.';
+      if(/redirect|url.*not.*allowed/i.test(msg))msg+=' Add https://washpilot.shop/** under Supabase Authentication → URL Configuration → Redirect URLs, then retry.';
       signupMessage('error',msg);
     }finally{
       submit.disabled=false;submit.innerHTML='Create free account <span>→</span>';
