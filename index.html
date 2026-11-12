@@ -2938,7 +2938,7 @@ function wpTimeMinutes(value){const [h,m]=String(value).slice(0,5).split(':').ma
 let wpCurrentPublicFacility=null,wpCurrentPublicServices=[],wpCurrentBusySlots=[];
 function renderPublicServiceCards(){
  if(!wpCurrentPublicServices.length)return '';
- return '<section class="wp-public-services"><div class="wp-public-services-heading"><span class="wp-eyebrow">OUR SERVICES</span><h2>Choose the service that fits your vehicle</h2><p>Compare what's included before making a reservation.</p></div><div class="wp-public-service-grid">'+wpCurrentPublicServices.map(s=>{
+ return '<section class="wp-public-services"><div class="wp-public-services-heading"><span class="wp-eyebrow">OUR SERVICES</span><h2>Choose the service that fits your vehicle</h2><p>Compare the included features before making a reservation.</p></div><div class="wp-public-service-grid">'+wpCurrentPublicServices.map(s=>{
   const bullets=String(s.description||'').split(/\r?\n/).map(line=>line.replace(/^\s*[-•*]\s*/,'').trim()).filter(Boolean);
   const bulletHtml=bullets.length?'<ul>'+bullets.map(line=>'<li>'+esc(line)+'</li>').join('')+'</ul>':'<p class="wp-service-no-description">Service details will be provided by the facility.</p>';
   return '<article class="wp-public-service-card"><div class="wp-public-service-card-head"><h3>'+esc(s.name)+'</h3><strong>'+money(s.base_price_php)+'</strong></div><span class="wp-public-service-duration">'+Number(s.duration_minutes||30)+' min estimated</span>'+bulletHtml+'</article>';
