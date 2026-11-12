@@ -2196,7 +2196,7 @@ function subscriptionPage(){
    ? '<div class="wp-subscription-expiry is-expired"><small>PREMIUM PERIOD ENDED</small><b>'+esc(expiryText)+'</b><strong>Premium access has ended</strong><span>Your workspace is on the Free plan. Submit a renewal and upload payment proof to restore Premium.</span></div>'
    : '<div class="wp-subscription-expiry"><small>FREE PLAN</small><b>Free forever</b><strong>No expiry date</strong><span>Upgrade to Premium for ₱499 and get full access for 30 days after approval.</span></div>';
  const requestAction=isPremium?'Renew Premium · ₱499':'Get Premium · ₱499';
- const primary='<button class="btn" onclick="openPlanUpgradeModal(\\'premium\\')">'+requestAction+' <span>→</span></button>';
+ const primary='<button class="btn" onclick="openPlanUpgradeModal(\'premium\')">'+requestAction+' <span>→</span></button>';
  const planCard=(code,name,price,desc,features,current)=>'<article class="wp-billing-plan '+(current?'is-current':'')+'"><div class="wp-billing-plan-top"><span>'+name+'</span>'+(current?'<span class="status Completed">CURRENT PLAN</span>':'')+'</div><div class="wp-billing-price">'+price+'</div><p>'+desc+'</p><ul>'+features.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>'+(current?'<button class="btn ghost" disabled>Current plan</button>':primary)+'</article>';
  const cards=planCard('basic','Free','₱0 · Forever','Essential tools for daily carwash operations',['One location','Core POS and wash queue','Services, add-ons, receipts and customer history','Daily sales summary'],plan==='basic')+
   planCard('premium','Premium','₱499 · 30 days','The complete WashPilot management workspace',['Bookings and online reservations','Employees, expenses and inventory','Reports, loyalty and add-on analytics','Multiple branches and service recipes'],plan==='premium');
@@ -2222,7 +2222,7 @@ async function openPlanUpgradeModal(planCode){
    '<div class="wp-upgrade-summary"><span>Premium subscription</span><b>30 days</b><span>Amount due</span><strong>₱499</strong></div>'+
    '<section class="wp-payment-instructions"><div class="wp-payment-instructions-head"><b>GCash payment details</b><span>'+(configured?'READY':'NOT CONFIGURED')+'</span></div>'+
    (configured?qr+'<b>'+esc(settings.gcash_account_name)+'</b><strong>'+esc(settings.gcash_number)+'</strong><p>'+esc(settings.payment_instructions||'Send ₱499 and upload your receipt.')+'</p>':'<p class="wp-payment-unconfigured">No GCash receiving details are configured. Please contact WashPilot before sending payment.</p>')+'</section>'+
-   '<form onsubmit="submitPlanUpgrade(event,\\'premium\\',499)"><div class="field"><label>Payment receipt / screenshot *</label><input name="proof" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" required><small class="subtle">JPG, PNG, WebP or PDF · Up to 10 MB</small></div>'+
+   '<form onsubmit="submitPlanUpgrade(event,\'premium\',499)"><div class="field"><label>Payment receipt / screenshot *</label><input name="proof" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" required><small class="subtle">JPG, PNG, WebP or PDF · Up to 10 MB</small></div>'+
    '<div class="actions" style="justify-content:flex-end;margin-top:18px"><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn" type="submit">Send payment to admin for approval</button></div></form>';
  }catch(err){
   document.getElementById('modal').innerHTML='<div class="modal-head"><h2>Premium payment</h2><button class="close" onclick="closeModal()">×</button></div><div class="inline-note">'+esc(err.message||'Could not load payment details.')+'</div><div class="actions" style="justify-content:flex-end;margin-top:16px"><button class="btn ghost" onclick="closeModal()">Close</button></div>';
@@ -2307,7 +2307,7 @@ function openTenantEditModal(id){
  const planOptions=[['basic','Free · Forever'],['premium','Premium · ₱499 / 30 days']].map(x=>'<option value="'+x[0]+'" '+(normalizePlan(t.plan)===x[0]?'selected':'')+'>'+x[1]+'</option>').join('');
  openModal('<div class="modal-head"><h2>Manage '+esc(t.name)+'</h2><button class="close" onclick="closeModal()">×</button></div>'+
   '<div class="summary-line"><span>Owner contact</span><b>'+esc(t.email||'Not provided')+'</b></div><div class="summary-line"><span>Current status</span><b>'+esc(t.status)+'</b></div>'+
-  '<form onsubmit="updateTenant(event,\\''+esc(t.id)+'\\')" style="margin-top:13px"><div class="field"><label>Subscription plan</label><select name="plan">'+planOptions+'</select></div>'+
+  '<form onsubmit="updateTenant(event,\''+esc(t.id)+'\')" style="margin-top:13px"><div class="field"><label>Subscription plan</label><select name="plan">'+planOptions+'</select></div>'+
   '<div class="field" style="margin-top:10px"><label>Account status</label><select name="status">'+statusOptions+'</select></div>'+
   '<p class="subtle" style="margin-top:12px">Free never expires. Premium is ₱499 for 30 days and starts after payment approval.</p>'+
   '<div class="actions" style="justify-content:flex-end;margin-top:16px"><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn">Save live changes</button></div></form>');
