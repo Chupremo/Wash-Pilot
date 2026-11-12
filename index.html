@@ -1762,10 +1762,10 @@ async function openPlanUpgradeModal(planCode){
   document.getElementById('modal').innerHTML=`<div class="modal-head"><h2>Upgrade to ${name}</h2><button class="close" onclick="closeModal()">×</button></div>
    <div class="wp-upgrade-summary"><span>Selected plan</span><b>${name}</b><span>Amount due</span><strong>${money(price)}</strong></div>
    <section class="wp-payment-instructions"><div class="wp-payment-instructions-head"><b>GCash payment details</b><span>${configured?'READY':'NOT CONFIGURED'}</span></div>
-   ${configured?qr+'<b>'+esc(settings.gcash_account_name)+'</b><strong>'+esc(settings.gcash_number)+'</strong><p>'+esc(settings.payment_instructions||'Send the exact amount and upload your receipt.')+'</p>':'<p class="wp-payment-unconfigured">The WashPilot administrator has not configured GCash receiving details yet. You can select a plan, but payment submission will be enabled after the receiving account and QR code are added in Platform Billing.</p>'}</section>
+   ${configured?qr+'<b>'+esc(settings.gcash_account_name)+'</b><strong>'+esc(settings.gcash_number)+'</strong><p>'+esc(settings.payment_instructions||'Send the exact amount and upload your receipt.')+'</p>':'<p class="wp-payment-unconfigured">No GCash receiving details are displayed here yet. Please get payment instructions from WashPilot before sending payment, then upload your receipt so the administrator can verify it.</p>'}</section>
    <form onsubmit="submitPlanUpgrade(event,'${code}',${price})">
-    <div class="field"><label>Payment receipt / screenshot *</label><input name="proof" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" required><small class="subtle">Upload a clear screenshot or PDF receipt · Up to 10 MB</small></div>
-    <div class="actions" style="justify-content:flex-end;margin-top:18px"><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn" ${configured?'':'disabled'} type="submit">Submit payment for verification</button></div>
+    <div class="field"><label>Payment receipt / screenshot *</label><input name="proof" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" required><small class="subtle">Receipt only—no reference number needed · JPG, PNG, WebP or PDF · Up to 10 MB</small></div>
+    <div class="actions" style="justify-content:flex-end;margin-top:18px"><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn" type="submit">Submit receipt for verification</button></div>
    </form>`;
  }catch(err){
   document.getElementById('modal').innerHTML=`<div class="modal-head"><h2>Upgrade to ${name}</h2><button class="close" onclick="closeModal()">×</button></div><div class="inline-note">${esc(err.message||'Could not load payment details.')}</div><div class="actions" style="justify-content:flex-end;margin-top:16px"><button class="btn ghost" onclick="closeModal()">Close</button></div>`;
@@ -2160,7 +2160,7 @@ function openRealWorkspace(user,business,subscription){
       if(error)throw error;return data||{};
     },
     async getMyRequests(businessId){
-      const {data,error}=await getClient().from('payment_reactivation_requests').select('id,plan_code,amount,payment_method,payment_reference,status,submitted_at,reviewer_note,request_type').eq('business_id',businessId).order('submitted_at',{ascending:false}).limit(10);
+      const {data,error}=await getClient().from('payment_reactivation_requests').select('id,plan_code,amount,payment_method,status,submitted_at,reviewer_note,request_type').eq('business_id',businessId).order('submitted_at',{ascending:false}).limit(10);
       if(error)throw error;return data||[];
     },
     async submitUpgrade({businessId,planCode,amount,file}){
