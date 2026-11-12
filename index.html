@@ -1170,6 +1170,26 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
  .wp-dashboard-booking-alert{align-items:flex-start;flex-wrap:wrap}
  .wp-dashboard-booking-alert>.btn{width:100%;justify-content:center}
 }
+.wp-online-queue-panel{border:1px solid #bfd5f4;background:#fff}
+.wp-online-queue-panel>.panel-head{align-items:flex-start}
+.wp-reserved-queue-list{display:grid;gap:9px}
+.wp-reserved-queue-item{display:grid;grid-template-columns:112px minmax(0,1fr) minmax(130px,auto);gap:14px;align-items:center;padding:13px 14px;border:1px solid #dce7f5;border-left:4px solid #3568f5;border-radius:11px;background:#f8fbff}
+.wp-reserved-time{display:grid;gap:3px;padding-right:12px;border-right:1px solid #dce5f1}
+.wp-reserved-time strong{font-size:17px;color:#16355d}
+.wp-reserved-time span{font-size:11px;font-weight:750;color:#405675}
+.wp-reserved-time small,.wp-reserved-details small,.wp-reserved-value small{font-size:10px;color:#73839b}
+.wp-reserved-details{min-width:0}
+.wp-reserved-heading{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.wp-reserved-heading>b{font-size:13px;color:#182d49}
+.wp-reserved-status{display:inline-flex;padding:4px 7px;background:#e8efff;color:#2456bd;border-radius:20px;font-size:9px;font-weight:900;letter-spacing:.06em}
+.wp-reserved-details p{margin:4px 0;font-size:11px;color:#50637f}
+.wp-reserved-details small{display:block;overflow-wrap:anywhere}
+.wp-reserved-note{margin-top:3px}
+.wp-reserved-value{display:grid;gap:4px;text-align:right}
+.wp-reserved-value>b{font-size:14px;color:#17385f}
+.wp-online-queue-empty{padding:18px;background:#f8fafc;border:1px dashed #d5dfec;border-radius:10px;color:#75849a;text-align:center;font-size:12px;line-height:1.55}
+.wp-online-queue-empty.error{color:#b42318;background:#fff8f7;border-color:#fecaca}
+@media(max-width:700px){.wp-reserved-queue-item{grid-template-columns:82px minmax(0,1fr);gap:10px;padding:11px}.wp-reserved-time{padding-right:8px}.wp-reserved-value{grid-column:2;text-align:left;display:flex;align-items:center;gap:8px;flex-wrap:wrap}}
 </style>
 </head>
 <body>
@@ -1571,7 +1591,36 @@ function selectMain(n){selectedMain=n;refreshWash();document.querySelectorAll('i
 function toggleAddon(id,checked){selectedAddons=checked?[...selectedAddons,id]:selectedAddons.filter(x=>x!==id);refreshWash()}
 function saveWash(){if(window.wpRealWorkspaceActive&&!state.services.some(s=>s.type==='main'&&s.active)){toast('Add a main service before creating a wash ticket.');catalogTab='main';go('catalog');return}let plate=document.getElementById('washPlate').value.trim().toUpperCase();if(!plate){toast('Please enter a plate number.');document.getElementById('washPlate').focus();return}let main=selectedService(),adds=state.services.filter(s=>selectedAddons.includes(s.id)&&s.type==='addon').map(s=>({name:s.name,price:s.price}));let total=main.price+adds.reduce((a,s)=>a+s.price,0);let d=new Date();let tx={id:'WP-'+String(Date.now()).slice(-6),date:today(),time:d.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'}),plate,vehicle:document.getElementById('washVehicle').value,customer:document.getElementById('washCustomer').value.trim(),main:main.name,mainPrice:main.price,addons:adds,total,payment:document.getElementById('washPayment').value,status:'Waiting',employee:(document.getElementById('washEmployee')?.value)||'Unassigned',notes:document.getElementById('washNotes').value,branch:'Main Branch'};state.transactions.unshift(tx);let customer=state.customers.find(c=>c.plate===plate);if(customer){customer.visits=(customer.visits||0)+1;customer.lastVisit=today();if(tx.customer)customer.name=tx.customer}else state.customers.push({plate,name:tx.customer||'Walk-in customer',vehicle:tx.vehicle,visits:1,spent:total,lastVisit:today()});let emp=state.employees.find(e=>e.name===tx.employee);if(emp){emp.today=(emp.today||0)+1}save();lastReceipt=tx;openWashTicket(tx)}
 function openReceipt(t){const isPaid=(t.financialStatus||'Paid')==='Paid';openModal(`<div class="modal-head"><h2>Payment recorded</h2><button class="close" onclick="closeModal()">×</button></div><div class="receipt" id="receipt"><img class="receipt-brand" src="washpilot-logo.svg" alt="WashPilot Management Solutions" /><p>${isPaid?'CARWASH PAYMENT RECEIPT':'CARWASH WASH TICKET'}</p><div class="receipt-row"><span>${isPaid?'Receipt':'Ticket'}</span><b>${t.id}</b></div><div class="receipt-row"><span>Date / Time</span><b>${dateLabel(t.date)} · ${t.time}</b></div><div class="receipt-row"><span>Plate / Vehicle</span><b>${esc(t.plate)} · ${esc(t.vehicle)}</b></div><div class="divider"></div><div class="receipt-row"><span>${esc(t.main)}</span><b>${money(t.mainPrice)}</b></div>${t.addons.map(a=>`<div class="receipt-row"><span>${esc(a.name)}</span><b>${money(a.price)}</b></div>`).join('')}<div class="receipt-total"><span>${isPaid?'TOTAL PAID':'TOTAL DUE AT PICKUP'}</span><span>${money(t.total)}</span></div><div class="receipt-row"><span>Payment status</span><b>${isPaid?'PAID':'UNPAID'}</b></div><div class="receipt-row"><span>Payment method</span><b>${isPaid?esc(t.payment||'Not recorded'):'To be selected at pickup'}</b></div><div class="receipt-row"><span>${isPaid?'Processed by':'Assigned staff'}</span><b>${esc(t.employee||'Unassigned')}</b></div><p style="margin-top:18px">${isPaid?'Thank you for choosing us!':'Please present this ticket when your vehicle is ready for pickup.'}</p></div><div class="modal-actions actions" style="justify-content:flex-end;margin-top:14px"><button class="btn ghost" onclick="closeModal();go('queue')">View queue</button><button class="btn" onclick="window.print()">${isPaid?'Print receipt':'Print ticket'}</button><button class="btn success" onclick="closeModal();go('newwash');selectedAddons=[];selectedMain='Basic Car Wash';render()">＋ New wash</button></div>`)}
-function queuePage(){let list=state.transactions.filter(t=>t.date===today()&&t.status!=='Cancelled');return `${pageHead('Service Queue','Track vehicles as they move from waiting to washing to completed.',`<button class="btn" onclick="go('newwash')">＋ New Wash</button>`)}<div class="grid stats">${stat('Waiting',list.filter(t=>t.status==='Waiting').length,'Awaiting service','◷','amber')}${stat('Washing',list.filter(t=>t.status==='Washing').length,'Currently being serviced','⚙')}${stat('Completed',list.filter(t=>t.status==='Completed').length,'Finished today','✓','green')}${stat('Queue Value',money(totalSales(list)),'Recorded sales today','₱','purple')}</div><section class="panel"><div class="panel-head"><h3>Today's vehicles</h3><span class="subtle">Use Update to change the status</span></div><div class="queue-list">${list.map(queueHtml).join('')||'<div class="empty">The queue is empty. Add a new wash to get started.</div>'}</div></section>`}
+function queuePage(){
+ let list=state.transactions.filter(t=>t.date===today()&&t.status!=='Cancelled');
+ const reservedSection=window.wpRealWorkspaceActive
+  ?'<section class="panel wp-online-queue-panel"><div class="panel-head"><div><h3>Reserved Online Bookings</h3><span class="subtle">Confirmed customer bookings with payment verified. These time slots are reserved.</span></div><button class="btn ghost small" type="button" onclick="loadOnlineReservationQueue()">Refresh</button></div><div id="wpOnlineReservationQueue"><div class="empty">Loading confirmed reservations…</div></div></section>'
+  :'';
+ return pageHead('Service Queue','Track walk-ins and confirmed online reservations in one place.',`<button class="btn" onclick="go('newwash')">＋ New Wash</button>`)+
+  '<div class="grid stats">'+
+  stat('Waiting',list.filter(t=>t.status==='Waiting').length,'Awaiting service','◷','amber')+
+  stat('Washing',list.filter(t=>t.status==='Washing').length,'Currently being serviced','⚙')+
+  stat('Completed',list.filter(t=>t.status==='Completed').length,'Finished today','✓','green')+
+  stat('Queue Value',money(totalSales(list)),'Recorded sales today','₱','purple')+'</div>'+
+  reservedSection+
+  '<section class="panel"><div class="panel-head"><h3>Walk-in vehicles today</h3><span class="subtle">Use Update to change the status</span></div><div class="queue-list">'+(list.map(queueHtml).join('')||'<div class="empty">No walk-in vehicles in the queue yet.</div>')+'</div></section>';
+}
+async function loadOnlineReservationQueue(){
+ const el=document.getElementById('wpOnlineReservationQueue');
+ if(!el||!window.wpRealWorkspaceActive||!window.washPilotBookingApi)return;
+ try{
+  const rows=await window.washPilotBookingApi.getConfirmedQueueBookings();
+  if(!rows.length){el.innerHTML='<div class="wp-online-queue-empty">No confirmed online reservations yet. Confirmed and paid bookings will appear here automatically.</div>';return;}
+  el.innerHTML='<div class="wp-reserved-queue-list">'+rows.map(b=>{
+   const date=dateLabel(b.booking_date),time=wpFormatClock(b.start_time)+' – '+wpFormatClock(b.end_time);
+   const vehicle=(b.vehicle_size||'Vehicle')+(b.vehicle_plate?' · '+b.vehicle_plate:'');
+   return '<article class="wp-reserved-queue-item"><div class="wp-reserved-time"><strong>'+esc(wpFormatClock(b.start_time))+'</strong><span>'+esc(date)+'</span><small>'+esc(wpFormatClock(b.end_time))+' end</small></div><div class="wp-reserved-details"><div class="wp-reserved-heading"><b>'+esc(b.customer_name)+'</b><span class="wp-reserved-status">RESERVED</span></div><p>'+esc(b.service_name)+' · '+esc(vehicle)+'</p><small>'+esc(b.booking_code)+' · '+esc(b.customer_phone)+'</small>'+(b.notes?'<small class="wp-reserved-note">Note: '+esc(b.notes)+'</small>':'')+'</div><div class="wp-reserved-value"><b>'+money(b.price_php)+'</b><small>Paid online · '+esc(b.payment_method==='gcash'?'GCash':'Bank transfer')+'</small></div></article>';
+  }).join('')+'</div>';
+ }catch(err){
+  console.warn('Online reservation queue could not load:',err&&err.message?err.message:err);
+  el.innerHTML='<div class="wp-online-queue-empty error">Confirmed online reservations could not be loaded. Refresh to try again.</div>';
+ }
+}
 function cycleStatus(id){let t=state.transactions.find(x=>x.id===id);if(!t)return;t.status=({Waiting:'Washing',Washing:'Completed',Completed:'Completed'})[t.status]||'Waiting';save();render();toast(`${t.plate} marked ${t.status}.`)}
 function transactionTable(list,showActions=true){if(!list.length)return '<div class="empty">No transactions found.</div>';return `<div class="table-wrap"><table><thead><tr><th>Receipt</th><th>Date</th><th>Vehicle</th><th>Service</th><th>Add-ons</th><th>Payment</th><th>Status</th><th>Total</th>${showActions?'<th></th>':''}</tr></thead><tbody>${list.map(t=>`<tr><td><b>${t.id}</b></td><td>${dateLabel(t.date)}</td><td><b>${esc(t.plate)}</b><br><span class="subtle">${esc(t.vehicle)}</span></td><td>${esc(t.main)}</td><td>${t.addons.length?esc(t.addons.map(a=>a.name).join(', ')):'—'}</td><td>${esc(t.payment||'Not collected')}</td><td>${statusPill(t.status)}</td><td class="amount">${money(t.total)}</td>${showActions?`<td><button class="btn ghost small" onclick="viewTransaction('${t.id}')">View</button></td>`:''}</tr>`).join('')}</tbody></table></div>`}
 function transactionsPage(){let list=state.transactions.filter(t=>[t.plate,t.id,t.main,...t.addons.map(a=>a.name)].join(' ').toLowerCase().includes(transactionSearch.toLowerCase()));return `${pageHead('Transactions','All recorded washes, services, add-ons and payments.',`<button class="btn" onclick="go('newwash')">＋ New Wash</button>`)}${dailyKpiStrip()}<section class="panel"><div class="toolbar"><input class="search" style="max-width:320px" placeholder="Search plate, receipt or service..." value="${esc(transactionSearch)}" oninput="transactionSearch=this.value;render()"><span class="subtle">${list.length} records</span><button class="btn ghost small" onclick="exportTransactions()">↓ Export CSV</button></div>${transactionTable(list)}</section>`}
@@ -1801,6 +1850,7 @@ function render(){
   if(currentPage==='subscription')loadMyBillingRequests();
   if(currentPage==='listing')loadFacilityListing();
   if(currentPage==='bookings')loadFacilityBookings();
+  if(currentPage==='queue'&&window.wpRealWorkspaceActive)loadOnlineReservationQueue();
   if(currentPage==='dashboard'||currentPage==='bookings')refreshBookingNotificationCount();
  }catch(renderError){
   console.error('WashPilot dashboard render failed:',renderError);
@@ -2578,6 +2628,14 @@ async syncServices(businessId,services){
       const {count,error}=await getClient().from('facility_bookings').select('id',{count:'exact',head:true})
         .eq('business_id',window.wpRealBusinessId).eq('status','pending').eq('payment_status','awaiting_verification');
       if(error)throw error;return Number(count||0);
+    },
+    async getConfirmedQueueBookings(){
+      const localToday=today();
+      const {data,error}=await getClient().from('facility_bookings')
+        .select('id,booking_code,customer_name,customer_phone,service_name,vehicle_size,vehicle_plate,booking_date,start_time,end_time,price_php,payment_method,payment_status,status,notes')
+        .eq('business_id',window.wpRealBusinessId).eq('status','confirmed')
+        .gte('booking_date',localToday).order('booking_date',{ascending:true}).order('start_time',{ascending:true}).limit(200);
+      if(error)throw error;return data||[];
     },
     async setBookingStatus(id,status){const {error}=await getClient().rpc('set_facility_booking_status',{p_booking_id:id,p_status:status});if(error)throw error;return true;},
     async setPaymentStatus(id,status){const {error}=await getClient().rpc('set_facility_booking_payment_status',{p_booking_id:id,p_status:status});if(error)throw error;return true;},
