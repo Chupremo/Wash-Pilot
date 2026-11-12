@@ -1378,7 +1378,7 @@ function closeModal(){document.getElementById('modalBackdrop').classList.remove(
 function backdropClose(e){if(e.target.id==='modalBackdrop')closeModal()}
 function toast(msg){let t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>t.classList.remove('show'),2600)}
 function resetDemo(){if(window.wpRealWorkspaceActive){toast('Demo reset is disabled for your business workspace.');return}if(!confirm('Reset all demo transactions, services and changes to the original sample data?'))return;state=structuredClone(initial);selectedMain='Basic Car Wash';selectedAddons=[];transactionSearch='';save();render();toast('Demo data reset.')}
-document.getElementById('planSelect').addEventListener('change',e=>setPlan(e.target.value));['primaryNav','managementNav','platformNav','easyToolsGroup'].forEach(id=>document.getElementById(id).addEventListener('click',e=>{let b=e.target.closest('button[data-page]');if(b)go(b.dataset.page)}));
+document.getElementById('planSelect')?.addEventListener('change',e=>setPlan(e.target.value));['primaryNav','managementNav','platformNav','easyToolsGroup'].forEach(id=>document.getElementById(id).addEventListener('click',e=>{let b=e.target.closest('button[data-page]');if(b)go(b.dataset.page)}));
 
 /* =========================================================
    WASHPILOT SAAS + OPERATIONS UPGRADE
