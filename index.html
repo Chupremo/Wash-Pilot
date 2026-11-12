@@ -1219,6 +1219,23 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
 .wp-directory-logo{object-fit:contain;background:#fff;padding:10px}
 @media(max-width:760px){.wp-facility-brand-editor{align-items:flex-start;flex-wrap:wrap}.wp-public-brand-heading{gap:12px}.wp-public-business-logo{width:64px;height:64px;flex-basis:64px}.wp-public-service-grid{grid-template-columns:1fr}.wp-public-location-cta{grid-template-columns:1fr;padding:14px}.wp-location-map,.wp-location-map iframe{min-height:220px}.wp-location-copy{padding:5px}}
 
+
+/* Public facility service list in the dark booking summary */
+.wp-booking-summary .wp-summary-service-list{
+ list-style:disc;padding-left:19px;margin:12px 0 18px;color:#fff;
+ display:grid;gap:12px
+}
+.wp-booking-summary .wp-summary-service-item{padding-left:2px;color:#fff}
+.wp-booking-summary .wp-summary-service-line{
+ display:flex;align-items:flex-start;justify-content:space-between;gap:14px;
+ font-size:14px;line-height:1.45;color:#fff
+}
+.wp-booking-summary .wp-summary-service-line span{font-weight:750;min-width:0}
+.wp-booking-summary .wp-summary-service-line strong{color:#fff;font-weight:900;white-space:nowrap;font-size:14px}
+.wp-booking-summary .wp-summary-service-inclusions{list-style:circle;padding-left:18px;margin:6px 0 0;color:#d2deed;display:grid;gap:3px}
+.wp-booking-summary .wp-summary-service-inclusions li{font-size:11px;line-height:1.5;color:#d2deed}
+.wp-booking-summary .wp-summary-no-services{font-size:12px;color:#d2deed}
+
 </style>
 </head>
 <body>
@@ -2944,6 +2961,15 @@ function renderPublicServiceCards(){
   return '<article class="wp-public-service-card"><div class="wp-public-service-card-head"><h3>'+esc(s.name)+'</h3><strong>'+money(s.base_price_php)+'</strong></div><span class="wp-public-service-duration">'+Number(s.duration_minutes||30)+' min estimated</span>'+bulletHtml+'</article>';
  }).join('')+'</div></section>';
 }
+function renderPublicServiceBulletList(){
+ if(!wpCurrentPublicServices.length)return '<p class="wp-summary-no-services">No online services are currently listed.</p>';
+ return '<ul class="wp-summary-service-list">'+wpCurrentPublicServices.map(s=>{
+  const price=money(s.base_price_php);
+  const inclusions=String(s.description||'').split(/\r?\n/).map(line=>line.replace(/^\s*[-•*]\s*/,'').trim()).filter(Boolean);
+  const nested=inclusions.length?'<ul class="wp-summary-service-inclusions">'+inclusions.map(line=>'<li>'+esc(line)+'</li>').join('')+'</ul>':'';
+  return '<li class="wp-summary-service-item"><div class="wp-summary-service-line"><span>'+esc(s.name)+'</span><strong>'+price+'</strong></div>'+nested+'</li>';
+ }).join('')+'</ul>';
+}
 function renderPublicLocationCta(f){
  const place=[f.facility_name,f.address].filter(Boolean).join(', ');
  if(!place)return '';
@@ -2960,7 +2986,6 @@ async function loadPublicFacility(slug){
   wpCurrentPublicFacility=f;wpCurrentPublicServices=await window.washPilotBookingApi.getPublicServices(slug);const bookingOn=!!f.booking_enabled&&wpCurrentPublicServices.length>0;
   el.innerHTML='<a href="/business" style="color:#3568f5;text-decoration:none;font-size:12px;font-weight:800">← All businesses</a><div class="wp-directory-head" style="margin-top:20px"><div class="wp-public-brand-heading">'+(f.logo_url?'<img class="wp-public-business-logo" src="'+esc(f.logo_url)+'" alt="'+esc(f.business_name)+' logo">':'')+'<div><span class="wp-eyebrow">WASHPILOT REGISTERED FACILITY</span><h1>'+esc(f.facility_name)+'</h1><p>'+esc(f.business_name)+' · '+esc(f.address||'')+'</p>'+(f.public_description?'<p class="wp-public-intro">'+esc(f.public_description)+'</p>':'')+'</div></div><div class="wp-booking-note">'+(bookingOn?'Online booking is available for this facility.':'This business is listed in the directory. Online bookings require an active ₱399 or ₱899 plan, at least one active service, and configured GCash or bank-transfer details.')+'</div></div>'+
   ((f.gallery_images||[]).length?'<div class="wp-public-gallery">'+f.gallery_images.slice(0,5).map((src,i)=>'<img src="'+esc(src)+'" alt="'+esc(f.facility_name)+' facility photo '+(i+1)+'" loading="lazy">').join('')+'</div>':'')+
-  renderPublicServiceCards()+
   '<div class="wp-booking-layout"><section class="wp-booking-form">'+(bookingOn?'<h2>Book a car wash</h2><form id="wpPublicBookingForm" onsubmit="submitPublicBooking(event)">'+
   '<div class="field"><label>Choose a service</label><select name="service_id" id="wpPublicService" required onchange="refreshPublicBookingSlots()">'+wpCurrentPublicServices.map(s=>'<option value="'+s.service_id+'">'+esc(s.name)+' · '+money(s.base_price_php)+'</option>').join('')+'</select></div>'+
   '<div class="grid two"><div class="field"><label>Booking date</label><input type="date" name="booking_date" id="wpPublicBookingDate" min="'+new Date().toISOString().slice(0,10)+'" max="'+new Date(Date.now()+60*86400000).toISOString().slice(0,10)+'" required onchange="refreshPublicBookingSlots()"></div><div class="field"><label>Available time</label><select name="start_time" id="wpPublicBookingTime" required><option value="">Choose a date first</option></select></div></div>'+
@@ -2974,7 +2999,7 @@ async function loadPublicFacility(slug){
   '<div class="grid two"><div class="field"><label>Email (optional)</label><input name="customer_email" type="email" maxlength="160"></div><div class="field"><label>Plate number (optional)</label><input name="vehicle_plate" maxlength="20"></div></div>'+
   '<div class="field"><label>Notes (optional)</label><textarea name="notes" rows="2" maxlength="500"></textarea></div><div class="wp-booking-note" id="wpPublicBookingPrice">Select a service and date to view available slots.</div><button class="wp-btn-primary" style="width:100%;justify-content:center;border:0;cursor:pointer;margin-top:16px" type="submit" id="wpPublicBookingSubmit">Request booking <span>→</span></button></form>':
   '<h2>Online booking unavailable</h2><p class="wp-booking-note">This facility has a public WashPilot listing, but has not activated online booking yet. Contact the facility directly or browse another carwash.</p><a class="wp-btn-primary" href="/businesses" style="display:flex;justify-content:center;padding:14px;text-decoration:none;border-radius:10px">Browse businesses</a>')+
-  '</section><aside class="wp-booking-summary"><h3>'+esc(f.facility_name)+'</h3><p>'+esc(f.address||'')+'</p><p>Opening hours<br><b>'+wpFormatClock(f.opening_time)+' – '+wpFormatClock(f.closing_time)+'</b></p><p>Timezone: '+esc(f.timezone||'Asia/Manila')+'</p><p>Pay by GCash or bank transfer only. Upload your proof so the facility can verify it before confirming. Cash is not accepted for online bookings.</p><div class="wp-summary-price">'+(bookingOn?'Choose your service':'Listed on WashPilot')+'</div><p>Only available times within published operating hours can be requested.</p></aside></div>'+renderPublicLocationCta(f);
+  '</section><aside class="wp-booking-summary"><h3>'+esc(f.facility_name)+'</h3><p>'+esc(f.address||'')+'</p><p>Opening hours<br><b>'+wpFormatClock(f.opening_time)+' – '+wpFormatClock(f.closing_time)+'</b></p><p>Timezone: '+esc(f.timezone||'Asia/Manila')+'</p><p>Pay by GCash or bank transfer only. Upload your proof so the facility can verify it before confirming. Cash is not accepted for online bookings.</p><div class="wp-summary-price">'+(bookingOn?'Available services':'Listed on WashPilot')+'</div>'+(bookingOn?renderPublicServiceBulletList():'')+'<p>Only available times within published operating hours can be requested.</p></aside></div>'+renderPublicLocationCta(f);
   if(bookingOn){refreshPublicBookingSlots();updatePublicPaymentInstructions();}
  }catch(err){el.innerHTML='<div class="wp-directory-empty">Could not load this facility: '+esc(err.message||err)+'</div>';}
 }
