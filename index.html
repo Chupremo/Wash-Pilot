@@ -1406,12 +1406,12 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
     <button data-page="catalog"><span class="ico">◇</span>Services & Pricing</button>
     <button data-page="loyalty"><span class="ico">★</span>Loyalty & Packages</button>
     <button data-page="addons"><span class="ico">↗</span>Add-on Analytics</button>
-    <button data-page="employees"><span class="ico">♧</span>Employees <span class="badge" style="margin-left:auto">Business</span></button>
-    <button data-page="expenses"><span class="ico">₱</span>Expenses <span class="badge" style="margin-left:auto">Business</span></button>
+    <button data-page="employees"><span class="ico">♧</span>Employees <span class="badge" style="margin-left:auto">Premium</span></button>
+    <button data-page="expenses"><span class="ico">₱</span>Expenses <span class="badge" style="margin-left:auto">Premium</span></button>
     <button data-page="reports"><span class="ico">▥</span>Reports</button>
-    <button data-page="inventory"><span class="ico">▣</span>Inventory <span class="badge" style="margin-left:auto">Pro</span></button>
-    <button data-page="branches"><span class="ico">⌂</span>Branches <span class="badge" style="margin-left:auto">Pro</span></button>
-    <button data-page="recipes"><span class="ico">⚗</span>Service Recipes <span class="badge" style="margin-left:auto">Pro</span></button>
+    <button data-page="inventory"><span class="ico">▣</span>Inventory <span class="badge" style="margin-left:auto">Premium</span></button>
+    <button data-page="branches"><span class="ico">⌂</span>Branches <span class="badge" style="margin-left:auto">Premium</span></button>
+    <button data-page="recipes"><span class="ico">⚗</span>Service Recipes <span class="badge" style="margin-left:auto">Premium</span></button>
     <button data-page="reconcile"><span class="ico">⇄</span>Shift & Reconciliation</button>
     <button data-page="subscription"><span class="ico">▣</span>Subscription & Billing</button>
   </nav></div></div>
@@ -1628,7 +1628,7 @@ function setPlan(p){
  const planSelect=document.getElementById('planSelect');if(planSelect)planSelect.value=currentPlan;
  renderNav();render();
 }
-function renderNav(){document.querySelectorAll('.nav button').forEach(b=>{let p=b.dataset.page;b.classList.toggle('active',p===currentPage);let tag=b.querySelector('.badge');if(tag){tag.style.opacity=allowed(p)?'.45':'1'}});document.querySelectorAll('[data-mobile-page]').forEach(b=>b.classList.toggle('active',b.dataset.mobilePage===currentPage));document.getElementById('sidePlan').textContent=currentPlan.toUpperCase()+' PLAN';document.getElementById('sidePlanText').textContent=effectivePlan()==='basic'?'Free plan · Core carwash operations.':effectivePlan()==='premium'?'Staff, expenses and profitability tools unlocked.':'Advanced controls for multi-branch operations.'}
+function renderNav(){document.querySelectorAll('.nav button').forEach(b=>{let p=b.dataset.page;b.classList.toggle('active',p===currentPage);let tag=b.querySelector('.badge');if(tag){tag.style.opacity=allowed(p)?'.45':'1'}});document.querySelectorAll('[data-mobile-page]').forEach(b=>b.classList.toggle('active',b.dataset.mobilePage===currentPage));document.getElementById('sidePlan').textContent=effectivePlan()==='premium'?'PREMIUM PLAN':'FREE PLAN';document.getElementById('sidePlanText').textContent=effectivePlan()==='premium'?'Full WashPilot access · ₱499 per 30 days.':'Free forever · Core carwash operations.'}
 function go(page){currentPage=page;renderNav();render();document.getElementById('sidebar').classList.remove('open');document.body.classList.remove('sidebar-visible')}
 function toggleSidebar(){const sidebar=document.getElementById('sidebar');const open=sidebar.classList.toggle('open');document.body.classList.toggle('sidebar-visible',open)}
 document.addEventListener('click',function(e){if(document.body.classList.contains('sidebar-visible') && e.target===document.body){document.getElementById('sidebar').classList.remove('open');document.body.classList.remove('sidebar-visible')}});
@@ -2258,7 +2258,7 @@ async function openPlanUpgradeModal(planCode){
   if(history.find(x=>x.status==='pending'))throw new Error('A payment request is already waiting for review. Please wait until the Super Admin reviews it.');
   const configured=!!(settings.gcash_number&&settings.gcash_account_name);
   const qr=settings.qr_image_url?'<img class="wp-gcash-qr" src="'+esc(settings.qr_image_url)+'" alt="GCash payment QR code">':'';
-  const isRenewal=effectivePlan()==='premium'||premiumPeriodExpired(window.wpRealSubscription||{});
+  const activeSub=window.wpRealSubscription||{};const isRenewal=effectivePlan()==='premium'||activeSub.status==='expired'||premiumPeriodExpired(activeSub);
   document.getElementById('modal').innerHTML='<div class="modal-head"><h2>'+(isRenewal?'Renew Premium':'Get Premium')+'</h2><button class="close" onclick="closeModal()">×</button></div>'+
    '<div class="wp-upgrade-summary"><span>Premium subscription</span><b>30 days</b><span>Amount due</span><strong>₱499</strong></div>'+
    '<section class="wp-payment-instructions"><div class="wp-payment-instructions-head"><b>GCash payment details</b><span>'+(configured?'READY':'NOT CONFIGURED')+'</span></div>'+
