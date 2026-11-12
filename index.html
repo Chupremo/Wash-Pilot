@@ -1016,7 +1016,7 @@ tbody tr:hover td{background:#f5f9ff}
       <form id="loginForm" autocomplete="on">
         <div class="login-field"><label id="wpLoginIdentityLabel" for="loginUsername">Email address</label><input class="login-input" id="loginUsername" name="email" type="email" placeholder="you@yourbusiness.com" autocomplete="email" required></div>
         <div class="login-field"><label for="loginPassword">Password</label><div class="login-input-wrap"><input class="login-input has-toggle" id="loginPassword" name="password" type="password" placeholder="Enter your password" autocomplete="current-password" required><button class="login-toggle" type="button" onclick="toggleLoginPassword()" id="loginPasswordToggle">Show</button></div></div>
-        <div class="login-form-row" id="wpForgotRow" style="display:none"><button type="button" class="login-link" onclick="openForgotPassword()">Forgot password?</button></div>
+        
         <div class="login-error" id="loginError" role="alert"></div>
         <button class="login-submit" type="submit" id="loginSubmitButton">Sign in <span aria-hidden="true">→</span></button>
       </form>
@@ -1059,7 +1059,7 @@ tbody tr:hover td{background:#f5f9ff}
 <main class="main">
 <header class="topbar">
   <div class="topbar-left" style="display:flex;align-items:center;gap:10px"><button class="mobile-menu" onclick="toggleSidebar()">☰</button><img class="topbar-brand-icon" src="washpilot-logo.svg" alt="WashPilot" /><div class="crumb" id="crumb">Dashboard<small id="crumbSub">Welcome back! Here's your business overview.</small></div></div>
-  <div class="top-actions"><div class="mode-switch" id="modeSwitch" role="group" aria-label="Display mode"><button type="button" id="easyModeButton" onclick="setViewMode('easy')">Easy</button><button type="button" id="advancedModeButton" onclick="setViewMode('advanced')">Advanced</button></div><select class="pill plan-pill" id="planSelect" aria-label="Choose demo plan"><option value="starter">Starter · ₱499</option><option value="business">Business · ₱1,299</option><option value="pro">Pro · ₱1,999</option></select><button class="pill reset-demo-button" onclick="resetDemo()">↻ Reset demo</button><button class="pill wp-tour-launch" id="wpTourLaunch" type="button" onclick="openWashPilotTourChooser()" title="Choose a guided walkthrough">▶ Guided Tour</button><button class="avatar" type="button" onclick="logoutDemo()" title="Sign out" aria-label="Sign out">BO</button></div>
+  <div class="top-actions"><div class="mode-switch" id="modeSwitch" role="group" aria-label="Display mode"><button type="button" id="easyModeButton" onclick="setViewMode('easy')">Easy</button><button type="button" id="advancedModeButton" onclick="setViewMode('advanced')">Advanced</button></div><button class="pill wp-tour-launch" id="wpTourLaunch" type="button" onclick="openWashPilotTourChooser()" title="Choose a guided walkthrough">▶ Guided Tour</button><button class="avatar" type="button" onclick="logoutDemo()" title="Sign out" aria-label="Sign out">BO</button></div>
 </header>
 <div class="content" id="content"></div>
 </main>
