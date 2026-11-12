@@ -1159,6 +1159,37 @@ tbody tr:hover td{background:#f5f9ff}
 <div class="forgot-backdrop" id="forgotBackdrop" onclick="forgotBackdropClose(event)"><div class="forgot-card" id="forgotCard" role="dialog" aria-modal="true" aria-labelledby="forgotTitle"><div id="forgotContent"></div></div></div>
 <div class="modal-backdrop" id="modalBackdrop" onclick="backdropClose(event)"><div class="modal" id="modal"></div></div>
 <div class="toast" id="toast"></div>
+<script>
+/* Global storage bootstrap: intentionally isolated from the main application script. */
+(function (w) {
+  if (w.wpStorage && typeof w.wpStorage.getItem === 'function' &&
+      typeof w.wpStorage.setItem === 'function' &&
+      typeof w.wpStorage.removeItem === 'function') return;
+  var memory = Object.create(null);
+  var persistent = null;
+  try {
+    var probe = '__washpilot_storage_probe__';
+    w.localStorage.setItem(probe, '1');
+    w.localStorage.removeItem(probe);
+    persistent = w.localStorage;
+  } catch (_) {}
+  w.wpStorage = {
+    getItem: function (key) {
+      try { return persistent ? persistent.getItem(key) : (Object.prototype.hasOwnProperty.call(memory, key) ? memory[key] : null); }
+      catch (_) { return Object.prototype.hasOwnProperty.call(memory, key) ? memory[key] : null; }
+    },
+    setItem: function (key, value) {
+      var v = String(value);
+      memory[key] = v;
+      try { if (persistent) persistent.setItem(key, v); } catch (_) {}
+    },
+    removeItem: function (key) {
+      delete memory[key];
+      try { if (persistent) persistent.removeItem(key); } catch (_) {}
+    }
+  };
+})(window);
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // Safari/file-origin-safe demo storage. If persistent browser storage is unavailable,
