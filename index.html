@@ -2599,7 +2599,7 @@ function openRealWorkspace(user,business,subscription){
 
 function renderPublicFacilityCard(f){
  const hours=String(f.opening_time||'08:00').slice(0,5)+'–'+String(f.closing_time||'18:00').slice(0,5);
- return '<article class="wp-facility-card" data-search="'+esc((f.business_name+' '+f.facility_name+' '+(f.address||'')).toLowerCase())+'"><div class="wp-facility-mark">WP</div><h3>'+esc(f.facility_name||f.business_name)+'</h3><p>'+esc(f.business_name)+'</p><div class="wp-facility-meta"><span>⌖ '+esc(f.address||'Address not provided')+'</span><span>◷ '+esc(hours)+'</span><span>'+(f.booking_enabled?'Online booking available':'Facility listed · Online booking not activated')+'</span></div><a class="wp-btn-primary" href="/book/'+encodeURIComponent(f.facility_slug)+'">BOOK A CAR WASH <span>→</span></a></article>';
+ return '<article class="wp-facility-card" data-search="'+esc((f.business_name+' '+f.facility_name+' '+(f.address||'')).toLowerCase())+'"><div class="wp-facility-mark">WP</div><h3>'+esc(f.facility_name||f.business_name)+'</h3><p>'+esc(f.business_name)+'</p><div class="wp-facility-meta"><span>⌖ '+esc(f.address||'Address not provided')+'</span><span>◷ '+esc(hours)+'</span><span>'+(f.booking_enabled?'Online booking enabled':'Public listing')+'</span></div>'+(f.booking_enabled?'<a class="wp-btn-primary" href="/book/'+encodeURIComponent(f.facility_slug)+'">BOOK A CAR WASH <span>→</span></a>':'')+'</article>';
 }
 let wpPublicFacilitiesCache=[];
 async function loadPublicDirectory(){
@@ -2719,6 +2719,7 @@ async function submitPublicBooking(e){
   const publicSections = {
     '/features':{slug:'features',id:'wp-features',title:'Features'},
     '/businesses':{slug:'businesses',id:'wp-business-directory',title:'Businesses'},
+    '/business':{slug:'businesses',id:'wp-business-directory',title:'Businesses'},
     '/how-it-works':{slug:'how',id:'wp-how',title:'How It Works'},
     '/pricing':{slug:'pricing',id:'wp-pricing',title:'Pricing'},
     '/about':{slug:'about',id:'wp-about',title:'About'},
@@ -2906,7 +2907,7 @@ async function submitPublicBooking(e){
     };
   }
 
-  const routePaths=new Set(['/','/features','/businesses','/how-it-works','/pricing','/about','/faq','/login','/signup',...Object.values(pagePaths)]);
+  const routePaths=new Set(['/','/features','/business','/businesses','/how-it-works','/pricing','/about','/faq','/login','/signup',...Object.values(pagePaths)]);
   document.addEventListener('click',function(event){
     if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
     const anchor=event.target.closest&&event.target.closest('a[href]');
