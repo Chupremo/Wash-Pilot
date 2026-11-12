@@ -1260,7 +1260,36 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
 .wp-client-subscription-banner.is-expired{background:#fff3f3;border-color:#f0d1d4}
 .wp-client-subscription-banner.is-expired .wp-client-subscription-kicker{color:#bd4853}
 .wp-client-subscription-banner.is-free{background:#f3f7fc;border-color:#e0e8f2}
-@media(max-width:760px){.wp-price-grid{grid-template-columns:1fr!important;max-width:520px!important;gap:16px!important}.wp-price-card{padding:23px!important}.wp-client-subscription-banner{align-items:stretch;flex-direction:column;padding:15px}.wp-client-subscription-action{align-items:stretch;text-align:left}.wp-client-subscription-action .btn{justify-content:center;width:100%}.wp-price-card h3{font-size:24px}.wp-price b{font-size:36px}}</style>
+@media(max-width:760px){.wp-price-grid{grid-template-columns:1fr!important;max-width:520px!important;gap:16px!important}.wp-price-card{padding:23px!important}.wp-client-subscription-banner{align-items:stretch;flex-direction:column;padding:15px}.wp-client-subscription-action{align-items:stretch;text-align:left}.wp-client-subscription-action .btn{justify-content:center;width:100%}.wp-price-card h3{font-size:24px}.wp-price b{font-size:36px}}/* Public marketing page route and readability corrections */
+#publicLanding .wp-section{width:100%;max-width:1180px;margin-inline:auto;overflow-x:clip}
+#publicLanding .wp-feature-grid{display:grid!important;width:100%;max-width:1130px;margin:0 auto;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:18px;min-width:0}
+#publicLanding .wp-feature-card{min-width:0;width:100%;overflow:hidden}
+#publicLanding .wp-feature-large{grid-column:span 2;background-color:#102846!important;background-image:none!important;color:#fff!important;border:1px solid #102846!important}
+#publicLanding .wp-feature-large h3{color:#fff!important}
+#publicLanding .wp-feature-large p{color:#d4e3f4!important;font-size:13px!important;line-height:1.75!important}
+#publicLanding .wp-feature-large .wp-feature-label{color:#83d5fb!important;font-size:10px!important;letter-spacing:1px}
+#publicLanding .wp-feature-large .wp-feature-icon{background:#3568f5!important;color:#fff!important}
+#publicLanding .wp-feature-large .wp-flow-mini{width:100%;max-width:520px;gap:8px;flex-wrap:wrap}
+#publicLanding .wp-feature-large .wp-flow-mini span{background:#203b61!important;color:#f4f8ff!important;border:1px solid #45658e!important;font-size:10px!important;padding:9px 11px!important}
+#publicLanding .wp-feature-large .wp-flow-mini i{background:#68c7f4!important;min-width:10px}
+#publicLanding .wp-feature-card:not(.wp-feature-large) p{font-size:13px!important;line-height:1.7!important;color:#52657e!important}
+#publicLanding .wp-feature-label{font-size:9px!important;color:#61748d!important}
+#publicLanding .wp-feature-card h3{font-size:21px!important;line-height:1.25!important}
+#publicLanding .wp-how{background-color:#0b1830!important;background-image:none!important;color:#fff!important;width:100%;max-width:none;margin:0;overflow:hidden}
+#publicLanding .wp-how-inner{width:100%;max-width:1130px;margin:0 auto;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:64px;min-width:0}
+#publicLanding .wp-how h2{color:#fff!important}
+#publicLanding .wp-how-intro>p{color:#d0dbea!important;font-size:14px!important;line-height:1.8!important}
+#publicLanding .wp-how .wp-eyebrow-light{color:#83d5fb!important}
+#publicLanding .wp-how .wp-how-cta{color:#8bd9ff!important}
+#publicLanding .wp-steps{min-width:0}
+#publicLanding .wp-steps article{background:#142846!important;border:1px solid #2c476a!important;min-width:0}
+#publicLanding .wp-steps h3{color:#fff!important;font-size:17px!important}
+#publicLanding .wp-steps p{color:#d0dbea!important;font-size:13px!important;line-height:1.7!important}
+#publicLanding .wp-steps article>span{background:none!important;color:#83d5fb!important;-webkit-text-fill-color:#83d5fb!important;font-size:13px!important}
+#publicLanding .wp-steps article>b{background:#3568f5!important;color:#fff!important}
+@media(max-width:780px){#publicLanding .wp-feature-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:13px}#publicLanding .wp-feature-large{grid-column:span 2}#publicLanding .wp-how-inner{grid-template-columns:minmax(0,1fr);gap:28px}#publicLanding .wp-how{padding:64px 20px}}
+@media(max-width:520px){#publicLanding .wp-feature-grid{grid-template-columns:minmax(0,1fr)!important}#publicLanding .wp-feature-large{grid-column:auto}#publicLanding .wp-feature-card{padding:21px!important;min-height:0!important}#publicLanding .wp-feature-card h3{font-size:20px!important}#publicLanding .wp-feature-card p{font-size:13px!important}#publicLanding .wp-feature-large .wp-flow-mini{gap:6px}#publicLanding .wp-feature-large .wp-flow-mini i{flex:0 0 12px}}
+</style>
 </head>
 <body>
 
@@ -3344,7 +3373,7 @@ async function submitPublicBooking(e){
         if(slug==='home'){
           el.style.display=(el.classList.contains('wp-hero')||el.classList.contains('wp-value-strip')||el.classList.contains('wp-final-cta'))?'':'none';
         }else{
-          const section=publicSections['/'+slug];
+          const section=Object.values(publicSections).find(item=>item.slug===slug)||null;
           el.style.display=section&&el.id===section.id?'':'none';
         }
       });
