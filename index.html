@@ -1298,6 +1298,15 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
 .wp-google-place-status{display:block;margin-top:6px;font-size:10px;line-height:1.5;color:#9a6a16}
 .wp-google-place-status.is-selected{color:#16845a}
 
+
+/* Login form actions: primary sign-in and secondary registration */
+.login-action-row{display:flex;align-items:stretch;gap:10px;width:100%;margin-top:4px}
+.login-action-row .login-submit{width:auto;min-width:0;flex:1}
+.login-register-button{flex:0 0 116px;height:51px;padding:0 18px;border:1px solid #cbd9ed;border-radius:12px;background:#fff;color:#245fc4;font:750 13px Inter,sans-serif;cursor:pointer;transition:background .15s,border-color .15s,transform .15s}
+.login-register-button:hover{background:#f2f6ff;border-color:#9eb9e7;transform:translateY(-1px)}
+.login-register-button:focus-visible,.login-submit:focus-visible{outline:3px solid rgba(53,104,245,.25);outline-offset:2px}
+@media(max-width:680px){.login-action-row{gap:9px}.login-register-button{flex-basis:108px;height:53px;padding:0 12px;font-size:13px}.login-action-row .login-submit{height:53px}}
+
 </style>
 </head>
 <body>
@@ -1420,9 +1429,11 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
         <div class="login-field"><label for="loginPassword">Password</label><div class="login-input-wrap"><input class="login-input has-toggle" id="loginPassword" name="password" type="password" placeholder="Enter your password" autocomplete="current-password" required><button class="login-toggle" type="button" onclick="toggleLoginPassword()" id="loginPasswordToggle">Show</button></div></div>
         <div class="wp-forgot-row" id="wpForgotRow"><button type="button" onclick="openForgotPassword()">Forgot password?</button></div>
         <div class="login-error" id="loginError" role="alert"></div>
-        <button class="login-submit" type="submit" id="loginSubmitButton">Sign in <span aria-hidden="true">→</span></button>
+        <div class="login-action-row">
+          <button class="login-submit" type="submit" id="loginSubmitButton">Sign in <span aria-hidden="true">→</span></button>
+          <button class="login-register-button" type="button" id="loginRegisterButton" onclick="openTrialSignup('basic')">Register</button>
+        </div>
       </form>
-      <div class="wp-login-signup" id="wpLoginSignup">New to WashPilot? <button type="button" onclick="openTrialSignup()">Create a free account</button></div>
       
     </div>
   </div>
@@ -1905,17 +1916,21 @@ function loadState(){try{let d=window.wpStorage.getItem('washpilot_demo_data')||
 function save(){if(window.wpRealWorkspaceActive&&window.wpRealBusinessId){window.wpStorage.setItem('wp_real_workspace_data_'+window.wpRealBusinessId,JSON.stringify(state));window.wpStorage.setItem('wp_real_workspace_plan_'+window.wpRealBusinessId,currentPlan);return;}window.wpStorage.setItem('washpilot_demo_data',JSON.stringify(state));window.wpStorage.setItem('wp_plan',currentPlan);}
 function demoPassword(){return window.wpStorage.getItem('wp_demo_password')||window.wpStorage.getItem('wb_demo_password')||''}
 function setLoginRole(role){
- if(role!=='business')return;
+ // Login is for registered accounts. Never prefill demo owner credentials.
  demoLoginRole='business';
  demoStaffRole='owner';
  const picker=document.getElementById('staffRolePicker');if(picker)picker.style.display='none';
- const u='owner',pw=demoPassword(),noteText='Explore the carwash owner workspace using sample data.';
+ const ui=document.getElementById('loginUsername'),pi=document.getElementById('loginPassword');
+ if(ui){ui.value='';ui.defaultValue='';}
+ if(pi){pi.value='';pi.defaultValue='';}
  const uname=document.getElementById('demoUsernameHint'),pass=document.getElementById('demoPasswordHint'),note=document.getElementById('demoRoleNote');
- if(uname)uname.textContent=u;if(pass)pass.textContent=pw;if(note)note.textContent=noteText;
- const ui=document.getElementById('loginUsername'),pi=document.getElementById('loginPassword');if(ui)ui.value=u;if(pi)pi.value=pw;
- const h=document.querySelector('.login-heading h2'),p=document.querySelector('.login-heading p');
- if(h)h.textContent='Sign in to your carwash workspace';
- if(p)p.textContent='Explore the WashPilot owner workspace using sample data.';
+ if(uname)uname.textContent='';
+ if(pass)pass.textContent='';
+ if(note)note.textContent='';
+ const h=document.getElementById('wpLoginHeading'),p=document.getElementById('wpLoginDescription');
+ if(h)h.textContent='Sign in to your account';
+ if(p)p.textContent='Use your registered email address and password to access your WashPilot account.';
+ const error=document.getElementById('loginError');if(error){error.textContent='';error.classList.remove('show');}
 }
 function setStaffDemoRole(){setLoginRole('business')}
 function handleLogin(e){
@@ -2599,7 +2614,7 @@ function logoutDemo(){
   function esc(s) {
     return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
-  function setAuthMode(){authMode='account';if($('wpLoginHeading'))$('wpLoginHeading').textContent='Sign in to your account';if($('wpLoginDescription'))$('wpLoginDescription').textContent='Use your registered email address and password to access your WashPilot account.';if($('wpLoginIdentityLabel'))$('wpLoginIdentityLabel').textContent='Email address';const input=$('loginUsername');if(input){input.type='email';input.name='email';input.placeholder='you@yourbusiness.com';input.autocomplete='email';}if($('wpForgotRow'))$('wpForgotRow').style.display='';if($('loginSubmitButton'))$('loginSubmitButton').innerHTML='Sign in <span aria-hidden="true">→</span>';loginError('');}
+  function setAuthMode(){authMode='account';if($('wpLoginHeading'))$('wpLoginHeading').textContent='Sign in to your account';if($('wpLoginDescription'))$('wpLoginDescription').textContent='Use your registered email address and password to access your WashPilot account.';if($('wpLoginIdentityLabel'))$('wpLoginIdentityLabel').textContent='Email address';const input=$('loginUsername');if(input){input.type='email';input.name='email';input.placeholder='you@yourbusiness.com';input.autocomplete='email';input.value='';}const password=$('loginPassword');if(password)password.value='';if($('wpForgotRow'))$('wpForgotRow').style.display='';if($('loginSubmitButton'))$('loginSubmitButton').innerHTML='Sign in <span aria-hidden="true">→</span>';if($('loginRegisterButton'))$('loginRegisterButton').style.display='';loginError('');}
   window.setLoginMode=setAuthMode;
   window.wpRequestPasswordReset=async function(email){
     const {error}=await getClient().auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+'/?wpRecovery=1'});
