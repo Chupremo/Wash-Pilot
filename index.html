@@ -1112,28 +1112,9 @@ const wpStorage = (() => {
     removeItem(key) { delete memory[key]; try { if (persistent) persistent.removeItem(key); } catch (_) {} }
   };
 })();
-// Front-end demo authentication only. Replace with Supabase Auth or another secure identity provider in production.
-const DEMO_USERNAME='owner';
-const DEMO_EMAIL='owner@washpilot.demo';
-const DEMO_RESET_CODE='246810';
-function demoPassword(){return wpStorage.getItem('wp_demo_password')||'washpilot123'}
-function initAuth(){let ok=wpStorage.getItem('wp_demo_authenticated')==='1';document.getElementById('demoPasswordHint').textContent=wpStorage.getItem('wp_demo_password')?'Updated in this browser':'washpilot123';document.getElementById('loginScreen').style.display=ok?'none':'';document.getElementById('washpilotApp').classList.toggle('auth-hidden',!ok);if(ok){renderNav();render()}}
-function handleLogin(e){
- e.preventDefault();
- const username=document.getElementById('loginUsername').value.trim().toLowerCase();
- const password=document.getElementById('loginPassword').value;
- const error=document.getElementById('loginError');
- if(username===DEMO_USERNAME&&password===demoPassword()){
-  wpStorage.setItem('wp_demo_authenticated','1');
-  wpStorage.setItem('wp_demo_role','business');
-  wpStorage.setItem('wp_demo_staff_role','owner');
-  error.classList.remove('show');setWashPilotAuthVisibility(true);renderNav();render();
- }else{
-  error.textContent='The username or password is incorrect. Please try again.';
-  error.classList.add('show');document.getElementById('loginPassword').value='';
-  document.getElementById('loginPassword').focus();
- }
-}
+// Real account access is handled by Supabase Auth below.
+function initAuth(){}
+function handleLogin(e){e.preventDefault();const error=document.getElementById('loginError');if(error){error.textContent='Use your registered WashPilot email and password.';error.classList.add('show');}}
 function toggleLoginPassword(){let input=document.getElementById('loginPassword'),btn=document.getElementById('loginPasswordToggle');let show=input.type==='password';input.type=show?'text':'password';btn.textContent=show?'Hide':'Show'}
 function logoutDemo(){wpStorage.removeItem('wp_demo_authenticated');document.getElementById('loginPassword').value='';document.getElementById('loginError').classList.remove('show');document.getElementById('washpilotApp').classList.add('auth-hidden');document.getElementById('loginScreen').style.display='grid';document.getElementById('loginUsername').focus()}
 let forgotUsername='';
@@ -1141,9 +1122,9 @@ function openForgotPassword(){forgotUsername='';renderForgotStepOne();document.g
 function closeForgotPassword(){document.getElementById('forgotBackdrop').classList.remove('show')}
 function forgotBackdropClose(e){if(e.target.id==='forgotBackdrop')closeForgotPassword()}
 function renderForgotStepOne(){document.getElementById('forgotContent').innerHTML=`<div class="forgot-icon">⌁</div><h3 id="forgotTitle">Reset your password</h3><p>Enter your demo username and registered email address to verify the account.</p><form onsubmit="verifyForgotAccount(event)"><div class="login-field"><label for="forgotUsername">Username</label><input class="login-input" id="forgotUsername" value="${forgotUsername}" placeholder="Enter username" required></div><div class="login-field"><label for="forgotEmail">Registered email</label><input class="login-input" id="forgotEmail" type="email" placeholder="name@company.com" required></div><div class="forgot-actions"><button type="button" class="btn ghost" onclick="closeForgotPassword()">Cancel</button><button class="btn">Continue</button></div></form>`}
-function verifyForgotAccount(e){e.preventDefault();let u=document.getElementById('forgotUsername').value.trim().toLowerCase(),mail=document.getElementById('forgotEmail').value.trim().toLowerCase();if(u!==DEMO_USERNAME||mail!==DEMO_EMAIL){let old=document.getElementById('forgotAccountError');if(old)old.remove();document.querySelector('#forgotContent form').insertAdjacentHTML('beforeend','<div class="login-error show" id="forgotAccountError" style="margin:12px 0 0">We could not verify that demo account. Check the username and email shown in the demo instructions.</div>');return}forgotUsername=u;renderForgotStepTwo()}
-function renderForgotStepTwo(){document.getElementById('forgotContent').innerHTML=`<div class="forgot-icon">✓</div><h3 id="forgotTitle">Create a new password</h3><p>Your demo account has been verified. Enter the demo verification code and choose a new password.</p><div class="forgot-demo-code">Demo verification code<br><b>${DEMO_RESET_CODE}</b><br><span style="color:#8293ab">In production, this code must be delivered through a verified email or SMS.</span></div><form onsubmit="saveDemoPassword(event)" style="margin-top:17px"><div class="login-field"><label for="forgotCode">Verification code</label><input class="login-input" id="forgotCode" inputmode="numeric" maxlength="6" placeholder="6-digit code" required></div><div class="login-field"><label for="newDemoPassword">New password</label><input class="login-input" id="newDemoPassword" type="password" minlength="8" placeholder="At least 8 characters" required></div><div class="login-field"><label for="confirmDemoPassword">Confirm new password</label><input class="login-input" id="confirmDemoPassword" type="password" minlength="8" placeholder="Re-enter new password" required></div><div class="forgot-actions"><button type="button" class="btn ghost" onclick="renderForgotStepOne()">Back</button><button class="btn">Update password</button></div></form>`}
-function saveDemoPassword(e){e.preventDefault();let code=document.getElementById('forgotCode').value.trim(),pw=document.getElementById('newDemoPassword').value,confirm=document.getElementById('confirmDemoPassword').value;if(code!==DEMO_RESET_CODE){document.getElementById('forgotCode').setCustomValidity('The verification code is incorrect.');document.getElementById('forgotCode').reportValidity();document.getElementById('forgotCode').setCustomValidity('');return}if(pw.length<8){document.getElementById('newDemoPassword').focus();return}if(pw!==confirm){document.getElementById('confirmDemoPassword').setCustomValidity('Passwords do not match.');document.getElementById('confirmDemoPassword').reportValidity();document.getElementById('confirmDemoPassword').setCustomValidity('');return}wpStorage.setItem('wp_demo_password',pw);document.getElementById('demoPasswordHint').textContent='Updated in this browser';closeForgotPassword();document.getElementById('loginUsername').value=DEMO_USERNAME;document.getElementById('loginPassword').value='';document.getElementById('loginError').textContent='Password updated for this demo browser. Sign in with your new password.';document.getElementById('loginError').classList.add('show')}
+function verifyForgotAccount(e){e.preventDefault();let u=document.getElementById('forgotUsername').value.trim().toLowerCase(),mail=document.getElementById('forgotEmail').value.trim().toLowerCase();if(u!==||mail!==DEMO_EMAIL){let old=document.getElementById('forgotAccountError');if(old)old.remove();document.querySelector('#forgotContent form').insertAdjacentHTML('beforeend','<div class="login-error show" id="forgotAccountError" style="margin:12px 0 0">We could not verify that demo account. Check the username and email shown in the demo instructions.</div>');return}forgotUsername=u;renderForgotStepTwo()}
+function renderForgotStepTwo(){document.getElementById('forgotContent').innerHTML=`<div class="forgot-icon">✓</div><h3 id="forgotTitle">Create a new password</h3><p>Your demo account has been verified. Enter the demo verification code and choose a new password.</p><div class="forgot-demo-code">Demo verification code<br><b>${}</b><br><span style="color:#8293ab">In production, this code must be delivered through a verified email or SMS.</span></div><form onsubmit="saveDemoPassword(event)" style="margin-top:17px"><div class="login-field"><label for="forgotCode">Verification code</label><input class="login-input" id="forgotCode" inputmode="numeric" maxlength="6" placeholder="6-digit code" required></div><div class="login-field"><label for="newDemoPassword">New password</label><input class="login-input" id="newDemoPassword" type="password" minlength="8" placeholder="At least 8 characters" required></div><div class="login-field"><label for="confirmDemoPassword">Confirm new password</label><input class="login-input" id="confirmDemoPassword" type="password" minlength="8" placeholder="Re-enter new password" required></div><div class="forgot-actions"><button type="button" class="btn ghost" onclick="renderForgotStepOne()">Back</button><button class="btn">Update password</button></div></form>`}
+function saveDemoPassword(e){e.preventDefault();let code=document.getElementById('forgotCode').value.trim(),pw=document.getElementById('newDemoPassword').value,confirm=document.getElementById('confirmDemoPassword').value;if(code!==){document.getElementById('forgotCode').setCustomValidity('The verification code is incorrect.');document.getElementById('forgotCode').reportValidity();document.getElementById('forgotCode').setCustomValidity('');return}if(pw.length<8){document.getElementById('newDemoPassword').focus();return}if(pw!==confirm){document.getElementById('confirmDemoPassword').setCustomValidity('Passwords do not match.');document.getElementById('confirmDemoPassword').reportValidity();document.getElementById('confirmDemoPassword').setCustomValidity('');return}wpStorage.setItem('wp_demo_password',pw);document.getElementById('demoPasswordHint').textContent='Updated in this browser';closeForgotPassword();document.getElementById('loginUsername').value=;document.getElementById('loginPassword').value='';document.getElementById('loginError').textContent='Password updated for this demo browser. Sign in with your new password.';document.getElementById('loginError').classList.add('show')}
 const seedServices=[
  {id:1,name:'Basic Car Wash',price:120,type:'main',duration:25,active:true,description:'Exterior wash and dry'},
  {id:2,name:'Premium Car Wash',price:200,type:'main',duration:40,active:true,description:'Wash, tire care and quick interior wipe'},
@@ -1178,7 +1159,7 @@ const initial={services:seedServices,transactions:[
  {id:'WP-1001',date:isoAgo(1),time:'03:20 PM',plate:'GHI 3456',vehicle:'SUV',main:'Ceramic Coating',mainPrice:5000,addons:[{name:'Headlight Restoration',price:300}],total:5300,payment:'GCash',status:'Completed',employee:'Mark Santos',branch:'Main Branch'},
  {id:'WP-1000',date:isoAgo(2),time:'11:35 AM',plate:'JKL 7890',vehicle:'Van',main:'Premium Car Wash',mainPrice:200,addons:[{name:'Engine Wash',price:150}],total:350,payment:'Cash',status:'Completed',employee:'Juan Dela Cruz',branch:'Main Branch'}
 ],employees:[{id:1,name:'Juan Dela Cruz',role:'Washer',status:'Active',today:2,sales:270},{id:2,name:'Mark Santos',role:'Senior Detailer',status:'Active',today:2,sales:5680},{id:3,name:'Paolo Reyes',role:'Cashier',status:'Active',today:0,sales:0}],expenses:[{id:1,date:today(),category:'Cleaning Supplies',description:'Car shampoo and microfiber',amount:450},{id:2,date:isoAgo(1),category:'Utilities',description:'Water and electricity',amount:800}],inventory:[{id:1,name:'Car Shampoo',unit:'Liters',stock:24,min:30},{id:2,name:'Tire Black',unit:'Liters',stock:12,min:8},{id:3,name:'Microfiber Cloth',unit:'Pieces',stock:36,min:15},{id:4,name:'Spray Wax',unit:'Bottles',stock:15,min:10}],branches:[{id:1,name:'Main Branch',location:'Lipa City',status:'Active'},{id:2,name:'North Branch',location:'Batangas City',status:'Active'},{id:3,name:'South Branch',location:'Tanauan City',status:'Active'}],customers:[]};
-let state=loadState();let currentPage='dashboard';let currentPlan=wpStorage.getItem('wp_plan')||'starter';let selectedMain='Basic Car Wash';let selectedAddons=[];let lastReceipt=null;let transactionSearch='';let catalogTab='main';
+let state=loadState();let currentPage='dashboard';let currentPlan=wpStorage.getItem('wp_plan')||'basic';let selectedMain='Basic Car Wash';let selectedAddons=[];let lastReceipt=null;let transactionSearch='';let catalogTab='main';
 function loadState(){try{let d=wpStorage.getItem('washpilot_demo_data');return d?JSON.parse(d):structuredClone(initial)}catch(e){return structuredClone(initial)}}
 function save(){wpStorage.setItem('washpilot_demo_data',JSON.stringify(state));wpStorage.setItem('wp_plan',currentPlan)}
 function money(n){return '₱'+Number(n||0).toLocaleString('en-PH',{maximumFractionDigits:2})}
@@ -1191,7 +1172,7 @@ function totalSales(list){return list.filter(isPaymentCollected).reduce((s,t)=>s
 function paymentDateOf(t){if(t.paymentDate&&/^\d{4}-\d{2}-\d{2}$/.test(t.paymentDate))return t.paymentDate;const stamp=t.paidAt||t.completedAt;if(stamp){const d=new Date(stamp);if(!Number.isNaN(d.getTime()))return dateKey(d)}if(t.createdAt){const d=new Date(t.createdAt);if(!Number.isNaN(d.getTime()))return dateKey(d)}return t.date||''}
 function paidTransactionsBetween(start,end){return state.transactions.filter(t=>isPaymentCollected(t)&&paymentDateOf(t)>=start&&paymentDateOf(t)<=end)}
 function totalCollectedBetween(start,end){return totalSales(paidTransactionsBetween(start,end))}
-function planRank(p){return ({starter:1,business:2,pro:3})[p]||1}
+function planRank(p){return ({basic:1,standard:2,premium:3})[p]||1}
 function minPlan(page){return ['employees','expenses'].includes(page)?2:['inventory','branches'].includes(page)?3:1}
 function allowed(page){return planRank(currentPlan)>=minPlan(page)}
 const pageNames={dashboard:'Dashboard',newwash:'New Wash',queue:'Service Queue',transactions:'Transactions',customers:'Customers & Vehicles',catalog:'Services & Pricing',addons:'Add-on Analytics',employees:'Employees',expenses:'Expenses',reports:'Reports',inventory:'Inventory',branches:'Branches'};
@@ -1334,7 +1315,7 @@ function ensureDemoState(){
 }
 function loadState(){try{let d=wpStorage.getItem('washpilot_demo_data')||wpStorage.getItem('washboss_demo_data');return d?JSON.parse(d):structuredClone(initial)}catch(e){return structuredClone(initial)}}
 function save(){if(window.wpRealWorkspaceActive&&window.wpRealBusinessId){wpStorage.setItem('wp_real_workspace_data_'+window.wpRealBusinessId,JSON.stringify(state));wpStorage.setItem('wp_real_workspace_plan_'+window.wpRealBusinessId,currentPlan);return;}wpStorage.setItem('washpilot_demo_data',JSON.stringify(state));wpStorage.setItem('wp_plan',currentPlan);}
-function demoPassword(){return wpStorage.getItem('wp_demo_password')||wpStorage.getItem('wb_demo_password')||'washpilot123'}
+function demoPassword(){return wpStorage.getItem('wp_demo_password')||wpStorage.getItem('wb_demo_password')||''}
 function setLoginRole(role){
  if(role!=='business')return;
  demoLoginRole='business';
@@ -1577,13 +1558,13 @@ function showLandingPage(){
  window.scrollTo({top:0,behavior:'smooth'});
 }
 function previewLandingPlan(plan){
- if(!['starter','business','pro'].includes(plan))return;
+ if(!['basic','standard','premium'].includes(plan))return;
  currentPlan=plan;wpStorage.setItem('wp_plan',plan);
  showLoginScreen();
  const note=document.getElementById('demoRoleNote');
  if(note)note.textContent='Previewing the '+plan.charAt(0).toUpperCase()+plan.slice(1)+' plan in the demo workspace. Demo data only.';
  const hint=document.getElementById('demoPasswordHint');
- if(hint)hint.textContent='owner: washpilot123';
+ if(hint)hint.textContent='owner: ';
 }
 function setWashPilotAuthVisibility(authenticated){
  const landing=document.getElementById('publicLanding');
@@ -1796,7 +1777,7 @@ function logoutDemo(){
     if(authMode==='demo'){
       const u=($('loginUsername')?.value||'').trim().toLowerCase(),p=$('loginPassword')?.value||'';
       loginError('');
-      const keys={owner:{u:'owner',p:typeof demoPassword==='function'?demoPassword():'washpilot123'}};
+      const keys={owner:{u:'owner',p:typeof demoPassword==='function'?demoPassword():''}};
       const k='owner',acc=keys[k];
       if(!acc||u!==acc.u||p!==acc.p)return loginError('The username or password is incorrect. Please check the selected demo workspace.');
       try{
