@@ -1487,10 +1487,8 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
         <label>Owner full name<input id="wpSignupOwner" name="owner" type="text" placeholder="Your full name" minlength="2" maxlength="100" required></label>
         <label>Contact number<input id="wpSignupPhone" name="phone" type="tel" placeholder="+63 9XX XXX XXXX" maxlength="30" required></label>
         <label class="wp-signup-wide">Business address
-          <div id="wpSignupAddressHost" class="wp-google-place-host"></div>
-          <input id="wpSignupAddress" name="address" type="text" placeholder="Enter business address" maxlength="180" required>
-          <input id="wpSignupLatitude" type="hidden"><input id="wpSignupLongitude" type="hidden"><input id="wpSignupPlaceId" type="hidden">
-          <small id="wpSignupAddressStatus" class="wp-google-place-status">Choose the exact business location from Google Maps suggestions.</small>
+          <input id="wpSignupAddress" name="address" type="text" placeholder="Street, barangay, city, province" maxlength="180" autocomplete="street-address" required>
+          <small>Enter the address where customers can find your business.</small>
         </label>
         <label>Opening time<input id="wpSignupOpening" name="opening_time" type="time" value="08:00" required></label>
         <label>Closing time<input id="wpSignupClosing" name="closing_time" type="time" value="18:00" required></label>
@@ -2144,7 +2142,7 @@ async function loadFacilityListing(){
   el.innerHTML='<div class="wp-facility-brand-editor"><div id="wpFacilityLogoPreview" class="wp-facility-logo-preview">'+(window.wpFacilityLogoDraft?'<img src="'+esc(window.wpFacilityLogoDraft)+'" alt="Business logo">':'<span>LOGO</span>')+'</div><div class="wp-facility-brand-controls"><b>Business logo</b><p class="wp-form-hint">Shown at the top of your public booking page and business listing.</p><label class="wp-upload-tile wp-logo-upload"><input id="wpFacilityLogoUpload" type="file" accept="image/jpeg,image/png,image/webp" onchange="uploadFacilityLogo(this)"><span>＋ Upload logo</span><small>JPG, PNG or WEBP · 8 MB max</small></label><button type="button" class="btn ghost small" onclick="removeFacilityLogo()">Remove logo</button></div></div>'+'<div class="wp-share-panel"><div><span class="wp-share-kicker">YOUR PUBLIC BOOKING LINK</span><div class="wp-share-url">'+esc(publicUrl)+'</div><div class="wp-share-actions"><button type="button" class="btn small" onclick="copyFacilityLink()">Copy link</button><button type="button" class="btn ghost small" onclick="copyFacilitySlug()">Copy slug</button><a class="btn ghost small" href="'+esc(publicUrl)+'" target="_blank" rel="noopener">Open page ↗</a></div></div><div class="wp-qr-wrap"><div id="wpFacilityQr"></div><button type="button" class="btn ghost small" onclick="downloadFacilityQr()">Download QR</button></div></div>'+
    '<form id="wpFacilityProfileForm" onsubmit="saveFacilityListing(event)"><h3>Facility details</h3><p class="wp-form-hint">Your business-name slug is used in the public link.</p><div class="field wp-public-description-field"><label>Public business description</label><textarea id="wpFacilityPublicDescription" rows="4" maxlength="1200" placeholder="Tell customers what makes your facility special, your equipment, service quality and what they can expect.">'+esc(f.public_description||'')+'</textarea><small>This introduction appears below your logo and facility name on the public booking page.</small></div><div class="grid two">'+
    '<div class="field"><label>Business / facility name</label><input name="name" maxlength="100" required value="'+esc(f.name)+'"></div><div class="field"><label>Public link slug</label><input name="slug" maxlength="50" pattern="[a-zA-Z0-9-]+" required value="'+esc(f.slug)+'"></div>'+
-   '<div class="field"><label>Contact number</label><input name="phone" maxlength="30" value="'+esc(f.phone||'')+'"></div><div class="field"><label>Facility address</label><div id="wpFacilityAddressHost" class="wp-google-place-host"></div><input name="address" id="wpFacilityAddress" type="text" maxlength="180" required placeholder="Enter facility address" value="'+esc(f.address||'')+'"><input id="wpFacilityLatitude" type="hidden" value="'+esc(f.latitude??'')+'"><input id="wpFacilityLongitude" type="hidden" value="'+esc(f.longitude??'')+'"><input id="wpFacilityPlaceId" type="hidden" value="'+esc(f.google_place_id||'')+'"><small id="wpFacilityAddressStatus" class="wp-google-place-status">'+(f.google_place_id?'Saved Google Maps location. Select a new suggestion to move it.':'Location is not yet verified with Google Maps.')+'</small></div>'+
+   '<div class="field"><label>Contact number</label><input name="phone" maxlength="30" value="'+esc(f.phone||'')+'"></div><div class="field"><label>Facility address</label><input name="address" id="wpFacilityAddress" type="text" maxlength="180" required autocomplete="street-address" placeholder="Street, barangay, city, province" value="'+esc(f.address||'')+'"></div>'+
    '<div class="field"><label>Opening time</label><input name="opening_time" type="time" required value="'+String(f.opening_time||'08:00').slice(0,5)+'"></div><div class="field"><label>Closing time</label><input name="closing_time" type="time" required value="'+String(f.closing_time||'18:00').slice(0,5)+'"></div></div>'+
    '<div class="field" style="margin-top:15px"><label>Operating days</label><div class="wp-days-grid">'+days.map(([d,n])=>'<label><input type="checkbox" name="operating_days" value="'+n+'" '+((f.operating_days||[0,1,2,3,4,5,6]).includes(n)?'checked':'')+'><span>'+d+'</span></label>').join('')+'</div></div>'+
    '<label class="wp-listing-toggle"><input type="checkbox" name="is_listed" '+(f.is_listed?'checked':'')+'><span><b>Show my facility in the public directory</b><small>Basic listings remain visible without a booking button.</small></span></label><div class="actions" style="justify-content:flex-end;margin:18px 0 26px"><button class="btn" type="submit">Save facility details</button></div></form>'+
@@ -2156,7 +2154,6 @@ async function loadFacilityListing(){
    '<div class="wp-payment-settings-card"><b>Bank transfer</b><div class="field"><label>Bank name</label><input id="wpFacilityBankName" maxlength="100" value="'+esc(f.bank_name||'')+'" placeholder="e.g. BDO, BPI, Metrobank"></div><div class="field"><label>Account name</label><input id="wpFacilityBankAccountName" maxlength="100" value="'+esc(f.bank_account_name||'')+'" placeholder="Name on bank account"></div><div class="field"><label>Account number</label><input id="wpFacilityBankAccountNumber" maxlength="40" value="'+esc(f.bank_account_number||'')+'" placeholder="Bank account number"></div></div></div>'+
    '<div class="actions" style="justify-content:flex-end;margin-top:16px"><button type="button" class="btn" onclick="saveFacilityPaymentAndGallery()">Save payment and gallery settings</button></div>';
   renderFacilityQr(publicUrl);
-  window.initGooglePlaceAutocomplete({inputId:'wpFacilityAddress',hostId:'wpFacilityAddressHost',latitudeId:'wpFacilityLatitude',longitudeId:'wpFacilityLongitude',placeIdId:'wpFacilityPlaceId',statusId:'wpFacilityAddressStatus'});
  }catch(err){el.innerHTML='<div class="empty">Could not load facility details: '+esc(err.message||err)+'</div>';}
 }
 async function saveFacilityListing(e){e.preventDefault();await persistFacilityProfile(document.getElementById('wpFacilityProfileForm'));}
@@ -2167,14 +2164,9 @@ async function persistFacilityProfile(form){
  const days=[...form.querySelectorAll('input[name="operating_days"]:checked')].map(x=>Number(x.value));
  if(!days.length){btns.forEach(b=>b.disabled=false);toast('Choose at least one operating day.');return;}
  if(form.elements.opening_time.value>=form.elements.closing_time.value){btns.forEach(b=>b.disabled=false);toast('Closing time must be later than opening time.');return;}
- const selectedLat=Number(document.getElementById('wpFacilityLatitude')?.value),selectedLng=Number(document.getElementById('wpFacilityLongitude')?.value),selectedPlaceId=document.getElementById('wpFacilityPlaceId')?.value||'';
- const hasVerifiedGooglePlace=!!selectedPlaceId&&Number.isFinite(selectedLat)&&Number.isFinite(selectedLng);
- const addressChanged=form.elements.address.value.trim()!==(window.wpFacilityCurrent.address||'').trim();
- if((addressChanged||!window.wpFacilityCurrent.google_place_id)&&!hasVerifiedGooglePlace){btns.forEach(b=>b.disabled=false);toast('Select the exact facility address from Google Maps before saving.');return;}
  try{
   await window.washPilotBookingApi.updateMyFacility({
    name:form.elements.name.value.trim(),slug:form.elements.slug.value.trim().toLowerCase(),phone:form.elements.phone.value.trim(),address:form.elements.address.value.trim(),
-   latitude:selectedLat,longitude:selectedLng,google_place_id:selectedPlaceId,
    opening_time:form.elements.opening_time.value,closing_time:form.elements.closing_time.value,operating_days:days,is_listed:form.elements.is_listed.checked,
    gallery_images:window.wpFacilityGalleryDraft||[],logo_url:window.wpFacilityLogoDraft||'',public_description:document.getElementById('wpFacilityPublicDescription')?.value.trim()||'',gcash_account_name:document.getElementById('wpFacilityGcashName').value.trim(),
    gcash_mobile_number:document.getElementById('wpFacilityGcashNumber').value.trim(),bank_name:document.getElementById('wpFacilityBankName').value.trim(),
@@ -2632,7 +2624,6 @@ function logoutDemo(){
     signupMessage('','');
     const box=$('wpSignupBackdrop');
     if(box){box.classList.add('show');box.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';}
-    initGooglePlaceAutocomplete({inputId:'wpSignupAddress',hostId:'wpSignupAddressHost',latitudeId:'wpSignupLatitude',longitudeId:'wpSignupLongitude',placeIdId:'wpSignupPlaceId',statusId:'wpSignupAddressStatus'});
     setTimeout(()=> $('wpSignupBusiness')?.focus(),35);
   };
   window.closeTrialSignup=function(){
@@ -2642,59 +2633,6 @@ function logoutDemo(){
   window.signupBackdropClose=function(e){if(e.target&&e.target.id==='wpSignupBackdrop')window.closeTrialSignup();};
 
   
-/* Google Places address selection. Requires a referrer-restricted Maps JavaScript API key and Places API (New). */
-window.WP_GOOGLE_MAPS_BROWSER_KEY = window.WP_GOOGLE_MAPS_BROWSER_KEY || '';
-let wpGooglePlacesPromise=null;
-async function loadWashPilotGooglePlaces(){
- if(window.google?.maps?.importLibrary)return window.google.maps.importLibrary('places');
- if(!window.WP_GOOGLE_MAPS_BROWSER_KEY)throw new Error('Google Maps is not configured yet. The site administrator must add the restricted Google Maps browser key.');
- if(!wpGooglePlacesPromise){
-  wpGooglePlacesPromise=new Promise((resolve,reject)=>{
-   const script=document.createElement('script');
-   script.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(window.WP_GOOGLE_MAPS_BROWSER_KEY)+'&v=weekly&loading=async';
-   script.async=true;script.defer=true;
-   script.onload=resolve;script.onerror=()=>reject(new Error('Google Maps could not load. Check the browser key, billing, and enabled APIs.'));
-   document.head.appendChild(script);
-  });
- }
- await wpGooglePlacesPromise;
- return window.google.maps.importLibrary('places');
-}
-async function initGooglePlaceAutocomplete(config){
- const host=document.getElementById(config.hostId),address=document.getElementById(config.inputId);
- const lat=document.getElementById(config.latitudeId),lng=document.getElementById(config.longitudeId),placeId=document.getElementById(config.placeIdId),status=document.getElementById(config.statusId);
- if(!host||!address)return;
- host.innerHTML='';
- try{
-  const {PlaceAutocompleteElement}=await loadWashPilotGooglePlaces();
-  const autocomplete=new PlaceAutocompleteElement();
-  autocomplete.placeholder='Search Google Maps for the exact business address';
-  autocomplete.includedRegionCodes=['ph'];
-  autocomplete.style.width='100%';
-  host.appendChild(autocomplete);
-  address.style.display='none';
-  address.addEventListener('input',()=>{if(!address.value.trim()||address.value.trim()!==(window.wpFacilityCurrent?.address||'')){if(lat)lat.value='';if(lng)lng.value='';if(placeId)placeId.value='';if(status){status.textContent='Select the exact address from Google Maps suggestions to save a verified location.';status.classList.remove('is-selected');}}});
-  autocomplete.addEventListener('gmp-select',async event=>{
-   try{
-    const place=event.placePrediction.toPlace();
-    await place.fetchFields({fields:['id','formattedAddress','location','displayName']});
-    if(!place.location||!place.id)throw new Error('Google Maps did not return a verified place location.');
-    const coords=place.location.toJSON();
-    if(!Number.isFinite(coords.lat)||!Number.isFinite(coords.lng))throw new Error('The selected Google Maps result has no coordinates.');
-    address.value=place.formattedAddress||place.displayName||'';
-    lat.value=String(coords.lat);lng.value=String(coords.lng);placeId.value=place.id;
-    if(status){status.textContent='Google Maps location selected: '+address.value;status.classList.add('is-selected');}
-   }catch(err){if(status){status.textContent=err.message||'Unable to read the selected Google Maps location.';status.classList.remove('is-selected');}}
-  });
-  if(status&&!placeId?.value)status.textContent='Search and select a result from Google Maps. Typing an address alone is not enough.';
- }catch(err){
-  address.style.display='block';
-  if(status){status.textContent=err.message||'Google Maps autocomplete is unavailable.';status.classList.remove('is-selected');}
-  console.warn('WashPilot Google Places:',err);
- }
-}
-window.initGooglePlaceAutocomplete=initGooglePlaceAutocomplete;
-
 window.submitTrialSignup=async function(e){
     e.preventDefault();
     const business=$('wpSignupBusiness').value.trim(), owner=$('wpSignupOwner').value.trim();
@@ -2702,16 +2640,13 @@ window.submitTrialSignup=async function(e){
     const openingTime=$('wpSignupOpening').value, closingTime=$('wpSignupClosing').value;
     const email=$('wpSignupEmail').value.trim().toLowerCase();
     const password=$('wpSignupPassword').value, confirm=$('wpSignupConfirm').value;
-    const latitude=Number($('wpSignupLatitude')?.value),longitude=Number($('wpSignupLongitude')?.value),googlePlaceId=$('wpSignupPlaceId')?.value||'';
     if(business.length<2||owner.length<2||phone.length<6||!address||!email||!openingTime||!closingTime)return signupMessage('error','Please complete all business and owner details.');
-    const hasVerifiedGooglePlace=!!googlePlaceId&&Number.isFinite(latitude)&&Number.isFinite(longitude);
-    if(!hasVerifiedGooglePlace)return signupMessage('error',window.WP_GOOGLE_MAPS_BROWSER_KEY?'Please select your exact business address from the Google Maps suggestions.':'Google Maps is not connected yet. The site administrator must configure the restricted Google Maps API key before registration.');
     if(openingTime>=closingTime)return signupMessage('error','Closing time must be later than opening time.');
     if(password.length<8)return signupMessage('error','Use a password with at least 8 characters.');
     if(password!==confirm)return signupMessage('error','Your passwords do not match.');
     const submit=$('wpSignupSubmit');submit.disabled=true;submit.textContent='Creating your account…';signupMessage('','');
     try{
-      const meta={full_name:owner,business_name:business,business_slug:safeSlug(business),business_phone:phone,business_address:address,business_latitude:hasVerifiedGooglePlace?String(latitude):'',business_longitude:hasVerifiedGooglePlace?String(longitude):'',business_google_place_id:hasVerifiedGooglePlace?googlePlaceId:'',opening_time:openingTime,closing_time:closingTime,intended_plan:'basic',signup_source:'washpilot_public_landing'};
+      const meta={full_name:owner,business_name:business,business_slug:safeSlug(business),business_phone:phone,business_address:address,opening_time:openingTime,closing_time:closingTime,intended_plan:'basic',signup_source:'washpilot_public_landing'};
       const {data,error}=await getClient().auth.signUp({
         email,password,
         options:{data:meta,emailRedirectTo:window.location.origin}
@@ -2989,7 +2924,7 @@ function openRealWorkspace(user,business,subscription){
 
   window.washPilotBookingApi = {
     async getMyFacility(){
-      const {data,error}=await getClient().from('business_facilities').select('id,business_id,name,slug,address,latitude,longitude,google_place_id,phone,opening_time,closing_time,operating_days,timezone,is_listed,gallery_images,gcash_account_name,gcash_mobile_number,bank_name,bank_account_name,bank_account_number,logo_url,public_description').eq('business_id',window.wpRealBusinessId).eq('is_primary',true).maybeSingle();
+      const {data,error}=await getClient().from('business_facilities').select('id,business_id,name,slug,address,phone,opening_time,closing_time,operating_days,timezone,is_listed,gallery_images,gcash_account_name,gcash_mobile_number,bank_name,bank_account_name,bank_account_number,logo_url,public_description').eq('business_id',window.wpRealBusinessId).eq('is_primary',true).maybeSingle();
       if(error)throw error;return data;
     },
     async updateMyFacility(v){
@@ -3001,12 +2936,6 @@ function openRealWorkspace(user,business,subscription){
        p_bank_name:v.bank_name||null,p_bank_account_name:v.bank_account_name||null,p_bank_account_number:v.bank_account_number||null
       });
       if(error)throw error;
-      if(v.google_place_id&&Number.isFinite(Number(v.latitude))&&Number.isFinite(Number(v.longitude))){
-       const locationResult=await getClient().rpc('update_my_facility_location',{
-        p_facility_id:f.id,p_latitude:v.latitude,p_longitude:v.longitude,p_google_place_id:v.google_place_id
-       });
-       if(locationResult.error)throw locationResult.error;
-      }
       return data?.[0]||null;
     },
     async uploadFacilityPhoto(file,businessId){
@@ -3314,15 +3243,8 @@ function renderPublicServiceBulletList(){
  }).join('')+'</ul>';
 }
 function renderPublicLocationCta(f){
- const place=[f.facility_name,f.address].filter(Boolean).join(', ');
- if(!place)return '';
- const q=encodeURIComponent(place);
- const hasVerifiedLocation=!!f.google_place_id&&Number.isFinite(Number(f.latitude))&&Number.isFinite(Number(f.longitude));
- if(!hasVerifiedLocation)return '<section class="wp-public-location-cta"><div class="wp-location-copy"><span class="wp-eyebrow">VISIT OUR FACILITY</span><h2>Location verification pending</h2><p>'+esc(f.facility_name)+'</p><p class="wp-location-address">'+esc(f.address||'')+'</p><p class="wp-form-hint">The facility has not yet confirmed its exact Google Maps pin. Directions will appear after the owner verifies the location.</p></div></section>';
- const destination=Number(f.latitude)+','+Number(f.longitude);
- const mapUrl='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(destination);
- const embedUrl='https://maps.google.com/maps?q='+encodeURIComponent(destination)+'&output=embed';
- return '<section class="wp-public-location-cta"><div class="wp-location-copy"><span class="wp-eyebrow">VISIT OUR FACILITY</span><h2>Find us on Google Maps</h2><p>'+esc(f.facility_name)+'</p><p class="wp-location-address">'+esc(f.address||'')+'</p><a class="wp-btn-primary wp-directions-cta" href="'+esc(mapUrl)+'" target="_blank" rel="noopener">Get directions in Google Maps <span>↗</span></a></div><div class="wp-location-map"><iframe title="Map to '+esc(f.facility_name)+'" src="'+esc(embedUrl)+'" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div></section>';
+ if(!f.address)return '';
+ return '<section class="wp-public-location-cta"><div class="wp-location-copy"><span class="wp-eyebrow">VISIT OUR FACILITY</span><h2>Facility address</h2><p>'+esc(f.facility_name)+'</p><p class="wp-location-address">'+esc(f.address)+'</p></div></section>';
 }
 
 async function loadPublicFacility(slug){
