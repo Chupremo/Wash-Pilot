@@ -1108,6 +1108,29 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
 .wp-listing-url a{font-size:12px;color:#3568f5;text-decoration:none;font-weight:800}
 @media(max-width:900px){.wp-directory-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.wp-booking-layout{grid-template-columns:1fr}.wp-booking-summary{position:static}}
 @media(max-width:620px){.wp-directory-head{display:grid;align-items:start}.wp-directory-head .wp-btn-primary{justify-content:center;text-align:center}.wp-directory-grid{grid-template-columns:1fr}.wp-directory-search{display:grid}.wp-directory-search input{width:100%}.wp-days-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.wp-booking-form{padding:16px}}
+.wp-share-panel{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:20px;padding:20px;border:1px solid #e1e8f1;border-radius:14px;background:#f5f8fd;margin-bottom:24px;align-items:center}
+.wp-share-kicker{font-size:10px;letter-spacing:.1em;color:#76849a;font-weight:850}.wp-share-url{font-size:13px;font-weight:800;color:#17304f;overflow-wrap:anywhere;margin:8px 0 12px}
+.wp-share-actions{display:flex;gap:8px;flex-wrap:wrap}.wp-share-actions a{text-decoration:none;display:inline-flex;align-items:center}
+.wp-qr-wrap{display:grid;justify-items:center;gap:9px;padding:12px;border:1px solid #e1e8f1;background:#fff;border-radius:12px}.wp-qr-wrap #wpFacilityQr{min-height:156px;min-width:156px;display:grid;place-items:center}
+.wp-qr-wrap #wpFacilityQr img,.wp-qr-wrap #wpFacilityQr canvas{max-width:100%;height:auto}
+.wp-form-hint{font-size:12px;color:#718096;line-height:1.6;margin:5px 0 16px}.wp-section-rule{height:1px;background:#e5ebf3;margin:24px 0}
+.wp-gallery-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.wp-gallery-head h3{margin-bottom:4px}.wp-gallery-count{font-size:11px;color:#64748b;font-weight:800}
+.wp-owner-gallery{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:12px 0}
+.wp-owner-photo{aspect-ratio:1;position:relative;border-radius:12px;overflow:hidden;border:1px solid #dce5f0;background:#eef3f9}.wp-owner-photo img{width:100%;height:100%;object-fit:cover}
+.wp-owner-photo button{position:absolute;top:6px;right:6px;border:0;border-radius:50%;width:26px;height:26px;background:#10233f;color:#fff;font-size:19px;cursor:pointer}
+.wp-upload-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:20px;border:1px dashed #9fb2cc;border-radius:12px;background:#f8fafd;cursor:pointer;color:#31517d;font-weight:800;font-size:13px}
+.wp-upload-tile input{max-width:100%;margin-bottom:6px}.wp-upload-tile small{font-weight:500;color:#76849a;font-size:11px}
+.wp-payment-settings{display:grid;grid-template-columns:1fr 1fr;gap:14px}.wp-payment-settings-card{border:1px solid #e1e8f1;border-radius:12px;padding:15px;background:#fff}
+.wp-payment-settings-card>b{display:block;margin-bottom:13px;color:#17304f}.wp-payment-settings-card .field{margin-bottom:10px}.wp-payment-settings-card input{width:100%;padding:11px;border:1px solid #dce4ef;border-radius:9px}
+.wp-public-gallery{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:22px 0;border-radius:14px;overflow:hidden}
+.wp-public-gallery img{width:100%;height:160px;object-fit:cover;background:#eaf0f7}.wp-facility-cover{width:100%;height:160px;object-fit:cover;border-radius:11px}
+.wp-payment-instructions{padding:14px;border-radius:10px;background:#edf3ff;color:#24456f;font-size:13px;line-height:1.8;margin:10px 0 14px;overflow-wrap:anywhere}
+.wp-booking-form input[type=file]{padding:10px;background:#f7f9fc;font-size:11px}.wp-booking-form small{display:block;font-size:10px;color:#76849a;margin-top:4px}
+.wp-payment-state{display:inline-flex;padding:4px 8px;border-radius:50px;font-size:10px;font-weight:850;margin:5px 0}
+.wp-payment-state.verified{background:#e6f7ee;color:#137449}.wp-payment-state.pending{background:#fff4dd;color:#99630a}.wp-payment-state.rejected{background:#feecec;color:#b42318}
+.wp-proof-link{font-size:11px;color:#3568f5;font-weight:800;text-decoration:none}.wp-booking-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}.wp-booking-actions button{font-size:10px!important;padding:7px 9px!important}
+.wp-booking-form select option:disabled{color:#9b3840}
+@media(max-width:760px){.wp-share-panel{grid-template-columns:1fr}.wp-qr-wrap{width:max-content;max-width:100%;justify-self:start}.wp-payment-settings{grid-template-columns:1fr}.wp-owner-gallery{grid-template-columns:repeat(3,minmax(0,1fr))}.wp-public-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}.wp-public-gallery img{height:135px}}
 </style>
 </head>
 <body>
@@ -1848,27 +1871,71 @@ async function loadFacilityListing(){
  const el=document.getElementById('wpFacilityListingPanel');if(!el||!window.washPilotBookingApi)return;
  try{
   const f=await window.washPilotBookingApi.getMyFacility();if(!f){el.innerHTML='<div class="empty">No facility is linked to this business yet. Please contact support.</div>';return;}
-  const days=[['Sunday',0],['Monday',1],['Tuesday',2],['Wednesday',3],['Thursday',4],['Friday',5],['Saturday',6]];
-  el.innerHTML='<form onsubmit="saveFacilityListing(event)"><div class="grid two">'+
-   '<div class="field"><label>Public facility name</label><input name="name" maxlength="100" required value="'+esc(f.name)+'"></div>'+
-   '<div class="field"><label>Contact number</label><input name="phone" maxlength="30" value="'+esc(f.phone||'')+'"></div>'+
-   '<div class="field" style="grid-column:1/-1"><label>Facility address</label><input name="address" maxlength="180" required value="'+esc(f.address||'')+'"></div>'+
-   '<div class="field"><label>Opening time</label><input name="opening_time" type="time" required value="'+String(f.opening_time||'08:00').slice(0,5)+'"></div>'+
-   '<div class="field"><label>Closing time</label><input name="closing_time" type="time" required value="'+String(f.closing_time||'18:00').slice(0,5)+'"></div></div>'+
+  window.wpFacilityCurrent=f;window.wpFacilityGalleryDraft=(f.gallery_images||[]).slice(0,5);
+  const days=[['Sunday',0],['Monday',1],['Tuesday',2],['Wednesday',3],['Thursday',4],['Friday',5],['Saturday',6]],publicUrl=location.origin+'/book/'+f.slug;
+  el.innerHTML='<div class="wp-share-panel"><div><span class="wp-share-kicker">YOUR PUBLIC BOOKING LINK</span><div class="wp-share-url">'+esc(publicUrl)+'</div><div class="wp-share-actions"><button type="button" class="btn small" onclick="copyFacilityLink()">Copy link</button><a class="btn ghost small" href="'+esc(publicUrl)+'" target="_blank" rel="noopener">Open page ↗</a></div></div><div class="wp-qr-wrap"><div id="wpFacilityQr"></div><button type="button" class="btn ghost small" onclick="downloadFacilityQr()">Download QR</button></div></div>'+
+   '<form id="wpFacilityProfileForm" onsubmit="saveFacilityListing(event)"><h3>Facility details</h3><p class="wp-form-hint">Your business-name slug is used in the public link.</p><div class="grid two">'+
+   '<div class="field"><label>Business / facility name</label><input name="name" maxlength="100" required value="'+esc(f.name)+'"></div><div class="field"><label>Public link slug</label><input name="slug" maxlength="50" pattern="[a-zA-Z0-9-]+" required value="'+esc(f.slug)+'"></div>'+
+   '<div class="field"><label>Contact number</label><input name="phone" maxlength="30" value="'+esc(f.phone||'')+'"></div><div class="field"><label>Facility address</label><input name="address" maxlength="180" required value="'+esc(f.address||'')+'"></div>'+
+   '<div class="field"><label>Opening time</label><input name="opening_time" type="time" required value="'+String(f.opening_time||'08:00').slice(0,5)+'"></div><div class="field"><label>Closing time</label><input name="closing_time" type="time" required value="'+String(f.closing_time||'18:00').slice(0,5)+'"></div></div>'+
    '<div class="field" style="margin-top:15px"><label>Operating days</label><div class="wp-days-grid">'+days.map(([d,n])=>'<label><input type="checkbox" name="operating_days" value="'+n+'" '+((f.operating_days||[0,1,2,3,4,5,6]).includes(n)?'checked':'')+'><span>'+d+'</span></label>').join('')+'</div></div>'+
-   '<label class="wp-listing-toggle"><input type="checkbox" name="is_listed" '+(f.is_listed?'checked':'')+'><span><b>Show my facility in the public directory</b><small>When enabled, customers can discover your business listing.</small></span></label>'+
-   '<div class="wp-listing-url"><span>PUBLIC FACILITY PAGE</span><a href="/book/'+encodeURIComponent(f.slug)+'" target="_blank" rel="noopener">washpilot.shop/book/'+esc(f.slug)+' ↗</a></div>'+
-   '<div class="actions" style="justify-content:flex-end;margin-top:18px"><button class="btn" type="submit">Save facility details</button></div></form>';
+   '<label class="wp-listing-toggle"><input type="checkbox" name="is_listed" '+(f.is_listed?'checked':'')+'><span><b>Show my facility in the public directory</b><small>Basic listings remain visible without a booking button.</small></span></label><div class="actions" style="justify-content:flex-end;margin:18px 0 26px"><button class="btn" type="submit">Save facility details</button></div></form>'+
+   '<div class="wp-section-rule"></div><div class="wp-gallery-head"><div><h3>Facility photos</h3><p class="wp-form-hint">Upload up to five photos for your public booking page.</p></div><span id="wpGalleryCount" class="wp-gallery-count">'+window.wpFacilityGalleryDraft.length+'/5 photos</span></div>'+
+   '<div id="wpFacilityGalleryGrid" class="wp-owner-gallery">'+window.wpFacilityGalleryDraft.map((src,i)=>'<div class="wp-owner-photo"><img src="'+esc(src)+'" alt="Facility photo '+(i+1)+'"><button type="button" onclick="removeFacilityPhoto('+i+')">×</button></div>').join('')+'</div>'+
+   '<label class="wp-upload-tile"><input id="wpFacilityPhotoUpload" type="file" accept="image/jpeg,image/png,image/webp" multiple onchange="uploadFacilityPhotos(this)"><span>＋ Add photos</span><small>JPG, PNG or WEBP · 8 MB max per image</small></label>'+
+   '<div class="wp-section-rule"></div><h3>Online payment instructions</h3><p class="wp-form-hint">Customers pay online only. Configure GCash, bank transfer, or both. Cash is not accepted for online reservations.</p>'+
+   '<div class="wp-payment-settings"><div class="wp-payment-settings-card"><b>GCash</b><div class="field"><label>Account name</label><input id="wpFacilityGcashName" maxlength="100" value="'+esc(f.gcash_account_name||'')+'" placeholder="Name on GCash account"></div><div class="field"><label>GCash mobile number</label><input id="wpFacilityGcashNumber" maxlength="30" value="'+esc(f.gcash_mobile_number||'')+'" placeholder="09XXXXXXXXX"></div></div>'+
+   '<div class="wp-payment-settings-card"><b>Bank transfer</b><div class="field"><label>Bank name</label><input id="wpFacilityBankName" maxlength="100" value="'+esc(f.bank_name||'')+'" placeholder="e.g. BDO, BPI, Metrobank"></div><div class="field"><label>Account name</label><input id="wpFacilityBankAccountName" maxlength="100" value="'+esc(f.bank_account_name||'')+'" placeholder="Name on bank account"></div><div class="field"><label>Account number</label><input id="wpFacilityBankAccountNumber" maxlength="40" value="'+esc(f.bank_account_number||'')+'" placeholder="Bank account number"></div></div></div>'+
+   '<div class="actions" style="justify-content:flex-end;margin-top:16px"><button type="button" class="btn" onclick="saveFacilityPaymentAndGallery()">Save payment and gallery settings</button></div>';
+  renderFacilityQr(publicUrl);
  }catch(err){el.innerHTML='<div class="empty">Could not load facility details: '+esc(err.message||err)+'</div>';}
 }
-async function saveFacilityListing(e){
- e.preventDefault();const form=e.currentTarget,btn=form.querySelector('button[type="submit"]'),days=[...form.querySelectorAll('input[name="operating_days"]:checked')].map(x=>Number(x.value));
- if(!days.length){toast('Choose at least one operating day.');return;}
- if(form.elements.opening_time.value>=form.elements.closing_time.value){toast('Closing time must be later than opening time.');return;}
- if(btn){btn.disabled=true;btn.textContent='Saving…';}
- try{await window.washPilotBookingApi.updateMyFacility({name:form.elements.name.value.trim(),phone:form.elements.phone.value.trim(),address:form.elements.address.value.trim(),opening_time:form.elements.opening_time.value,closing_time:form.elements.closing_time.value,operating_days:days,is_listed:form.elements.is_listed.checked});toast('Facility listing and operating hours saved.');loadFacilityListing();}
- catch(err){alert(err.message||'Could not update your facility.');}
- finally{if(btn){btn.disabled=false;btn.textContent='Save facility details';}}
+async function saveFacilityListing(e){e.preventDefault();await persistFacilityProfile(document.getElementById('wpFacilityProfileForm'));}
+async function saveFacilityPaymentAndGallery(){await persistFacilityProfile(document.getElementById('wpFacilityProfileForm'));}
+async function persistFacilityProfile(form){
+ if(!form||!window.wpFacilityCurrent)return;
+ const btns=[...document.querySelectorAll('#wpFacilityListingPanel button')];btns.forEach(b=>b.disabled=true);
+ const days=[...form.querySelectorAll('input[name="operating_days"]:checked')].map(x=>Number(x.value));
+ if(!days.length){btns.forEach(b=>b.disabled=false);toast('Choose at least one operating day.');return;}
+ if(form.elements.opening_time.value>=form.elements.closing_time.value){btns.forEach(b=>b.disabled=false);toast('Closing time must be later than opening time.');return;}
+ try{
+  await window.washPilotBookingApi.updateMyFacility({
+   name:form.elements.name.value.trim(),slug:form.elements.slug.value.trim().toLowerCase(),phone:form.elements.phone.value.trim(),address:form.elements.address.value.trim(),
+   opening_time:form.elements.opening_time.value,closing_time:form.elements.closing_time.value,operating_days:days,is_listed:form.elements.is_listed.checked,
+   gallery_images:window.wpFacilityGalleryDraft||[],gcash_account_name:document.getElementById('wpFacilityGcashName').value.trim(),
+   gcash_mobile_number:document.getElementById('wpFacilityGcashNumber').value.trim(),bank_name:document.getElementById('wpFacilityBankName').value.trim(),
+   bank_account_name:document.getElementById('wpFacilityBankAccountName').value.trim(),bank_account_number:document.getElementById('wpFacilityBankAccountNumber').value.trim()
+  });
+  toast('Facility profile, slug, gallery and payment instructions saved.');loadFacilityListing();
+ }catch(err){alert(err.message||'Could not save facility settings.');}
+ finally{btns.forEach(b=>b.disabled=false);}
+}
+function renderFacilityQr(url){
+ const box=document.getElementById('wpFacilityQr');if(!box)return;box.innerHTML='';
+ if(typeof QRCode==='undefined'){box.textContent='QR code library unavailable';return;}
+ new QRCode(box,{text:url,width:156,height:156,colorDark:'#10233f',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});
+}
+async function copyFacilityLink(){
+ const url=location.origin+'/book/'+(window.wpFacilityCurrent?.slug||'');
+ try{await navigator.clipboard.writeText(url);toast('Booking link copied.');}catch(_){window.prompt('Copy your booking link:',url);}
+}
+function downloadFacilityQr(){
+ const canvas=document.querySelector('#wpFacilityQr canvas');if(!canvas){toast('QR code is not ready yet.');return;}
+ const a=document.createElement('a');a.href=canvas.toDataURL('image/png');a.download=(window.wpFacilityCurrent?.slug||'washpilot')+'-booking-qr.png';a.click();
+}
+function renderFacilityGalleryDraft(){
+ const grid=document.getElementById('wpFacilityGalleryGrid'),count=document.getElementById('wpGalleryCount');
+ if(grid)grid.innerHTML=(window.wpFacilityGalleryDraft||[]).map((src,i)=>'<div class="wp-owner-photo"><img src="'+esc(src)+'" alt="Facility photo '+(i+1)+'"><button type="button" onclick="removeFacilityPhoto('+i+')">×</button></div>').join('');
+ if(count)count.textContent=(window.wpFacilityGalleryDraft||[]).length+'/5 photos';
+}
+function removeFacilityPhoto(i){window.wpFacilityGalleryDraft.splice(i,1);renderFacilityGalleryDraft();}
+async function uploadFacilityPhotos(input){
+ const files=[...input.files||[]];if(!files.length)return;const remaining=5-(window.wpFacilityGalleryDraft||[]).length;
+ if(files.length>remaining){alert('You can upload only '+remaining+' more photo(s).');input.value='';return;}
+ input.disabled=true;
+ try{for(const file of files){if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>8*1024*1024)throw new Error('Use JPG, PNG or WEBP images up to 8 MB each.');window.wpFacilityGalleryDraft.push(await window.washPilotBookingApi.uploadFacilityPhoto(file,window.wpRealBusinessId));}
+  renderFacilityGalleryDraft();toast('Photos uploaded. Save payment and gallery settings to publish them.');
+ }catch(err){alert(err.message||'Could not upload facility photos.');}finally{input.disabled=false;input.value='';}
 }
 function bookingsPage(){
  if(!window.wpRealWorkspaceActive)return pageHead('Online Bookings','Sign in to a registered business account to manage reservations.')+'<section class="panel"><div class="empty">Registered business access is required.</div></section>';
@@ -1879,19 +1946,21 @@ function bookingsPage(){
 async function loadFacilityBookings(){
  const el=document.getElementById('wpFacilityBookingsTable');if(!el||!window.washPilotBookingApi)return;
  try{
-  const rows=await window.washPilotBookingApi.getMyBookings();
-  if(!rows.length){el.innerHTML='<div class="empty">No online booking requests yet. Your public BOOK A CAR WASH page will appear in the Business Directory.</div>';return;}
-  el.innerHTML='<div class="table-wrap"><table><thead><tr><th>Booking</th><th>Customer</th><th>Service / Vehicle</th><th>Schedule</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead><tbody>'+
-   rows.map(b=>'<tr><td><b>'+esc(b.booking_code)+'</b><br><small>'+dateLabel(b.booking_date)+'</small></td>'+
-   '<td><b>'+esc(b.customer_name)+'</b><br><small>'+esc(b.customer_phone)+(b.customer_email?' · '+esc(b.customer_email):'')+'</small></td>'+
-   '<td><b>'+esc(b.service_name)+'</b><br><small>'+esc(b.vehicle_size)+(b.vehicle_plate?' · '+esc(b.vehicle_plate):'')+'</small></td>'+
-   '<td>'+esc(String(b.start_time).slice(0,5))+'–'+esc(String(b.end_time).slice(0,5))+'</td>'+
-   '<td class="amount">'+money(b.price_php)+'</td><td>'+statusPill(b.status)+'</td><td>'+
-   (b.status==='pending'?'<button class="btn success small" onclick="changeFacilityBookingStatus(\''+b.id+'\',\'confirmed\')">Confirm</button> <button class="btn danger small" onclick="changeFacilityBookingStatus(\''+b.id+'\',\'rejected\')">Decline</button>':
-    b.status==='confirmed'?'<button class="btn small" onclick="changeFacilityBookingStatus(\''+b.id+'\',\'completed\')">Complete</button> <button class="btn ghost small" onclick="changeFacilityBookingStatus(\''+b.id+'\',\'cancelled\')">Cancel</button>':'—')+'</td></tr>').join('')+
-   '</tbody></table></div>';
+  const rows=await window.washPilotBookingApi.getMyBookings();if(!rows.length){el.innerHTML='<div class="empty">No online booking requests yet. Reservations will appear here with payment proof.</div>';return;}
+  const proofs=await Promise.all(rows.map(async b=>{if(!b.payment_proof_path)return '';try{return await window.washPilotBookingApi.getPaymentProofUrl(b.payment_proof_path);}catch(_){return '';}}));
+  el.innerHTML='<div class="table-wrap"><table><thead><tr><th>Booking</th><th>Customer</th><th>Service / Vehicle</th><th>Schedule</th><th>Payment</th><th>Amount</th><th>Action</th></tr></thead><tbody>'+
+   rows.map((b,i)=>{
+    const proof=proofs[i]?'<a href="'+esc(proofs[i])+'" target="_blank" rel="noopener" class="wp-proof-link">View proof ↗</a>':'<small>No proof file</small>';
+    const pay=b.payment_status==='verified'?'<span class="wp-payment-state verified">Verified</span>':b.payment_status==='rejected'?'<span class="wp-payment-state rejected">Rejected</span>':'<span class="wp-payment-state pending">Awaiting verification</span>';
+    let actions='—';
+    if(b.status==='pending'&&b.payment_status==='awaiting_verification')actions=proof+'<div class="wp-booking-actions"><button class="btn success small" onclick="verifyFacilityBookingPayment(\''+b.id+'\',\'verified\')">Verify payment</button><button class="btn danger small" onclick="verifyFacilityBookingPayment(\''+b.id+'\',\'rejected\')">Reject proof</button></div>';
+    else if(b.status==='pending'&&b.payment_status==='verified')actions='<span class="wp-payment-state verified">Payment verified</span><div class="wp-booking-actions"><button class="btn success small" onclick="changeFacilityBookingStatus(\''+b.id+'\',\'confirmed\')">Confirm booking</button><button class="btn danger small" onclick="changeFacilityBookingStatus(\''+b.id+'\',\'rejected\')">Decline</button></div>';
+    else if(b.status==='confirmed')actions='<button class="btn small" onclick="changeFacilityBookingStatus(\''+b.id+'\',\'completed\')">Complete</button> <button class="btn ghost small" onclick="changeFacilityBookingStatus(\''+b.id+'\',\'cancelled\')">Cancel</button>';
+    return '<tr><td><b>'+esc(b.booking_code)+'</b><br><small>'+dateLabel(b.booking_date)+'</small></td><td><b>'+esc(b.customer_name)+'</b><br><small>'+esc(b.customer_phone)+(b.customer_email?' · '+esc(b.customer_email):'')+'</small></td><td><b>'+esc(b.service_name)+'</b><br><small>'+esc(b.vehicle_size)+(b.vehicle_plate?' · '+esc(b.vehicle_plate):'')+'</small></td><td>'+esc(String(b.start_time).slice(0,5))+'–'+esc(String(b.end_time).slice(0,5))+'</td><td>'+esc(b.payment_method==='gcash'?'GCash':'Bank transfer')+'<br>'+pay+'<br>'+proof+'</td><td class="amount">'+money(b.price_php)+'</td><td>'+statusPill(b.status)+'<div class="wp-booking-actions">'+actions+'</div></td></tr>';
+   }).join('')+'</tbody></table></div>';
  }catch(err){el.innerHTML='<div class="empty">Could not load bookings: '+esc(err.message||err)+'</div>';}
 }
+async function verifyFacilityBookingPayment(id,status){try{await window.washPilotBookingApi.setPaymentStatus(id,status);toast(status==='verified'?'Payment verified. You can now confirm this booking.':'Payment proof rejected; the slot has been released.');loadFacilityBookings();}catch(err){alert(err.message||'Could not update payment status.');}}
 async function changeFacilityBookingStatus(id,status){try{await window.washPilotBookingApi.setBookingStatus(id,status);toast('Booking updated.');loadFacilityBookings();}catch(err){alert(err.message||'Could not update booking.');}}
 
 function subscriptionPage(){
@@ -2368,32 +2437,56 @@ function openRealWorkspace(user,business,subscription){
 
   window.washPilotBookingApi = {
     async getMyFacility(){
-      const {data,error}=await getClient().from('business_facilities').select('id,business_id,name,slug,address,phone,opening_time,closing_time,operating_days,timezone,is_listed').eq('business_id',window.wpRealBusinessId).eq('is_primary',true).maybeSingle();
+      const {data,error}=await getClient().from('business_facilities').select('id,business_id,name,slug,address,phone,opening_time,closing_time,operating_days,timezone,is_listed,gallery_images,gcash_account_name,gcash_mobile_number,bank_name,bank_account_name,bank_account_number').eq('business_id',window.wpRealBusinessId).eq('is_primary',true).maybeSingle();
       if(error)throw error;return data;
     },
     async updateMyFacility(v){
       const f=await this.getMyFacility();if(!f)throw new Error('Facility listing not found.');
-      const {data,error}=await getClient().from('business_facilities').update({name:v.name,address:v.address,phone:v.phone||null,opening_time:v.opening_time,closing_time:v.closing_time,operating_days:v.operating_days,timezone:'Asia/Manila',is_listed:!!v.is_listed,updated_at:new Date().toISOString()}).eq('id',f.id).select().single();
-      if(error)throw error;return data;
+      const {data,error}=await getClient().rpc('update_my_facility_profile',{
+       p_facility_id:f.id,p_name:v.name,p_slug:v.slug,p_address:v.address,p_phone:v.phone||null,
+       p_opening_time:v.opening_time,p_closing_time:v.closing_time,p_operating_days:v.operating_days,p_is_listed:!!v.is_listed,
+       p_gallery_images:v.gallery_images||[],p_gcash_account_name:v.gcash_account_name||null,p_gcash_mobile_number:v.gcash_mobile_number||null,
+       p_bank_name:v.bank_name||null,p_bank_account_name:v.bank_account_name||null,p_bank_account_number:v.bank_account_number||null
+      });
+      if(error)throw error;return data?.[0]||null;
     },
-    async syncServices(businessId,services){
+    async uploadFacilityPhoto(file,businessId){
+      const ext=file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg',path=businessId+'/'+crypto.randomUUID()+'.'+ext;
+      const {error}=await getClient().storage.from('washpilot-facility-gallery').upload(path,file,{contentType:file.type,upsert:false});
+      if(error)throw error;return getClient().storage.from('washpilot-facility-gallery').getPublicUrl(path).data.publicUrl;
+    },
+    async uploadBookingProof(file,businessId){
+      const ext=file.type==='application/pdf'?'pdf':file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg',path=businessId+'/'+crypto.randomUUID()+'.'+ext;
+      const {error}=await getClient().storage.from('washpilot-booking-proofs').upload(path,file,{contentType:file.type,upsert:false});
+      if(error)throw error;return path;
+    },
+    async getPaymentProofUrl(path){const {data,error}=await getClient().storage.from('washpilot-booking-proofs').createSignedUrl(path,3600);if(error)throw error;return data.signedUrl;},
+async syncServices(businessId,services){
       const sb=getClient(),{data:f,error:fe}=await sb.from('business_facilities').select('id').eq('business_id',businessId).eq('is_primary',true).maybeSingle();
       if(fe)throw fe;if(!f)throw new Error('Public facility not found.');
       const rows=(services||[]).map((s,i)=>({facility_id:f.id,source_key:String(s.id),name:s.name,description:s.description||null,base_price_php:Number(s.price||0),price_by_size:s.type==='main'?(s.priceBySize||{}):{},duration_minutes:Math.max(5,Math.min(1440,Number(s.duration||30))),is_active:!!s.active,sort_order:i,updated_at:new Date().toISOString()}));
       if(rows.length){const {error}=await sb.from('facility_services').upsert(rows,{onConflict:'facility_id,source_key'});if(error)throw error;}return rows.length;
     },
     async getMyBookings(){
-      const {data,error}=await getClient().from('facility_bookings').select('id,booking_code,service_name,customer_name,customer_phone,customer_email,vehicle_size,vehicle_plate,booking_date,start_time,end_time,price_php,status,created_at,notes').eq('business_id',window.wpRealBusinessId).order('booking_date',{ascending:false}).order('start_time',{ascending:false}).limit(200);
+      const {data,error}=await getClient().from('facility_bookings').select('id,booking_code,service_name,customer_name,customer_phone,customer_email,vehicle_size,vehicle_plate,booking_date,start_time,end_time,price_php,status,created_at,notes,payment_method,payment_reference,payment_proof_path,payment_status,payment_verified_at').eq('business_id',window.wpRealBusinessId).order('booking_date',{ascending:false}).order('start_time',{ascending:false}).limit(200);
       if(error)throw error;return data||[];
     },
     async setBookingStatus(id,status){const {error}=await getClient().rpc('set_facility_booking_status',{p_booking_id:id,p_status:status});if(error)throw error;return true;},
-    async listPublicFacilities(){const {data,error}=await getClient().rpc('list_public_facilities');if(error)throw error;return data||[];},
+    async setPaymentStatus(id,status){const {error}=await getClient().rpc('set_facility_booking_payment_status',{p_booking_id:id,p_status:status});if(error)throw error;return true;},
+async listPublicFacilities(){const {data,error}=await getClient().rpc('list_public_facilities');if(error)throw error;return data||[];},
     async getPublicFacility(slug){const {data,error}=await getClient().rpc('get_public_facility',{p_facility_slug:slug});if(error)throw error;return data?.[0]||null;},
     async getPublicServices(slug){const {data,error}=await getClient().rpc('get_public_facility_services',{p_facility_slug:slug});if(error)throw error;return data||[];},
     async getBusySlots(slug,date){const {data,error}=await getClient().rpc('get_public_facility_busy_slots',{p_facility_slug:slug,p_booking_date:date});if(error)throw error;return data||[];},
     async createPublicBooking(v){
-      const {data,error}=await getClient().rpc('create_public_facility_booking',{p_facility_slug:v.slug,p_service_id:v.service_id,p_booking_date:v.booking_date,p_start_time:v.start_time,p_customer_name:v.customer_name,p_customer_phone:v.customer_phone,p_customer_email:v.customer_email||null,p_vehicle_size:v.vehicle_size,p_vehicle_plate:v.vehicle_plate||null,p_notes:v.notes||null});
-      if(error)throw error;return data?.[0]||null;
+      const proofPath=await this.uploadBookingProof(v.proof_file,v.business_id);
+      const {data,error}=await getClient().rpc('create_public_facility_booking',{
+       p_facility_slug:v.slug,p_service_id:v.service_id,p_booking_date:v.booking_date,p_start_time:v.start_time,
+       p_customer_name:v.customer_name,p_customer_phone:v.customer_phone,p_customer_email:v.customer_email||null,
+       p_vehicle_size:v.vehicle_size,p_vehicle_plate:v.vehicle_plate||null,p_notes:v.notes||null,
+       p_payment_method:v.payment_method,p_payment_reference:v.payment_reference||null,p_payment_proof_path:proofPath
+      });
+      if(error){await getClient().storage.from('washpilot-booking-proofs').remove([proofPath]);throw error;}
+      return data?.[0]||null;
     }
   };
 
@@ -2603,7 +2696,7 @@ function openRealWorkspace(user,business,subscription){
 
 function renderPublicFacilityCard(f){
  const hours=String(f.opening_time||'08:00').slice(0,5)+'–'+String(f.closing_time||'18:00').slice(0,5);
- return '<article class="wp-facility-card" data-search="'+esc((f.business_name+' '+f.facility_name+' '+(f.address||'')).toLowerCase())+'"><div class="wp-facility-mark">WP</div><h3>'+esc(f.facility_name||f.business_name)+'</h3><p>'+esc(f.business_name)+'</p><div class="wp-facility-meta"><span>⌖ '+esc(f.address||'Address not provided')+'</span><span>◷ '+esc(hours)+'</span><span>'+(f.booking_enabled?'Online booking enabled':'Public listing')+'</span></div>'+(f.booking_enabled?'<a class="wp-btn-primary" href="/book/'+encodeURIComponent(f.facility_slug)+'">BOOK A CAR WASH <span>→</span></a>':'')+'</article>';
+ return '<article class="wp-facility-card" data-search="'+esc((f.business_name+' '+f.facility_name+' '+(f.address||'')).toLowerCase())+'">'+((f.gallery_images||[]).length?'<img class="wp-facility-cover" src="'+esc(f.gallery_images[0])+'" alt="'+esc(f.facility_name)+'" loading="lazy">':'<div class="wp-facility-mark">WP</div>')+'<h3>'+esc(f.facility_name||f.business_name)+'</h3><p>'+esc(f.business_name)+'</p><div class="wp-facility-meta"><span>⌖ '+esc(f.address||'Address not provided')+'</span><span>◷ '+esc(hours)+'</span><span>'+(f.booking_enabled?'Online booking enabled':'Public listing')+'</span></div>'+(f.booking_enabled?'<a class="wp-btn-primary" href="/book/'+encodeURIComponent(f.facility_slug)+'">BOOK A CAR WASH <span>→</span></a>':'')+'</article>';
 }
 let wpPublicFacilitiesCache=[];
 async function loadPublicDirectory(){
@@ -2633,17 +2726,23 @@ async function loadPublicFacility(slug){
  try{
   const f=await window.washPilotBookingApi.getPublicFacility(slug);if(!f){el.innerHTML='<div class="wp-directory-empty">This facility is not available in the public directory. <p><a href="/businesses">Browse all businesses</a></p></div>';return;}
   wpCurrentPublicFacility=f;wpCurrentPublicServices=await window.washPilotBookingApi.getPublicServices(slug);const bookingOn=!!f.booking_enabled&&wpCurrentPublicServices.length>0;
-  el.innerHTML='<a href="/businesses" style="color:#3568f5;text-decoration:none;font-size:12px;font-weight:800">← All businesses</a><div class="wp-directory-head" style="margin-top:20px"><div><span class="wp-eyebrow">WASHPILOT REGISTERED FACILITY</span><h1>'+esc(f.facility_name)+'</h1><p>'+esc(f.business_name)+' · '+esc(f.address||'')+'</p></div><div class="wp-booking-note">'+(bookingOn?'Online booking is available for this facility.':'This business is listed in the directory. Online bookings are available after the owner activates a ₱399 or ₱899 plan and adds services.')+'</div></div>'+
+  el.innerHTML='<a href="/business" style="color:#3568f5;text-decoration:none;font-size:12px;font-weight:800">← All businesses</a><div class="wp-directory-head" style="margin-top:20px"><div><span class="wp-eyebrow">WASHPILOT REGISTERED FACILITY</span><h1>'+esc(f.facility_name)+'</h1><p>'+esc(f.business_name)+' · '+esc(f.address||'')+'</p></div><div class="wp-booking-note">'+(bookingOn?'Online booking is available for this facility.':'This business is listed in the directory. Online bookings are available after the owner activates a ₱399 or ₱899 plan and adds services.')+'</div></div>'+
+  ((f.gallery_images||[]).length?'<div class="wp-public-gallery">'+f.gallery_images.slice(0,5).map((src,i)=>'<img src="'+esc(src)+'" alt="'+esc(f.facility_name)+' facility photo '+(i+1)+'" loading="lazy">').join('')+'</div>':'')+
   '<div class="wp-booking-layout"><section class="wp-booking-form">'+(bookingOn?'<h2>Book a car wash</h2><form id="wpPublicBookingForm" onsubmit="submitPublicBooking(event)">'+
   '<div class="field"><label>Choose a service</label><select name="service_id" id="wpPublicService" required onchange="refreshPublicBookingSlots()">'+wpCurrentPublicServices.map(s=>'<option value="'+s.service_id+'">'+esc(s.name)+' · '+money(s.base_price_php)+'</option>').join('')+'</select></div>'+
   '<div class="grid two"><div class="field"><label>Booking date</label><input type="date" name="booking_date" id="wpPublicBookingDate" min="'+new Date().toISOString().slice(0,10)+'" max="'+new Date(Date.now()+60*86400000).toISOString().slice(0,10)+'" required onchange="refreshPublicBookingSlots()"></div><div class="field"><label>Available time</label><select name="start_time" id="wpPublicBookingTime" required><option value="">Choose a date first</option></select></div></div>'+
   '<div class="field"><label>Vehicle size</label><select name="vehicle_size"><option>Small</option><option selected>Medium</option><option>Large</option><option>XL</option></select></div>'+
+  '<div class="field"><label>Payment method</label><select name="payment_method" id="wpBookingPaymentMethod" required onchange="updatePublicPaymentInstructions()">'+
+   (f.gcash_mobile_number&&f.gcash_account_name?'<option value="gcash">GCash</option>':'')+
+   (f.bank_name&&f.bank_account_name&&f.bank_account_number?'<option value="bank_transfer">Bank transfer</option>':'')+
+  '</select></div><div id="wpPublicPaymentInstructions" class="wp-payment-instructions"></div>'+
+  '<div class="grid two"><div class="field"><label>Payment reference (optional)</label><input name="payment_reference" maxlength="100" placeholder="Transfer reference number"></div><div class="field"><label>Upload payment proof *</label><input name="payment_proof" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" required><small>JPG, PNG, WEBP or PDF · 5 MB max</small></div></div>'+
   '<div class="grid two"><div class="field"><label>Customer name</label><input name="customer_name" minlength="2" maxlength="100" required></div><div class="field"><label>Contact number</label><input name="customer_phone" type="tel" maxlength="30" required></div></div>'+
   '<div class="grid two"><div class="field"><label>Email (optional)</label><input name="customer_email" type="email" maxlength="160"></div><div class="field"><label>Plate number (optional)</label><input name="vehicle_plate" maxlength="20"></div></div>'+
   '<div class="field"><label>Notes (optional)</label><textarea name="notes" rows="2" maxlength="500"></textarea></div><div class="wp-booking-note" id="wpPublicBookingPrice">Select a service and date to view available slots.</div><button class="wp-btn-primary" style="width:100%;justify-content:center;border:0;cursor:pointer;margin-top:16px" type="submit" id="wpPublicBookingSubmit">Request booking <span>→</span></button></form>':
   '<h2>Online booking unavailable</h2><p class="wp-booking-note">This facility has a public WashPilot listing, but has not activated online booking yet. Contact the facility directly or browse another carwash.</p><a class="wp-btn-primary" href="/businesses" style="display:flex;justify-content:center;padding:14px;text-decoration:none;border-radius:10px">Browse businesses</a>')+
-  '</section><aside class="wp-booking-summary"><h3>'+esc(f.facility_name)+'</h3><p>'+esc(f.address||'')+'</p><p>Opening hours<br><b>'+wpFormatClock(f.opening_time)+' – '+wpFormatClock(f.closing_time)+'</b></p><p>Timezone: '+esc(f.timezone||'Asia/Manila')+'</p><p>Booking requests are sent to the facility for confirmation. No payment is taken online.</p><div class="wp-summary-price">'+(bookingOn?'Choose your service':'Listed on WashPilot')+'</div><p>Only available times within published operating hours can be requested.</p></aside></div>';
-  if(bookingOn)refreshPublicBookingSlots();
+  '</section><aside class="wp-booking-summary"><h3>'+esc(f.facility_name)+'</h3><p>'+esc(f.address||'')+'</p><p>Opening hours<br><b>'+wpFormatClock(f.opening_time)+' – '+wpFormatClock(f.closing_time)+'</b></p><p>Timezone: '+esc(f.timezone||'Asia/Manila')+'</p><p>Pay by GCash or bank transfer only. Upload your proof so the facility can verify it before confirming. Cash is not accepted for online bookings.</p><div class="wp-summary-price">'+(bookingOn?'Choose your service':'Listed on WashPilot')+'</div><p>Only available times within published operating hours can be requested.</p></aside></div>';
+  if(bookingOn){refreshPublicBookingSlots();updatePublicPaymentInstructions();}
  }catch(err){el.innerHTML='<div class="wp-directory-empty">Could not load this facility: '+esc(err.message||err)+'</div>';}
 }
 async function refreshPublicBookingSlots(){
@@ -2656,17 +2755,33 @@ async function refreshPublicBookingSlots(){
  try{
   wpCurrentBusySlots=await window.washPilotBookingApi.getBusySlots(f.facility_slug,date);
   const duration=Math.max(5,Number(service?.duration_minutes||30)),opening=wpTimeMinutes(f.opening_time),closing=wpTimeMinutes(f.closing_time),busy=wpCurrentBusySlots.map(x=>[wpTimeMinutes(x.start_time),wpTimeMinutes(x.end_time)]),options=[];
-  for(let start=opening;start+duration<=closing;start+=30){if(busy.some(([a,b])=>start<b&&start+duration>a))continue;const value=String(Math.floor(start/60)).padStart(2,'0')+':'+String(start%60).padStart(2,'0');options.push('<option value="'+value+'">'+wpFormatClock(value)+'</option>');}
-  select.innerHTML=options.length?'<option value="">Choose an available time</option>'+options.join(''):'<option value="">No available slots on this date</option>';
+  for(let start=opening;start+duration<=closing;start+=30){
+   const end=start+duration,blocked=busy.some(([a,b])=>start<b&&end>a),value=String(Math.floor(start/60)).padStart(2,'0')+':'+String(start%60).padStart(2,'0');
+   options.push('<option value="'+value+'" '+(blocked?'disabled':'')+'>'+wpFormatClock(value)+(blocked?' — BOOKED / UNAVAILABLE':' — Available')+'</option>');
+  }
+  select.innerHTML=options.length?'<option value="">Choose a time (booked slots are disabled)</option>'+options.join(''):'<option value="">No slots fit this service today</option>';
  }catch(err){select.innerHTML='<option value="">Availability temporarily unavailable</option>';}
+}
+function updatePublicPaymentInstructions(){
+ const f=wpCurrentPublicFacility,method=document.getElementById('wpBookingPaymentMethod')?.value,box=document.getElementById('wpPublicPaymentInstructions');if(!f||!box)return;
+ if(method==='gcash')box.innerHTML='<b>Pay via GCash</b><div>Account name: '+esc(f.gcash_account_name||'')+'</div><div>Mobile number: <b>'+esc(f.gcash_mobile_number||'')+'</b></div>';
+ else if(method==='bank_transfer')box.innerHTML='<b>Bank transfer</b><div>Bank: '+esc(f.bank_name||'')+'</div><div>Account name: '+esc(f.bank_account_name||'')+'</div><div>Account number: <b>'+esc(f.bank_account_number||'')+'</b></div>';
+ else box.textContent='Select a configured online payment method.';
 }
 async function submitPublicBooking(e){
  e.preventDefault();const form=e.currentTarget,btn=document.getElementById('wpPublicBookingSubmit'),f=wpCurrentPublicFacility;if(!f)return;
- if(btn){btn.disabled=true;btn.textContent='Submitting booking…';}
- const data=new FormData(form);
+ const data=new FormData(form),proof=form.elements.payment_proof.files[0];
+ if(!proof){alert('Upload your GCash or bank transfer payment proof before submitting.');return;}
+ if(proof.size>5*1024*1024||!['image/jpeg','image/png','image/webp','application/pdf'].includes(proof.type)){alert('Payment proof must be JPG, PNG, WEBP or PDF up to 5 MB.');return;}
+ if(btn){btn.disabled=true;btn.textContent='Uploading proof and submitting…';}
  try{
-  const result=await window.washPilotBookingApi.createPublicBooking({slug:f.facility_slug,service_id:data.get('service_id'),booking_date:data.get('booking_date'),start_time:data.get('start_time'),customer_name:data.get('customer_name'),customer_phone:data.get('customer_phone'),customer_email:data.get('customer_email'),vehicle_size:data.get('vehicle_size'),vehicle_plate:data.get('vehicle_plate'),notes:data.get('notes')});
-  document.getElementById('wpPublicFacilityContent').innerHTML='<div class="wp-booking-success"><h2>Booking request submitted</h2><p>Your request has been sent to '+esc(f.facility_name)+'. The facility still needs to confirm your schedule.</p><p><b>Booking reference: '+esc(result.booking_code)+'</b></p><p>Date: '+esc(result.booking_date)+' · '+esc(wpFormatClock(result.start_time))+'</p><p>Service amount: '+money(result.price_php)+'</p><a href="/businesses" style="color:#176c49;font-weight:800">Browse more businesses →</a></div>';
+  const result=await window.washPilotBookingApi.createPublicBooking({
+   slug:f.facility_slug,business_id:f.business_id,service_id:data.get('service_id'),booking_date:data.get('booking_date'),
+   start_time:data.get('start_time'),customer_name:data.get('customer_name'),customer_phone:data.get('customer_phone'),
+   customer_email:data.get('customer_email'),vehicle_size:data.get('vehicle_size'),vehicle_plate:data.get('vehicle_plate'),
+   notes:data.get('notes'),payment_method:data.get('payment_method'),payment_reference:data.get('payment_reference'),proof_file:proof
+  });
+  document.getElementById('wpPublicFacilityContent').innerHTML='<div class="wp-booking-success"><h2>Booking request submitted</h2><p>Your payment proof has been uploaded privately. The facility will verify it before confirming your reservation.</p><p><b>Booking reference: '+esc(result.booking_code)+'</b></p><p>Date: '+esc(result.booking_date)+' · '+esc(wpFormatClock(result.start_time))+'</p><p>Service amount: '+money(result.price_php)+'</p><p>Payment status: Awaiting verification</p><a href="/business" style="color:#176c49;font-weight:800">Browse more businesses →</a></div>';
  }catch(err){alert(err.message||'We could not submit your booking. Please choose another slot.');refreshPublicBookingSlots();if(btn){btn.disabled=false;btn.innerHTML='Request booking <span>→</span>';}}
 }
 
@@ -2930,5 +3045,6 @@ async function submitPublicBooking(e){
 })();
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 </body>
 </html>
