@@ -1611,7 +1611,7 @@ async function savePasswordRecovery(e){
   if(typeof window.wpUpdatePassword!=='function')throw new Error('The password update service is not available. Please refresh and try again.');
   await window.wpUpdatePassword(password);
   const panel=document.getElementById('forgotContent');
-  if(panel)panel.innerHTML='<div class="forgot-icon">✓</div><h3>Password updated</h3><p>Your WashPilot password has been changed successfully.</p><div class="forgot-actions"><button class="btn" type="button" onclick="window.location.href=\\'/dashboard\\'">Continue to WashPilot</button></div>';
+  if(panel)panel.innerHTML='<div class="forgot-icon">✓</div><h3>Password updated</h3><p>Your WashPilot password has been changed successfully.</p><div class="forgot-actions"><button class="btn" type="button" <a class="btn" href="/dashboard">Continue to WashPilot</a></div>';
  }catch(err){
   if(error){error.textContent=err&&err.message?err.message:'We could not update your password. Request a new reset link and try again.';error.classList.add('show');}
   if(button){button.disabled=false;button.textContent='Update password';}
@@ -2156,7 +2156,7 @@ async function loadFacilityListing(){
    '<div class="wp-payment-settings-card"><b>Bank transfer</b><div class="field"><label>Bank name</label><input id="wpFacilityBankName" maxlength="100" value="'+esc(f.bank_name||'')+'" placeholder="e.g. BDO, BPI, Metrobank"></div><div class="field"><label>Account name</label><input id="wpFacilityBankAccountName" maxlength="100" value="'+esc(f.bank_account_name||'')+'" placeholder="Name on bank account"></div><div class="field"><label>Account number</label><input id="wpFacilityBankAccountNumber" maxlength="40" value="'+esc(f.bank_account_number||'')+'" placeholder="Bank account number"></div></div></div>'+
    '<div class="actions" style="justify-content:flex-end;margin-top:16px"><button type="button" class="btn" onclick="saveFacilityPaymentAndGallery()">Save payment and gallery settings</button></div>';
   renderFacilityQr(publicUrl);
-  initGooglePlaceAutocomplete({inputId:'wpFacilityAddress',hostId:'wpFacilityAddressHost',latitudeId:'wpFacilityLatitude',longitudeId:'wpFacilityLongitude',placeIdId:'wpFacilityPlaceId',statusId:'wpFacilityAddressStatus'});
+  window.initGooglePlaceAutocomplete({inputId:'wpFacilityAddress',hostId:'wpFacilityAddressHost',latitudeId:'wpFacilityLatitude',longitudeId:'wpFacilityLongitude',placeIdId:'wpFacilityPlaceId',statusId:'wpFacilityAddressStatus'});
  }catch(err){el.innerHTML='<div class="empty">Could not load facility details: '+esc(err.message||err)+'</div>';}
 }
 async function saveFacilityListing(e){e.preventDefault();await persistFacilityProfile(document.getElementById('wpFacilityProfileForm'));}
@@ -2688,6 +2688,7 @@ async function initGooglePlaceAutocomplete(config){
   console.warn('WashPilot Google Places:',err);
  }
 }
+window.initGooglePlaceAutocomplete=initGooglePlaceAutocomplete;
 
 window.submitTrialSignup=async function(e){
     e.preventDefault();
