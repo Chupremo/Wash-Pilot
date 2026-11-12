@@ -1918,8 +1918,8 @@ function renderNav(){
  const planSelect=document.getElementById('planSelect');if(planSelect)planSelect.style.display='none';
  const resetDemoButton=document.querySelector('.reset-demo-button');if(resetDemoButton)resetDemoButton.style.display='none';
  const sidePlan=document.getElementById('sidePlan'),sideText=document.getElementById('sidePlanText');
- sidePlan.textContent=isPlatform?'PLATFORM ADMIN':isOwner?activePlan.toUpperCase()+' PLAN':currentStaffRole.toUpperCase();
- sideText.textContent=isPlatform?'Central control for all subscribed businesses.':isOwner?'Daily operations workspace · '+planName(planRank(activePlan))+' plan':currentStaffRole==='washer'?'Assigned vehicles and service progress.':currentStaffRole==='cashier'?'New washes, payments and customer records.':'Team operations and daily oversight.';
+ sidePlan.textContent=isPlatform?'PLATFORM ADMIN':isOwner?(activePlan==='premium'?'PREMIUM PLAN':'FREE PLAN'):currentStaffRole.toUpperCase();
+ sideText.textContent=isPlatform?'Central control for all customer businesses.':isOwner?(activePlan==='premium'?'Premium access · ₱499 per 30 days.':'Free forever · Core carwash operations.'):currentStaffRole==='washer'?'Assigned vehicles and service progress.':currentStaffRole==='cashier'?'New washes, payments and customer records.':'Team operations and daily oversight.';
  document.querySelector('.top-actions .avatar').textContent=isPlatform?'SA':isOwner?'BO':currentStaffRole==='supervisor'?'SU':currentStaffRole==='cashier'?'CA':'WA';
  document.querySelectorAll('.nav button[data-page]').forEach(b=>{
   const page=b.dataset.page,allowedRole=canAccessRolePage(page),locked=!isPlatform&&(isOwner||isSupervisor)&&!allowed(page)&&!['managementHub','subscription'].includes(page);
