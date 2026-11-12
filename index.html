@@ -2387,7 +2387,7 @@ async function loadPlatformBillingRequests(){
   if(form){form.elements.gcash_account_name.value=settings.gcash_account_name||'';form.elements.gcash_number.value=settings.gcash_number||'';form.elements.qr_image_url.value=settings.qr_image_url||'';form.elements.payment_instructions.value=settings.payment_instructions||'';}
   if(!rows.length){el.innerHTML='<div class="empty">No customer payment requests yet.</div>';return;}
   el.innerHTML='<div class="table-wrap"><table><thead><tr><th>Business</th><th>Request</th><th>Plan</th><th>Amount</th><th>Submitted</th><th>Status</th><th>Payment proof</th><th>Action</th></tr></thead><tbody>'+
-   rows.map(r=>'<tr><td><b>'+esc(r.business_name)+'</b></td><td>'+esc(r.request_type||'reactivation')+'</td><td>'+esc(planName(planRank(r.plan_code)))+'</td><td>'+money(r.amount)+'</td><td>'+dateLabel(String(r.submitted_at).slice(0,10))+'</td><td>'+statusPill(String(r.status).toUpperCase())+'</td><td><button class="btn ghost small" onclick="viewUpgradeProof(\''+esc(r.proof_object_path)+'\')">View receipt</button></td><td>'+(r.status==='pending'?'<button class="btn success small" onclick="reviewPlatformBillingRequest(\''+r.id+'\',true)">Approve</button> <button class="btn danger small" onclick="reviewPlatformBillingRequest(\''+r.id+'\',false)">Reject</button>':'—')+'</td></tr>').join('')+'</tbody></table></div>';
+   rows.map(r=>'<tr><td><b>'+esc(r.business_name)+'</b></td><td>'+esc(r.request_type==='renewal'?'Premium renewal':r.request_type==='upgrade'?'Premium access':'Reactivation')+'</td><td>'+esc(planName(planRank(r.plan_code)))+'</td><td>'+money(r.amount)+'</td><td>'+dateLabel(String(r.submitted_at).slice(0,10))+'</td><td>'+statusPill(String(r.status).toUpperCase())+'</td><td><button class="btn ghost small" onclick="viewUpgradeProof(\''+esc(r.proof_object_path)+'\')">View receipt</button></td><td>'+(r.status==='pending'?'<button class="btn success small" onclick="reviewPlatformBillingRequest(\''+r.id+'\',true)">Approve</button> <button class="btn danger small" onclick="reviewPlatformBillingRequest(\''+r.id+'\',false)">Reject</button>':'—')+'</td></tr>').join('')+'</tbody></table></div>';
  }catch(err){el.innerHTML='<div class="empty">Could not load live requests. Sign in as a WashPilot platform administrator to review payments. '+esc(err.message)+'</div>';}
 }
 async function savePlatformBillingSettings(e){
@@ -2778,6 +2778,7 @@ function openRealWorkspace(user,business,subscription){
         else if(subStatus==='trialing')status='Trial';
         else if(subStatus==='expired')status='Past Due';
         else if(subStatus==='pending_verification')status='Pending Verification';
+        else if(subStatus==='active'&&plan==='premium'&&sub?.current_period_ends_at&&Date.parse(sub.current_period_ends_at)<=Date.now())status='Past Due';
         else if(subStatus==='active')status='Active';
         const plan=sub?.plan_code||'basic';
         const due=sub?.next_due_at||sub?.current_period_ends_at||(subStatus==='trialing'?sub?.trial_ends_at:null);
