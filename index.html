@@ -1561,6 +1561,17 @@ function initAuth(){
 }
 function logoutDemo(){window.wpStorage.removeItem('wp_demo_authenticated');window.wpStorage.removeItem('wb_demo_authenticated');window.wpStorage.removeItem('wp_demo_role');window.wpStorage.removeItem('wp_demo_staff_role');document.getElementById('loginPassword').value='';document.getElementById('loginError').classList.remove('show');setWashPilotAuthVisibility(false);setLoginRole('business');document.getElementById('loginUsername').focus()}
 function setViewMode(){viewMode='advanced';window.wpStorage.setItem('wp_view_mode','advanced');renderNav();render();}
+function openRealPlatformWorkspace(user){
+ window.wpRealPlatformAdminActive=true;window.wpRealWorkspaceActive=false;window.wpRealBusinessId=null;window.wpRealBusiness=null;window.wpRealSubscription=null;
+ window.wpRealPlatformAdminName=user?.user_metadata?.full_name||'Platform Admin';
+ currentRole='platform';currentStaffRole='owner';viewMode='advanced';currentPlan='basic';currentPage='platformBilling';
+ window.wpStorage.removeItem('wp_demo_authenticated');window.wpStorage.removeItem('wb_demo_authenticated');window.wpStorage.removeItem('wp_demo_role');window.wpStorage.removeItem('wp_demo_staff_role');
+ const landing=document.getElementById('publicLanding'),login=document.getElementById('loginScreen'),app=document.getElementById('washpilotApp');
+ if(landing)landing.style.display='none';if(login){login.hidden=true;login.style.display='none';}
+ if(app){app.hidden=false;app.classList.remove('auth-hidden');app.style.display='grid';}
+ document.body.classList.add('washpilot-authenticated');document.body.classList.remove('platform-mode');document.body.dataset.washpilotLoginOpen='0';
+ renderNav();render();window.scrollTo({top:0,behavior:'instant'});
+}
 function canAccessRolePage(page){
  if(currentRole==='platform')return ['platform','tenants','platformBilling'].includes(page);
  const permissions={owner:null,supervisor:['dashboard','newwash','queue','transactions','customers','catalog','employees','reports','reconcile','managementHub','addons','inventory','recipes','expenses','branches','loyalty','subscription'],cashier:['dashboard','newwash','queue','transactions','customers'],washer:['queue']};
@@ -1989,6 +2000,9 @@ function logoutDemo(){
   async function activateTrial(user){
     if(!user||!user.id)throw new Error('Your account session is missing. Please sign in again.');
     const sb=getClient(),meta=user.user_metadata||{};
+    const {data:adminRecord,error:adminCheckError}=await sb.from('platform_admins').select('user_id').eq('user_id',user.id).maybeSingle();
+    if(adminCheckError)throw new Error('Could not verify platform administrator access: '+adminCheckError.message);
+    if(adminRecord){openRealPlatformWorkspace(user);return;}
     let businessId=null, membershipError=null;
     // Returning users must reopen their existing business; never create a new one on every sign-in.
     const membership=await sb.from('business_members').select('business_id').eq('user_id',user.id).limit(1).maybeSingle();
@@ -2109,7 +2123,7 @@ function openRealWorkspace(user,business,subscription){
 
   const previousDemoLogout=window.logoutDemo;
   window.logoutDemo=async function(){
-    if(window.wpRealWorkspaceActive){try{await getClient().auth.signOut();}catch(err){console.warn('WashPilot sign-out:',err);}window.wpRealWorkspaceActive=false;window.wpRealBusinessId=null;window.wpStorage.removeItem('wp_real_business_id');window.location.reload();return;}
+    if(window.wpRealWorkspaceActive||window.wpRealPlatformAdminActive){try{await getClient().auth.signOut();}catch(err){console.warn('WashPilot sign-out:',err);}window.wpRealWorkspaceActive=false;window.wpRealPlatformAdminActive=false;window.wpRealBusinessId=null;window.wpStorage.removeItem('wp_real_business_id');window.location.reload();return;}
     if(typeof previousDemoLogout==='function')previousDemoLogout();
   };
   window.handleLogin=async function(e){
@@ -2209,7 +2223,7 @@ function openRealWorkspace(user,business,subscription){
   if(step.page&&typeof canAccessRolePage==='function'&&!canAccessRolePage(step.page))return;
   if(step.page&&typeof allowed==='function'&&step.page!=='dashboard'&&step.page!=='newwash'&&step.page!=='queue'&&step.page!=='transactions'&&step.page!=='customers'&&step.page!=='managementHub'&&!allowed(step.page)){
    step.targets=['#content .locked'];
-   step.description+=' This screen is part of the '+(minPlan(step.page)===2?'Business':'Pro')+' plan. In the demo, switch the plan selector in Advanced mode to preview it.';
+   step.description+=' This screen is included with the '+(minPlan(step.page)===2?'Standard':'Premium')+' plan. Registered owners request upgrades from Subscription & Billing.';
    step.locked=true;
   }
   out.push(step);
