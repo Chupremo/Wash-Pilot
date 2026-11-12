@@ -1163,7 +1163,7 @@ tbody tr:hover td{background:#f5f9ff}
 <script>
 // Safari/file-origin-safe demo storage. If persistent browser storage is unavailable,
 // keep the demo working for the current page session using an in-memory fallback.
-var wpStorage = window.wpStorage || (window.wpStorage = (function () {
+window.wpStorage = window.wpStorage || (function () {
   var memory = Object.create(null);
   var persistent = null;
   try { var test = '__wp_storage_test__'; window.localStorage.setItem(test, '1'); window.localStorage.removeItem(test); persistent = window.localStorage; } catch (_) { persistent = null; }
@@ -1172,12 +1172,12 @@ var wpStorage = window.wpStorage || (window.wpStorage = (function () {
     setItem: function(key,value) { var v=String(value); memory[key]=v; try { if (persistent) persistent.setItem(key,v); } catch (_) {} },
     removeItem: function(key) { delete memory[key]; try { if (persistent) persistent.removeItem(key); } catch (_) {} }
   };
-})());
+})();
 // Real account access is handled by Supabase Auth below.
 function initAuth(){}
 function handleLogin(e){e.preventDefault();const error=document.getElementById('loginError');if(error){error.textContent='Use your registered WashPilot email and password.';error.classList.add('show');}}
 function toggleLoginPassword(){let input=document.getElementById('loginPassword'),btn=document.getElementById('loginPasswordToggle');let show=input.type==='password';input.type=show?'text':'password';btn.textContent=show?'Hide':'Show'}
-function logoutDemo(){wpStorage.removeItem('wp_demo_authenticated');document.getElementById('loginPassword').value='';document.getElementById('loginError').classList.remove('show');document.getElementById('washpilotApp').classList.add('auth-hidden');document.getElementById('loginScreen').style.display='grid';document.getElementById('loginUsername').focus()}
+function logoutDemo(){window.wpStorage.removeItem('wp_demo_authenticated');document.getElementById('loginPassword').value='';document.getElementById('loginError').classList.remove('show');document.getElementById('washpilotApp').classList.add('auth-hidden');document.getElementById('loginScreen').style.display='grid';document.getElementById('loginUsername').focus()}
 let forgotUsername='';
 function openForgotPassword(){forgotUsername='';renderForgotStepOne();document.getElementById('forgotBackdrop').classList.add('show')}
 function closeForgotPassword(){document.getElementById('forgotBackdrop').classList.remove('show')}
@@ -1185,7 +1185,7 @@ function forgotBackdropClose(e){if(e.target.id==='forgotBackdrop')closeForgotPas
 function renderForgotStepOne(){document.getElementById('forgotContent').innerHTML=`<div class="forgot-icon">⌁</div><h3 id="forgotTitle">Reset your password</h3><p>Enter your demo username and registered email address to verify the account.</p><form onsubmit="verifyForgotAccount(event)"><div class="login-field"><label for="forgotUsername">Username</label><input class="login-input" id="forgotUsername" value="${forgotUsername}" placeholder="Enter username" required></div><div class="login-field"><label for="forgotEmail">Registered email</label><input class="login-input" id="forgotEmail" type="email" placeholder="name@company.com" required></div><div class="forgot-actions"><button type="button" class="btn ghost" onclick="closeForgotPassword()">Cancel</button><button class="btn">Continue</button></div></form>`}
 function verifyForgotAccount(e){e.preventDefault();let u=document.getElementById('forgotUsername').value.trim().toLowerCase(),mail=document.getElementById('forgotEmail').value.trim().toLowerCase();if(u!==||mail!==DEMO_EMAIL){let old=document.getElementById('forgotAccountError');if(old)old.remove();document.querySelector('#forgotContent form').insertAdjacentHTML('beforeend','<div class="login-error show" id="forgotAccountError" style="margin:12px 0 0">We could not verify that demo account. Check the username and email shown in the demo instructions.</div>');return}forgotUsername=u;renderForgotStepTwo()}
 function renderForgotStepTwo(){document.getElementById('forgotContent').innerHTML=`<div class="forgot-icon">✓</div><h3 id="forgotTitle">Create a new password</h3><p>Your demo account has been verified. Enter the demo verification code and choose a new password.</p><div class="forgot-demo-code">Demo verification code<br><b>${}</b><br><span style="color:#8293ab">In production, this code must be delivered through a verified email or SMS.</span></div><form onsubmit="saveDemoPassword(event)" style="margin-top:17px"><div class="login-field"><label for="forgotCode">Verification code</label><input class="login-input" id="forgotCode" inputmode="numeric" maxlength="6" placeholder="6-digit code" required></div><div class="login-field"><label for="newDemoPassword">New password</label><input class="login-input" id="newDemoPassword" type="password" minlength="8" placeholder="At least 8 characters" required></div><div class="login-field"><label for="confirmDemoPassword">Confirm new password</label><input class="login-input" id="confirmDemoPassword" type="password" minlength="8" placeholder="Re-enter new password" required></div><div class="forgot-actions"><button type="button" class="btn ghost" onclick="renderForgotStepOne()">Back</button><button class="btn">Update password</button></div></form>`}
-function saveDemoPassword(e){e.preventDefault();let code=document.getElementById('forgotCode').value.trim(),pw=document.getElementById('newDemoPassword').value,confirm=document.getElementById('confirmDemoPassword').value;if(code!==){document.getElementById('forgotCode').setCustomValidity('The verification code is incorrect.');document.getElementById('forgotCode').reportValidity();document.getElementById('forgotCode').setCustomValidity('');return}if(pw.length<8){document.getElementById('newDemoPassword').focus();return}if(pw!==confirm){document.getElementById('confirmDemoPassword').setCustomValidity('Passwords do not match.');document.getElementById('confirmDemoPassword').reportValidity();document.getElementById('confirmDemoPassword').setCustomValidity('');return}wpStorage.setItem('wp_demo_password',pw);document.getElementById('demoPasswordHint').textContent='Updated in this browser';closeForgotPassword();document.getElementById('loginUsername').value=;document.getElementById('loginPassword').value='';document.getElementById('loginError').textContent='Password updated for this demo browser. Sign in with your new password.';document.getElementById('loginError').classList.add('show')}
+function saveDemoPassword(e){e.preventDefault();let code=document.getElementById('forgotCode').value.trim(),pw=document.getElementById('newDemoPassword').value,confirm=document.getElementById('confirmDemoPassword').value;if(code!==){document.getElementById('forgotCode').setCustomValidity('The verification code is incorrect.');document.getElementById('forgotCode').reportValidity();document.getElementById('forgotCode').setCustomValidity('');return}if(pw.length<8){document.getElementById('newDemoPassword').focus();return}if(pw!==confirm){document.getElementById('confirmDemoPassword').setCustomValidity('Passwords do not match.');document.getElementById('confirmDemoPassword').reportValidity();document.getElementById('confirmDemoPassword').setCustomValidity('');return}window.wpStorage.setItem('wp_demo_password',pw);document.getElementById('demoPasswordHint').textContent='Updated in this browser';closeForgotPassword();document.getElementById('loginUsername').value=;document.getElementById('loginPassword').value='';document.getElementById('loginError').textContent='Password updated for this demo browser. Sign in with your new password.';document.getElementById('loginError').classList.add('show')}
 const seedServices=[
  {id:1,name:'Basic Car Wash',price:120,type:'main',duration:25,active:true,description:'Exterior wash and dry'},
  {id:2,name:'Premium Car Wash',price:200,type:'main',duration:40,active:true,description:'Wash, tire care and quick interior wipe'},
@@ -1220,9 +1220,9 @@ const initial={services:seedServices,transactions:[
  {id:'WP-1001',date:isoAgo(1),time:'03:20 PM',plate:'GHI 3456',vehicle:'SUV',main:'Ceramic Coating',mainPrice:5000,addons:[{name:'Headlight Restoration',price:300}],total:5300,payment:'GCash',status:'Completed',employee:'Mark Santos',branch:'Main Branch'},
  {id:'WP-1000',date:isoAgo(2),time:'11:35 AM',plate:'JKL 7890',vehicle:'Van',main:'Premium Car Wash',mainPrice:200,addons:[{name:'Engine Wash',price:150}],total:350,payment:'Cash',status:'Completed',employee:'Juan Dela Cruz',branch:'Main Branch'}
 ],employees:[{id:1,name:'Juan Dela Cruz',role:'Washer',status:'Active',today:2,sales:270},{id:2,name:'Mark Santos',role:'Senior Detailer',status:'Active',today:2,sales:5680},{id:3,name:'Paolo Reyes',role:'Cashier',status:'Active',today:0,sales:0}],expenses:[{id:1,date:today(),category:'Cleaning Supplies',description:'Car shampoo and microfiber',amount:450},{id:2,date:isoAgo(1),category:'Utilities',description:'Water and electricity',amount:800}],inventory:[{id:1,name:'Car Shampoo',unit:'Liters',stock:24,min:30},{id:2,name:'Tire Black',unit:'Liters',stock:12,min:8},{id:3,name:'Microfiber Cloth',unit:'Pieces',stock:36,min:15},{id:4,name:'Spray Wax',unit:'Bottles',stock:15,min:10}],branches:[{id:1,name:'Main Branch',location:'Lipa City',status:'Active'},{id:2,name:'North Branch',location:'Batangas City',status:'Active'},{id:3,name:'South Branch',location:'Tanauan City',status:'Active'}],customers:[]};
-let state=loadState();let currentPage='dashboard';let currentPlan=wpStorage.getItem('wp_plan')||'basic';let selectedMain='Basic Car Wash';let selectedAddons=[];let lastReceipt=null;let transactionSearch='';let catalogTab='main';
-function loadState(){try{let d=wpStorage.getItem('washpilot_demo_data');return d?JSON.parse(d):structuredClone(initial)}catch(e){return structuredClone(initial)}}
-function save(){wpStorage.setItem('washpilot_demo_data',JSON.stringify(state));wpStorage.setItem('wp_plan',currentPlan)}
+let state=loadState();let currentPage='dashboard';let currentPlan=window.wpStorage.getItem('wp_plan')||'basic';let selectedMain='Basic Car Wash';let selectedAddons=[];let lastReceipt=null;let transactionSearch='';let catalogTab='main';
+function loadState(){try{let d=window.wpStorage.getItem('washpilot_demo_data');return d?JSON.parse(d):structuredClone(initial)}catch(e){return structuredClone(initial)}}
+function save(){window.wpStorage.setItem('washpilot_demo_data',JSON.stringify(state));window.wpStorage.setItem('wp_plan',currentPlan)}
 function money(n){return '₱'+Number(n||0).toLocaleString('en-PH',{maximumFractionDigits:2})}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function dateLabel(d){return new Date(d+'T12:00:00Z').toLocaleDateString('en-PH',{timeZone:BUSINESS_TIME_ZONE,month:'short',day:'numeric',year:'numeric'})}
@@ -1334,8 +1334,8 @@ document.getElementById('planSelect').addEventListener('change',e=>setPlan(e.tar
    must be enforced by Supabase/RLS and payment webhooks.
    ========================================================= */
 let currentRole='business';
-let currentStaffRole=wpStorage.getItem('wp_demo_staff_role')||'owner';
-let viewMode=wpStorage.getItem('wp_view_mode')||'easy';
+let currentStaffRole=window.wpStorage.getItem('wp_demo_staff_role')||'owner';
+let viewMode=window.wpStorage.getItem('wp_view_mode')||'easy';
 let demoLoginRole='business';
 let demoStaffRole='cashier';
 let tenantSearch='';
@@ -1358,9 +1358,9 @@ const platformSeed={tenants:[
  {id:'INV-2026-1103',tenantId:'WP-1003',tenant:'QuickShine Express',date:'2026-11-08',due:'2026-11-08',amount:499,status:'Overdue',method:'—'},
  {id:'INV-2026-1102',tenantId:'WP-1004',tenant:'BlueWave Car Care',date:'2026-11-02',due:'2026-11-16',amount:1299,status:'Trial',method:'—'}
 ]};
-function loadPlatformData(){try{return JSON.parse(wpStorage.getItem('wp_platform_data')||'null')||structuredClone(platformSeed)}catch(e){return structuredClone(platformSeed)}}
+function loadPlatformData(){try{return JSON.parse(window.wpStorage.getItem('wp_platform_data')||'null')||structuredClone(platformSeed)}catch(e){return structuredClone(platformSeed)}}
 let platformData=loadPlatformData();
-function savePlatformData(){wpStorage.setItem('wp_platform_data',JSON.stringify(platformData))}
+function savePlatformData(){window.wpStorage.setItem('wp_platform_data',JSON.stringify(platformData))}
 function ensureDemoState(){
  if(!state.recipes)state.recipes=structuredClone(defaultRecipes);
  if(!state.inventoryMovements)state.inventoryMovements=[];
@@ -1374,9 +1374,9 @@ function ensureDemoState(){
  state.customers.forEach(c=>{if(c.loyaltyPoints==null)c.loyaltyPoints=0;if(c.rewardBalance==null)c.rewardBalance=0;if(!c.membership)c.membership=(c.spent||0)>=5000?'VIP':'Standard';if(c.packageBalance==null)c.packageBalance=[]});
  state.transactions.forEach(t=>{if(!t.financialStatus)t.financialStatus=t.status==='Cancelled'?'Void':'Paid';if(t.discount==null)t.discount=0});
 }
-function loadState(){try{let d=wpStorage.getItem('washpilot_demo_data')||wpStorage.getItem('washboss_demo_data');return d?JSON.parse(d):structuredClone(initial)}catch(e){return structuredClone(initial)}}
-function save(){if(window.wpRealWorkspaceActive&&window.wpRealBusinessId){wpStorage.setItem('wp_real_workspace_data_'+window.wpRealBusinessId,JSON.stringify(state));wpStorage.setItem('wp_real_workspace_plan_'+window.wpRealBusinessId,currentPlan);return;}wpStorage.setItem('washpilot_demo_data',JSON.stringify(state));wpStorage.setItem('wp_plan',currentPlan);}
-function demoPassword(){return wpStorage.getItem('wp_demo_password')||wpStorage.getItem('wb_demo_password')||''}
+function loadState(){try{let d=window.wpStorage.getItem('washpilot_demo_data')||window.wpStorage.getItem('washboss_demo_data');return d?JSON.parse(d):structuredClone(initial)}catch(e){return structuredClone(initial)}}
+function save(){if(window.wpRealWorkspaceActive&&window.wpRealBusinessId){window.wpStorage.setItem('wp_real_workspace_data_'+window.wpRealBusinessId,JSON.stringify(state));window.wpStorage.setItem('wp_real_workspace_plan_'+window.wpRealBusinessId,currentPlan);return;}window.wpStorage.setItem('washpilot_demo_data',JSON.stringify(state));window.wpStorage.setItem('wp_plan',currentPlan);}
+function demoPassword(){return window.wpStorage.getItem('wp_demo_password')||window.wpStorage.getItem('wb_demo_password')||''}
 function setLoginRole(role){
  if(role!=='business')return;
  demoLoginRole='business';
@@ -1401,10 +1401,10 @@ function handleLogin(e){
  }
  try{
   currentRole='business';currentStaffRole='owner';
-  wpStorage.setItem('wp_view_mode',viewMode);
-  wpStorage.setItem('wp_demo_authenticated','1');
-  wpStorage.setItem('wp_demo_role','business');
-  wpStorage.setItem('wp_demo_staff_role','owner');
+  window.wpStorage.setItem('wp_view_mode',viewMode);
+  window.wpStorage.setItem('wp_demo_authenticated','1');
+  window.wpStorage.setItem('wp_demo_role','business');
+  window.wpStorage.setItem('wp_demo_staff_role','owner');
   currentPage='dashboard';
   error.classList.remove('show');
   document.getElementById('loginScreen').style.display='none';
@@ -1425,15 +1425,15 @@ function setWashPilotAuthVisibility(authenticated){
  document.body.classList.toggle('washpilot-authenticated',!!authenticated);
 }
 function initAuth(){
- ensureDemoState();const ok=wpStorage.getItem('wp_demo_authenticated')==='1'||wpStorage.getItem('wb_demo_authenticated')==='1';
- currentRole=wpStorage.getItem('wp_demo_role')||'business';if(!['business','platform'].includes(currentRole))currentRole='business';
- currentStaffRole=wpStorage.getItem('wp_demo_staff_role')||'owner';if(!['owner','cashier','washer','supervisor'].includes(currentStaffRole))currentStaffRole='owner';
- viewMode=wpStorage.getItem('wp_view_mode')||'easy';if(!['easy','advanced'].includes(viewMode))viewMode='easy';if(['cashier','washer'].includes(currentStaffRole))viewMode='easy';
+ ensureDemoState();const ok=window.wpStorage.getItem('wp_demo_authenticated')==='1'||window.wpStorage.getItem('wb_demo_authenticated')==='1';
+ currentRole=window.wpStorage.getItem('wp_demo_role')||'business';if(!['business','platform'].includes(currentRole))currentRole='business';
+ currentStaffRole=window.wpStorage.getItem('wp_demo_staff_role')||'owner';if(!['owner','cashier','washer','supervisor'].includes(currentStaffRole))currentStaffRole='owner';
+ viewMode=window.wpStorage.getItem('wp_view_mode')||'easy';if(!['easy','advanced'].includes(viewMode))viewMode='easy';if(['cashier','washer'].includes(currentStaffRole))viewMode='easy';
  setWashPilotAuthVisibility(ok);
  if(ok){currentPage=currentRole==='platform'?'platform':currentStaffRole==='washer'?'queue':'dashboard';renderNav();render()}else setLoginRole('business');
 }
-function logoutDemo(){wpStorage.removeItem('wp_demo_authenticated');wpStorage.removeItem('wb_demo_authenticated');wpStorage.removeItem('wp_demo_role');wpStorage.removeItem('wp_demo_staff_role');document.getElementById('loginPassword').value='';document.getElementById('loginError').classList.remove('show');setWashPilotAuthVisibility(false);setLoginRole('business');document.getElementById('loginUsername').focus()}
-function setViewMode(mode){if(!['easy','advanced'].includes(mode))return;if(currentStaffRole==='washer'||currentStaffRole==='cashier')return;viewMode=mode;wpStorage.setItem('wp_view_mode',mode);if(mode==='easy'&&['loyalty','recipes','reconcile','subscription','addons','employees','expenses','reports','inventory','branches','catalog'].includes(currentPage))currentPage='managementHub';renderNav();render();}
+function logoutDemo(){window.wpStorage.removeItem('wp_demo_authenticated');window.wpStorage.removeItem('wb_demo_authenticated');window.wpStorage.removeItem('wp_demo_role');window.wpStorage.removeItem('wp_demo_staff_role');document.getElementById('loginPassword').value='';document.getElementById('loginError').classList.remove('show');setWashPilotAuthVisibility(false);setLoginRole('business');document.getElementById('loginUsername').focus()}
+function setViewMode(mode){if(!['easy','advanced'].includes(mode))return;if(currentStaffRole==='washer'||currentStaffRole==='cashier')return;viewMode=mode;window.wpStorage.setItem('wp_view_mode',mode);if(mode==='easy'&&['loyalty','recipes','reconcile','subscription','addons','employees','expenses','reports','inventory','branches','catalog'].includes(currentPage))currentPage='managementHub';renderNav();render();}
 function canAccessRolePage(page){
  if(currentRole==='platform')return ['platform','tenants','platformBilling'].includes(page);
  const permissions={owner:null,supervisor:['dashboard','newwash','queue','transactions','customers','catalog','employees','reports','reconcile','managementHub','addons','inventory','recipes','expenses','branches','loyalty','subscription'],cashier:['dashboard','newwash','queue','transactions','customers'],washer:['queue']};
@@ -1472,8 +1472,8 @@ function render(){
  const pages={dashboard:dashboardPage,newwash:newWashPage,queue:queuePage,transactions:transactionsPage,customers:customersPage,catalog:catalogPage,addons:addonsPage,employees:employeesPage,expenses:expensesPage,reports:reportsPage,inventory:inventoryPage,branches:branchesPage,loyalty:loyaltyPage,recipes:recipesPage,reconcile:reconcilePage,subscription:subscriptionPage};
  c.innerHTML=(pages[currentPage]||dashboardPage)();
 }
-let selectedHomeRange=Number(wpStorage.getItem('wp_home_range')||1);
-function setHomeRange(days){selectedHomeRange=[1,7,14,21,30].includes(Number(days))?Number(days):1;wpStorage.setItem('wp_home_range',String(selectedHomeRange));render()}
+let selectedHomeRange=Number(window.wpStorage.getItem('wp_home_range')||1);
+function setHomeRange(days){selectedHomeRange=[1,7,14,21,30].includes(Number(days))?Number(days):1;window.wpStorage.setItem('wp_home_range',String(selectedHomeRange));render()}
 function homeRangeTransactions(){const start=isoAgo(selectedHomeRange-1),end=today();return state.transactions.filter(t=>ticketDateOf(t)>=start&&ticketDateOf(t)<=end)}
 function homeRangeTabs(){const opts=[[1,'Today'],[7,'7 days'],[14,'14 days'],[21,'21 days'],[30,'30 days']];return `<div class="panel home-range-panel"><div class="home-range-label">Performance period</div><div class="tabs home-range-tabs" role="group" aria-label="Home performance period">${opts.map(([days,label])=>`<button type="button" class="${selectedHomeRange===days?'active':''}" aria-pressed="${selectedHomeRange===days}" onclick="setHomeRange(${days})">${label}</button>`).join('')}</div></div>`}
 function easyDashboardPage(){
@@ -1573,7 +1573,7 @@ function openTenantEditModal(id){let t=platformData.tenants.find(x=>x.id===id);i
 function updateTenant(e,id){e.preventDefault();let t=platformData.tenants.find(x=>x.id===id),f=new FormData(e.target);t.plan=f.get('plan');t.status=f.get('status');t.mrr=t.status==='Active'?({starter:499,business:1299,pro:1999})[t.plan]:0;savePlatformData();closeModal();render();toast('Business subscription updated.')}
 function recordTenantPayment(id){let t=platformData.tenants.find(x=>x.id===id);t.status='Active';t.mrr=({starter:499,business:1299,pro:1999})[t.plan];t.renewal=isoAgo(-30);let inv={id:'INV-'+Date.now().toString().slice(-7),tenantId:id,tenant:t.name,date:today(),due:today(),amount:t.mrr,status:'Paid',method:'Manual demo'};platformData.invoices.unshift(inv);savePlatformData();closeModal();render();toast('Demo payment marked as paid. No real money was collected.')}
 function platformBillingPage(){let inv=platformData.invoices,p=inv.filter(i=>i.status==='Paid').reduce((a,i)=>a+i.amount,0),due=inv.filter(i=>['Overdue','Pending'].includes(i.status)).reduce((a,i)=>a+i.amount,0);return `${pageHead('Billing & Revenue','Monitor invoices and collections across all WashPilot customer businesses.') }<div class="grid stats">${stat('Collected',money(p),'Paid demo invoices','₱','green')}${stat('Outstanding',money(due),'Overdue and pending invoices','₱','amber')}${stat('Invoices',inv.length,'All billing records','▤')}${stat('Active MRR',money(platformData.tenants.filter(t=>t.status==='Active').reduce((a,t)=>a+t.mrr,0)),'Current recurring run rate','↗','purple')}</div><section class="panel"><div class="panel-head"><h3>Subscription invoices</h3><span class="subtle">All businesses</span></div><div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Business</th><th>Issued</th><th>Due</th><th>Amount</th><th>Status</th><th>Method</th><th></th></tr></thead><tbody>${inv.map(i=>`<tr><td><b>${esc(i.id)}</b></td><td>${esc(i.tenant)}</td><td>${dateLabel(i.date)}</td><td>${dateLabel(i.due)}</td><td class="amount">${money(i.amount)}</td><td>${statusPill(i.status)}</td><td>${esc(i.method)}</td><td>${i.status!=='Paid'?`<button class="btn ghost small" onclick="recordTenantPayment('${i.tenantId}')">Mark paid</button>`:''}</td></tr>`).join('')}</tbody></table></div></section><div class="inline-note" style="margin-top:14px">Collection actions here are simulated. Production billing needs a gateway checkout, signed webhooks, invoice IDs, idempotency, failed-payment retries and an immutable audit log.</div>`}
-function resetDemo(){if(!confirm('Reset this browser demo, including tenant directory, transactions, loyalty and billing previews?'))return;wpStorage.removeItem('washpilot_demo_data');wpStorage.removeItem('wp_platform_data');wpStorage.removeItem('wp_plan');state=structuredClone(initial);currentPlan='starter';platformData=structuredClone(platformSeed);ensureDemoState();save();savePlatformData();selectedMain='Basic Car Wash';selectedAddons=[];transactionSearch='';tenantSearch='';renderNav();render();toast('WashPilot demo data reset.')}
+function resetDemo(){if(!confirm('Reset this browser demo, including tenant directory, transactions, loyalty and billing previews?'))return;window.wpStorage.removeItem('washpilot_demo_data');window.wpStorage.removeItem('wp_platform_data');window.wpStorage.removeItem('wp_plan');state=structuredClone(initial);currentPlan='starter';platformData=structuredClone(platformSeed);ensureDemoState();save();savePlatformData();selectedMain='Basic Car Wash';selectedAddons=[];transactionSearch='';tenantSearch='';renderNav();render();toast('WashPilot demo data reset.')}
 // Existing owner actions remain available. Run one safe state migration before the first render.
 ensureDemoState();
 
@@ -1602,7 +1602,7 @@ function showLandingPage(){
 }
 function previewLandingPlan(plan){
  if(!['basic','standard','premium'].includes(plan))return;
- currentPlan=plan;wpStorage.setItem('wp_plan',plan);
+ currentPlan=plan;window.wpStorage.setItem('wp_plan',plan);
  showLoginScreen();
  const note=document.getElementById('demoRoleNote');
  if(note)note.textContent='Previewing the '+plan.charAt(0).toUpperCase()+plan.slice(1)+' plan in the demo workspace. Demo data only.';
@@ -1619,8 +1619,8 @@ function setWashPilotAuthVisibility(authenticated){
  document.body.classList.toggle('washpilot-authenticated',!!authenticated);
 }
 function logoutDemo(){
- wpStorage.removeItem('wp_demo_authenticated');wpStorage.removeItem('wb_demo_authenticated');
- wpStorage.removeItem('wp_demo_role');wpStorage.removeItem('wp_demo_staff_role');
+ window.wpStorage.removeItem('wp_demo_authenticated');window.wpStorage.removeItem('wb_demo_authenticated');
+ window.wpStorage.removeItem('wp_demo_role');window.wpStorage.removeItem('wp_demo_staff_role');
  const pass=document.getElementById('loginPassword'),error=document.getElementById('loginError');
  if(pass)pass.value='';if(error)error.classList.remove('show');
  document.body.dataset.washpilotLoginOpen='0';
@@ -1756,12 +1756,12 @@ function logoutDemo(){
   function openRealWorkspace(user,business,subscription){
     const businessId=business.id;const storageKey='wp_real_workspace_data_'+businessId;
     const clean={services:[],transactions:[],employees:[],expenses:[],inventory:[],branches:[],customers:[],recipes:[],inventoryMovements:[],loyaltyLedger:[],packages:[],packageSales:[],shiftClosings:[],shifts:[],shift:null,packageRedemptions:[],subscriptionInvoices:[]};
-    let workspace=clean;const stored=wpStorage.getItem(storageKey);
+    let workspace=clean;const stored=window.wpStorage.getItem(storageKey);
     if(stored){try{const parsed=JSON.parse(stored);workspace=Object.assign({},clean,parsed);Object.keys(clean).forEach(k=>{if(Array.isArray(clean[k])&&!Array.isArray(workspace[k]))workspace[k]=[];});if(!Object.prototype.hasOwnProperty.call(workspace,'shift'))workspace.shift=null;}catch(_){workspace=clean;}}
     window.wpRealWorkspaceActive=true;window.wpRealBusinessId=businessId;window.wpRealBusiness=business;window.wpRealSubscription=subscription;window.wpRealOwnerName=user.user_metadata?.full_name||user.email||'Owner';
     state=workspace;currentRole='business';currentStaffRole='owner';viewMode='easy';currentPlan=subscription.plan_code||'basic';currentPage='dashboard';selectedMain=state.services.find(s=>s.type==='main'&&s.active)?.name||'';selectedAddons=[];transactionSearch='';
-    wpStorage.removeItem('wp_demo_authenticated');wpStorage.removeItem('wb_demo_authenticated');wpStorage.removeItem('wp_demo_role');wpStorage.removeItem('wp_demo_staff_role');wpStorage.setItem('wp_real_business_id',businessId);wpStorage.setItem('wp_view_mode','easy');wpStorage.setItem('wp_real_workspace_plan_'+businessId,currentPlan);
-    if(typeof selectedHomeRange!=='undefined')selectedHomeRange=1;wpStorage.setItem('wp_home_range','1');
+    window.wpStorage.removeItem('wp_demo_authenticated');window.wpStorage.removeItem('wb_demo_authenticated');window.wpStorage.removeItem('wp_demo_role');window.wpStorage.removeItem('wp_demo_staff_role');window.wpStorage.setItem('wp_real_business_id',businessId);window.wpStorage.setItem('wp_view_mode','easy');window.wpStorage.setItem('wp_real_workspace_plan_'+businessId,currentPlan);
+    if(typeof selectedHomeRange!=='undefined')selectedHomeRange=1;window.wpStorage.setItem('wp_home_range','1');
     const portal=document.getElementById('wpTrialPortal');if(portal)portal.remove();
     const landing=document.getElementById('publicLanding'),login=document.getElementById('loginScreen'),app=document.getElementById('washpilotApp');
     if(landing)landing.style.display='none';if(login){login.hidden=true;login.style.display='none';}if(app){app.hidden=false;app.classList.remove('auth-hidden');app.style.display='grid';}
@@ -1827,7 +1827,7 @@ function logoutDemo(){
 
   const previousDemoLogout=window.logoutDemo;
   window.logoutDemo=async function(){
-    if(window.wpRealWorkspaceActive){try{await getClient().auth.signOut();}catch(err){console.warn('WashPilot sign-out:',err);}window.wpRealWorkspaceActive=false;window.wpRealBusinessId=null;wpStorage.removeItem('wp_real_business_id');window.location.reload();return;}
+    if(window.wpRealWorkspaceActive){try{await getClient().auth.signOut();}catch(err){console.warn('WashPilot sign-out:',err);}window.wpRealWorkspaceActive=false;window.wpRealBusinessId=null;window.wpStorage.removeItem('wp_real_business_id');window.location.reload();return;}
     if(typeof previousDemoLogout==='function')previousDemoLogout();
   };
   window.handleLogin=async function(e){
@@ -1841,7 +1841,7 @@ function logoutDemo(){
       try{
         currentRole='business';currentStaffRole='owner';
         if(['cashier','washer'].includes(k))viewMode='easy';
-        wpStorage.setItem('wp_demo_authenticated','1');wpStorage.setItem('wp_demo_role',currentRole);wpStorage.setItem('wp_demo_staff_role',currentStaffRole);
+        window.wpStorage.setItem('wp_demo_authenticated','1');window.wpStorage.setItem('wp_demo_role',currentRole);window.wpStorage.setItem('wp_demo_staff_role',currentStaffRole);
         currentPage=k==='admin'?'platform':k==='washer'?'queue':'dashboard';
         setWashPilotAuthVisibility(true);renderNav();render();
       }catch(err){loginError(err.message||'Could not open the demo workspace.');}
@@ -1865,8 +1865,8 @@ function logoutDemo(){
       if(error)throw error;
       if(data.session)await activateTrial(data.session.user);
       else{
-        wpStorage.removeItem('wp_demo_authenticated');wpStorage.removeItem('wb_demo_authenticated');
-        wpStorage.removeItem('wp_demo_role');wpStorage.removeItem('wp_demo_staff_role');
+        window.wpStorage.removeItem('wp_demo_authenticated');window.wpStorage.removeItem('wb_demo_authenticated');
+        window.wpStorage.removeItem('wp_demo_role');window.wpStorage.removeItem('wp_demo_staff_role');
         const landing=$('publicLanding'),login=$('loginScreen'),app=$('washpilotApp');
         if(landing)landing.style.display='block';
         if(login){login.hidden=true;login.style.display='none';}
@@ -2039,15 +2039,15 @@ function logoutDemo(){
  window.previousWashPilotTourStep=function(){if(!active||stepIndex===0)return;stepIndex--;displayStep();};
  window.closeWashPilotTour=function(markSeen){
   active=false;clearSpotlight();if(card){card.remove();card=null;}if(backdrop){backdrop.remove();backdrop=null;}
-  if(markSeen&&typeof wpStorage!=='undefined'){var key='wp_tour_seen_'+(currentRole==='platform'?'platform':currentStaffRole);wpStorage.setItem(key,'1');}
+  if(markSeen&&typeof window.wpStorage!=='undefined'){var key='wp_tour_seen_'+(currentRole==='platform'?'platform':currentStaffRole);window.wpStorage.setItem(key,'1');}
  };
  var previousHandleLogin=window.handleLogin;
  if(typeof previousHandleLogin==='function'){
   window.handleLogin=async function(){
    await previousHandleLogin.apply(this,arguments);
-   if(!window.wpRealWorkspaceActive&&typeof wpStorage!=='undefined'&&wpStorage.getItem('wp_demo_authenticated')==='1'){
+   if(!window.wpRealWorkspaceActive&&typeof window.wpStorage!=='undefined'&&window.wpStorage.getItem('wp_demo_authenticated')==='1'){
     var key='wp_tour_seen_'+(currentRole==='platform'?'platform':currentStaffRole);
-    if(wpStorage.getItem(key)!=='1')window.setTimeout(function(){window.openWashPilotTourChooser();},650);
+    if(window.wpStorage.getItem(key)!=='1')window.setTimeout(function(){window.openWashPilotTourChooser();},650);
    }
   };
  }
