@@ -1509,7 +1509,7 @@ const initial={services:seedServices,transactions:[
  {id:'WP-1001',date:isoAgo(1),time:'03:20 PM',plate:'GHI 3456',vehicle:'SUV',main:'Ceramic Coating',mainPrice:5000,addons:[{name:'Headlight Restoration',price:300}],total:5300,payment:'GCash',status:'Completed',employee:'Mark Santos',branch:'Main Branch'},
  {id:'WP-1000',date:isoAgo(2),time:'11:35 AM',plate:'JKL 7890',vehicle:'Van',main:'Premium Car Wash',mainPrice:200,addons:[{name:'Engine Wash',price:150}],total:350,payment:'Cash',status:'Completed',employee:'Juan Dela Cruz',branch:'Main Branch'}
 ],employees:[{id:1,name:'Juan Dela Cruz',role:'Washer',status:'Active',today:2,sales:270},{id:2,name:'Mark Santos',role:'Senior Detailer',status:'Active',today:2,sales:5680},{id:3,name:'Paolo Reyes',role:'Cashier',status:'Active',today:0,sales:0}],expenses:[{id:1,date:today(),category:'Cleaning Supplies',description:'Car shampoo and microfiber',amount:450},{id:2,date:isoAgo(1),category:'Utilities',description:'Water and electricity',amount:800}],inventory:[{id:1,name:'Car Shampoo',unit:'Liters',stock:24,min:30},{id:2,name:'Tire Black',unit:'Liters',stock:12,min:8},{id:3,name:'Microfiber Cloth',unit:'Pieces',stock:36,min:15},{id:4,name:'Spray Wax',unit:'Bottles',stock:15,min:10}],branches:[{id:1,name:'Main Branch',location:'Lipa City',status:'Active'},{id:2,name:'North Branch',location:'Batangas City',status:'Active'},{id:3,name:'South Branch',location:'Tanauan City',status:'Active'}],customers:[]};
-let state=loadState();let currentPage='dashboard';let currentPlan=window.wpStorage.getItem('wp_plan')||'basic';let selectedMain='Basic Car Wash';let selectedAddons=[];let lastReceipt=null;let transactionSearch='';let catalogTab='main';
+let state=loadState();window.wpReadWorkspaceServices=()=>Array.isArray(state?.services)?state.services:[];let currentPage='dashboard';let currentPlan=window.wpStorage.getItem('wp_plan')||'basic';let selectedMain='Basic Car Wash';let selectedAddons=[];let lastReceipt=null;let transactionSearch='';let catalogTab='main';
 function loadState(){try{let d=window.wpStorage.getItem('washpilot_demo_data');return d?JSON.parse(d):structuredClone(initial)}catch(e){return structuredClone(initial)}}
 function save(){window.wpStorage.setItem('washpilot_demo_data',JSON.stringify(state));window.wpStorage.setItem('wp_plan',currentPlan)}
 function money(n){return '₱'+Number(n||0).toLocaleString('en-PH',{maximumFractionDigits:2})}
@@ -2413,7 +2413,7 @@ function logoutDemo(){
     const {data:subscription,error:subscriptionError}=await sb.from('subscriptions').select('plan_code,status,trial_starts_at,trial_ends_at,current_period_ends_at').eq('business_id',businessId).single();
     if(subscriptionError)throw new Error('Your business is available, but its subscription could not be loaded: '+subscriptionError.message);
     openRealWorkspace(user,business,subscription);
-    if(window.washPilotBookingApi){try{await window.washPilotBookingApi.syncServices(businessId,state.services||[]);}catch(syncError){console.warn('Facility service sync deferred:',syncError.message||syncError);}}
+    if(window.washPilotBookingApi){try{const services=typeof window.wpReadWorkspaceServices==='function'?window.wpReadWorkspaceServices():[];await window.washPilotBookingApi.syncServices(businessId,services);}catch(syncError){console.warn('Facility service sync deferred:',syncError.message||syncError);}}
   }
   function removeDemoFixturesFromWorkspace(workspace){
  const result=Object.assign({},workspace||{});
@@ -2630,7 +2630,7 @@ async syncServices(businessId,services){
       if(error)throw error;return Number(count||0);
     },
     async getConfirmedQueueBookings(){
-      const localToday=today();
+      const localToday=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Manila',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
       const {data,error}=await getClient().from('facility_bookings')
         .select('id,booking_code,customer_name,customer_phone,service_name,vehicle_size,vehicle_plate,booking_date,start_time,end_time,price_php,payment_method,payment_status,status,notes')
         .eq('business_id',window.wpRealBusinessId).eq('status','confirmed')
