@@ -2670,6 +2670,7 @@ async function initGooglePlaceAutocomplete(config){
   autocomplete.includedRegionCodes=['ph'];
   autocomplete.style.width='100%';
   host.appendChild(autocomplete);
+  address.style.display='none';
   autocomplete.addEventListener('gmp-select',async event=>{
    try{
     const place=event.placePrediction.toPlace();
@@ -2684,6 +2685,7 @@ async function initGooglePlaceAutocomplete(config){
   });
   if(status&&!placeId?.value)status.textContent='Search and select a result from Google Maps. Typing an address alone is not enough.';
  }catch(err){
+  address.style.display='block';
   if(status){status.textContent=err.message||'Google Maps autocomplete is unavailable.';status.classList.remove('is-selected');}
   console.warn('WashPilot Google Places:',err);
  }
@@ -3311,9 +3313,11 @@ function renderPublicLocationCta(f){
  const place=[f.facility_name,f.address].filter(Boolean).join(', ');
  if(!place)return '';
  const q=encodeURIComponent(place);
- const destination=Number.isFinite(Number(f.latitude))&&Number.isFinite(Number(f.longitude))?Number(f.latitude)+','+Number(f.longitude):place;
+ const hasVerifiedLocation=!!f.google_place_id&&Number.isFinite(Number(f.latitude))&&Number.isFinite(Number(f.longitude));
+ if(!hasVerifiedLocation)return '<section class="wp-public-location-cta"><div class="wp-location-copy"><span class="wp-eyebrow">VISIT OUR FACILITY</span><h2>Location verification pending</h2><p>'+esc(f.facility_name)+'</p><p class="wp-location-address">'+esc(f.address||'')+'</p><p class="wp-form-hint">The facility has not yet confirmed its exact Google Maps pin. Directions will appear after the owner verifies the location.</p></div></section>';
+ const destination=Number(f.latitude)+','+Number(f.longitude);
  const mapUrl='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(destination);
- const embedUrl='https://maps.google.com/maps?q='+q+'&output=embed';
+ const embedUrl='https://maps.google.com/maps?q='+encodeURIComponent(destination)+'&output=embed';
  return '<section class="wp-public-location-cta"><div class="wp-location-copy"><span class="wp-eyebrow">VISIT OUR FACILITY</span><h2>Find us on Google Maps</h2><p>'+esc(f.facility_name)+'</p><p class="wp-location-address">'+esc(f.address||'')+'</p><a class="wp-btn-primary wp-directions-cta" href="'+esc(mapUrl)+'" target="_blank" rel="noopener">Get directions in Google Maps <span>↗</span></a></div><div class="wp-location-map"><iframe title="Map to '+esc(f.facility_name)+'" src="'+esc(embedUrl)+'" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div></section>';
 }
 
