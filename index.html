@@ -1766,7 +1766,11 @@ function logoutDemo(){
     const landing=document.getElementById('publicLanding'),login=document.getElementById('loginScreen'),app=document.getElementById('washpilotApp');
     if(landing)landing.style.display='none';if(login){login.hidden=true;login.style.display='none';}if(app){app.hidden=false;app.classList.remove('auth-hidden');app.style.display='grid';}
     document.body.classList.add('washpilot-authenticated');document.body.classList.remove('platform-mode');document.body.dataset.washpilotLoginOpen='0';
-    save();renderNav();render();
+    save();
+    // Always land authenticated business owners directly on the dashboard.
+    currentPage='dashboard';
+    go('dashboard');
+    window.scrollTo({top:0,behavior:'instant'});
   }
   function renderTrialAccount(user,business,subscription){
     if($('publicLanding'))$('publicLanding').style.display='none';if($('loginScreen'))$('loginScreen').style.display='none';
