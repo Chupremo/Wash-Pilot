@@ -1163,16 +1163,16 @@ tbody tr:hover td{background:#f5f9ff}
 <script>
 // Safari/file-origin-safe demo storage. If persistent browser storage is unavailable,
 // keep the demo working for the current page session using an in-memory fallback.
-const wpStorage = (() => {
-  const memory = Object.create(null);
-  let persistent = null;
-  try { const test = '__wp_storage_test__'; window.localStorage.setItem(test, '1'); window.localStorage.removeItem(test); persistent = window.localStorage; } catch (_) { persistent = null; }
+var wpStorage = window.wpStorage || (window.wpStorage = (function () {
+  var memory = Object.create(null);
+  var persistent = null;
+  try { var test = '__wp_storage_test__'; window.localStorage.setItem(test, '1'); window.localStorage.removeItem(test); persistent = window.localStorage; } catch (_) { persistent = null; }
   return {
-    getItem(key) { try { return persistent ? persistent.getItem(key) : (Object.prototype.hasOwnProperty.call(memory,key) ? memory[key] : null); } catch (_) { return Object.prototype.hasOwnProperty.call(memory,key) ? memory[key] : null; } },
-    setItem(key,value) { const v=String(value); memory[key]=v; try { if (persistent) persistent.setItem(key,v); } catch (_) {} },
-    removeItem(key) { delete memory[key]; try { if (persistent) persistent.removeItem(key); } catch (_) {} }
+    getItem: function(key) { try { return persistent ? persistent.getItem(key) : (Object.prototype.hasOwnProperty.call(memory,key) ? memory[key] : null); } catch (_) { return Object.prototype.hasOwnProperty.call(memory,key) ? memory[key] : null; } },
+    setItem: function(key,value) { var v=String(value); memory[key]=v; try { if (persistent) persistent.setItem(key,v); } catch (_) {} },
+    removeItem: function(key) { delete memory[key]; try { if (persistent) persistent.removeItem(key); } catch (_) {} }
   };
-})();
+})());
 // Real account access is handled by Supabase Auth below.
 function initAuth(){}
 function handleLogin(e){e.preventDefault();const error=document.getElementById('loginError');if(error){error.textContent='Use your registered WashPilot email and password.';error.classList.add('show');}}
