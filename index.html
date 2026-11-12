@@ -4,12 +4,12 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#071a33" />
-<meta name="description" content="Run a smarter carwash with WashPilot. Manage wash queues, payments, customers, staff, inventory, and branches with simple monthly plans." />
+<meta name="description" content="WashPilot is a beginner-friendly carwash POS and management platform for Filipino carwash owners. Track washes, sales, payments, customers, and your daily queue. Start free today." />
 <link rel="icon" type="image/svg+xml" href="washpilot-logo.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700;750;800&family=Plus+Jakarta+Sans:wght@500;600;650;700;750;800&display=swap" rel="stylesheet">
-<title>WashPilot — Carwash Management Solutions & Pricing</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700;750;800&family=Poppins:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;650;700;750;800&display=swap" rel="stylesheet">
+<title>WashPilot — Carwash POS & Management Software for the Philippines</title>
 <style>
 :root{--navy:#10233f;--navy2:#17365e;--blue:#2563eb;--cyan:#38bdf8;--ink:#17243a;--muted:#738096;--line:#e4eaf2;--bg:#f4f7fb;--card:#fff;--green:#159b69;--red:#dc5656;--amber:#d58a18;--purple:#7456d8;--shadow:0 8px 28px rgba(17,39,70,.07)}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink)}button,input,select,textarea{font:inherit}button{cursor:pointer}.app{min-height:100vh;display:grid;grid-template-columns:250px minmax(0,1fr)}
@@ -1355,6 +1355,75 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
 .wp-google-address-selected{display:block;margin-top:7px;font-size:10px;line-height:1.45;color:#16845d;font-weight:700}
 .wp-google-address-status,.wp-google-address-error{padding:12px 13px;border:1px solid #dce6f2;border-radius:10px;background:#f7faff;color:#61738e;font-size:11px;line-height:1.5}
 .wp-google-address-error{background:#fff4f4;border-color:#f2d4d4;color:#b94d56}
+
+/* =========================================================
+   WASHPILOT PHASE 1 — owner-first homepage refinement
+   ========================================================= */
+#publicLanding{font-family:'Inter',sans-serif;color:#17243a}
+#publicLanding h1,#publicLanding h2,#publicLanding h3,
+#publicLanding .wp-site-links a,#publicLanding .wp-nav-signin,
+#publicLanding .wp-nav-cta{font-family:'Poppins','Inter',sans-serif}
+#publicLanding .wp-site-nav{
+  min-height:78px;height:auto;padding:12px clamp(18px,3.5vw,38px);
+  border-bottom:1px solid #e7edf5;box-shadow:0 4px 18px rgba(11,24,48,.045)
+}
+#publicLanding .wp-site-brand{width:190px;flex:0 0 190px}
+#publicLanding .wp-hero-copy{max-width:590px}
+#publicLanding .wp-hero h1{
+  font:800 clamp(42px,5.1vw,66px)/1.06 'Poppins','Inter',sans-serif;
+  letter-spacing:-.055em;max-width:650px
+}
+#publicLanding .wp-hero-lede{max-width:550px;font-size:16px;line-height:1.75;color:#d5e1f1}
+#publicLanding .wp-hero-actions{align-items:center;gap:12px}
+#publicLanding .wp-btn-primary,#publicLanding .wp-btn-secondary{
+  display:inline-flex;align-items:center;justify-content:center;gap:12px;
+  min-height:50px;padding:14px 19px;font:700 13px 'Poppins','Inter',sans-serif;
+  cursor:pointer
+}
+#publicLanding .wp-btn-primary{background:#3568f5!important;border:1px solid #3568f5!important}
+#publicLanding .wp-btn-primary:hover{background:#2555d9!important}
+#publicLanding .wp-btn-secondary{border:1px solid #dbe5f2!important}
+#publicLanding .wp-hero-proof{margin-top:28px}
+#publicLanding .wp-proof-avatars span{font-size:12px;font-weight:800}
+#publicLanding .wp-value-strip{border-bottom:1px solid #e7edf5;background:#fff}
+#publicLanding .wp-value-strip>div{padding:22px 18px}
+#publicLanding .wp-value-strip b{font:700 14px 'Poppins','Inter',sans-serif;color:#142846}
+#publicLanding .wp-value-strip small{font-size:12px;line-height:1.55;color:#738198}
+#publicLanding .wp-section-head h2,#publicLanding .wp-how h2,
+#publicLanding .wp-pricing h2,#publicLanding .wp-about h2,
+#publicLanding .wp-faq h2,#publicLanding .wp-final-cta h2{
+  font-family:'Poppins','Inter',sans-serif;letter-spacing:-.045em
+}
+#publicLanding .wp-section-head>p{font-size:14px;line-height:1.75}
+#publicLanding .wp-feature-card h3,#publicLanding .wp-price-card h3{font-family:'Poppins','Inter',sans-serif}
+#publicLanding .wp-feature-card p{font-size:13px;line-height:1.7}
+@media(max-width:1000px){
+  #publicLanding .wp-site-nav{padding-inline:16px;gap:10px}
+  #publicLanding .wp-site-links{gap:13px}
+  #publicLanding .wp-site-links a{font-size:11px}
+  #publicLanding .wp-site-brand{width:160px;flex-basis:160px}
+}
+@media(max-width:760px){
+  #publicLanding .wp-site-nav{min-height:68px;padding:10px 12px;gap:7px}
+  #publicLanding .wp-site-brand{width:clamp(125px,34vw,165px);flex:0 1 auto}
+  #publicLanding .wp-nav-actions{gap:3px}
+  #publicLanding .wp-nav-signin{min-height:42px;padding:8px 8px;font-size:11px}
+  #publicLanding .wp-nav-cta{min-height:42px;padding:9px 10px;font-size:10px;gap:6px}
+  #publicLanding .wp-menu-toggle{min-height:42px;min-width:42px;padding:8px}
+  #publicLanding .wp-hero{padding:42px 18px 0!important}
+  #publicLanding .wp-hero h1{font-size:clamp(38px,9vw,50px)!important;line-height:1.08!important;letter-spacing:-1.8px!important}
+  #publicLanding .wp-hero-lede{font-size:14px!important;line-height:1.7!important}
+  #publicLanding .wp-hero-actions{display:grid!important;grid-template-columns:1fr!important}
+  #publicLanding .wp-btn-primary,#publicLanding .wp-btn-secondary{width:100%;min-height:48px}
+  #publicLanding .wp-value-strip>div{padding:14px 12px}
+}
+@media(max-width:390px){
+  #publicLanding .wp-site-brand{width:118px;flex-basis:118px}
+  #publicLanding .wp-nav-signin{padding-inline:6px;font-size:10px}
+  #publicLanding .wp-nav-cta{padding-inline:8px;font-size:9px}
+  #publicLanding .wp-menu-toggle{min-width:38px;width:38px}
+}
+
 </style>
 </head>
 <body>
@@ -1365,24 +1434,24 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
     <nav class="wp-site-links" aria-label="Main navigation">
       <a href="/features">Features</a><a href="/businesses">Businesses</a><a href="/how-it-works">How it works</a><a href="/pricing">Pricing</a><a href="/about">About</a><a href="/faq">FAQ</a><a href="/contact">Contact</a>
     </nav>
-    <div class="wp-nav-actions"><button class="wp-nav-cta" type="button" onclick="showLoginScreen()">Sign in <span>↗</span></button><button class="wp-menu-toggle" type="button" aria-label="Open navigation" onclick="togglePublicMenu()">☰</button></div>
+    <div class="wp-nav-actions"><button class="wp-nav-signin" type="button" onclick="showLoginScreen()">Sign in</button><button class="wp-nav-cta" type="button" onclick="openTrialSignup('basic')">Start free <span>→</span></button><button class="wp-menu-toggle" type="button" aria-label="Open navigation" onclick="togglePublicMenu()">☰</button></div>
   </header>
 
   <main id="top">
     <section class="wp-hero">
       <div class="wp-hero-grid">
         <div class="wp-hero-copy">
-          <div class="wp-kicker"><span class="wp-kicker-dot"></span> CARWASH MANAGEMENT, REIMAGINED</div>
-          <h1>More shine.<br><em>Less stress.</em><br>Total control.</h1>
-          <p class="wp-hero-lede">The all-in-one workspace for running a smarter carwash. Keep every wash moving, every payment visible, and every day organized.</p>
-          <div class="wp-hero-actions"><a class="wp-btn-primary" href="/pricing">Explore plans <span>→</span></a><a class="wp-btn-secondary" href="/how-it-works">See how it works <span>↓</span></a></div>
-          <div class="wp-hero-proof"><div class="wp-proof-avatars"><span>W</span><span>P</span><span>+</span></div><div><b>Made for the people behind every wash.</b><small>Owners · Cashiers · Wash teams</small></div></div>
+          <div class="wp-kicker"><span class="wp-kicker-dot"></span> CARWASH POS &amp; MANAGEMENT FOR FILIPINO OWNERS</div>
+          <h1>Run your carwash.<br><em>Not your paperwork.</em></h1>
+          <p class="wp-hero-lede">Replace the ledger and scattered spreadsheets with one beginner-friendly POS. Track every wash, payment, customer, and daily sale from a single workspace.</p>
+          <div class="wp-hero-actions"><button class="wp-btn-primary" type="button" onclick="openTrialSignup('basic')">Start free today <span>→</span></button><a class="wp-btn-secondary" href="/how-it-works">See how it works <span>↓</span></a></div>
+          <div class="wp-hero-proof"><div class="wp-proof-avatars"><span>✓</span><span>₱</span><span>∞</span></div><div><b>Free forever. No credit card required.</b><small>For owners · Cashiers · Wash teams</small></div></div>
         </div>
-        <div class="wp-hero-visual" aria-label="Illustration of the WashPilot operations dashboard">
+        <div class="wp-hero-visual" aria-label="Sample preview of the WashPilot carwash POS dashboard">
           <div class="wp-visual-orbit wp-orbit-one"></div><div class="wp-visual-orbit wp-orbit-two"></div>
           <div class="wp-dashboard-window">
-            <div class="wp-dash-top"><div class="wp-dash-brand"><span class="wp-dash-mark">W</span><div><b>WashPilot</b><small>Business overview</small></div></div><span class="wp-live"><i></i> TODAY</span></div>
-            <div class="wp-dash-welcome"><div><small>WEDNESDAY, YOUR BUSINESS AT A GLANCE</small><h3>Good morning, Alex</h3></div><span class="wp-dash-avatar">A</span></div>
+            <div class="wp-dash-top"><div class="wp-dash-brand"><span class="wp-dash-mark">W</span><div><b>WashPilot</b><small>Business overview</small></div></div><span class="wp-live"><i></i> SAMPLE DATA</span></div>
+            <div class="wp-dash-welcome"><div><small>SAMPLE BUSINESS OVERVIEW</small><h3>Your carwash at a glance</h3></div><span class="wp-dash-avatar">A</span></div>
             <div class="wp-dash-stats"><div><span>Today's sales</span><b>₱8,450</b><small class="wp-stat-up">↑ Daily snapshot</small></div><div><span>Vehicles served</span><b>24</b><small>Across all services</small></div><div><span>In queue</span><b>06</b><small>Moving through wash</small></div></div>
             <div class="wp-dash-lower"><div class="wp-chart-card"><div class="wp-chart-head"><b>Sales overview</b><span>THIS WEEK</span></div><div class="wp-mini-chart"><i style="height:35%"></i><i style="height:54%"></i><i style="height:43%"></i><i style="height:76%"></i><i style="height:61%"></i><i style="height:92%"></i><i style="height:70%"></i></div><div class="wp-chart-days"><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span><span>SUN</span></div></div>
               <div class="wp-queue-card"><div class="wp-chart-head"><b>Wash queue</b><span>LIVE FLOW</span></div><div class="wp-queue-row"><i class="wp-q-blue"></i><span><b>Honda City</b><small>Premium wash</small></span><em>Washing</em></div><div class="wp-queue-row"><i class="wp-q-green"></i><span><b>Toyota Vios</b><small>Basic wash</small></span><em>Ready</em></div><div class="wp-queue-row"><i class="wp-q-amber"></i><span><b>Ford Ranger</b><small>Detailing</small></span><em>Waiting</em></div></div></div>
@@ -1391,17 +1460,17 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
           <div class="wp-float-chip wp-chip-bottom"><span class="wp-check">✓</span><div><b>Keep the line moving</b><small>From arrival to pickup</small></div></div>
         </div>
       </div>
-      <div class="wp-hero-foot"><span>ONE WORKSPACE. A BETTER-RUN CARWASH.</span><span>BUILT FOR DAILY OPERATIONS <b>✦</b></span></div>
+      <div class="wp-hero-foot"><span>BUILT FOR PHILIPPINE CARWASH OWNERS.</span><span>START FREE. UPGRADE WHEN READY. <b>✦</b></span></div>
     </section>
 
     <section class="wp-value-strip" aria-label="Platform highlights">
-      <div><span class="wp-value-icon">01</span><b>Know what’s happening</b><small>Daily sales and operational visibility</small></div>
-      <div><span class="wp-value-icon">02</span><b>Keep work moving</b><small>Organized wash queue and service flow</small></div>
-      <div><span class="wp-value-icon">03</span><b>Grow with confidence</b><small>Tools that scale with your operation</small></div>
+      <div><span class="wp-value-icon">01</span><b>Move beyond the ledger</b><small>Record washes and payments in one place</small></div>
+      <div><span class="wp-value-icon">02</span><b>Keep the queue moving</b><small>See each vehicle’s service status</small></div>
+      <div><span class="wp-value-icon">03</span><b>Know your daily numbers</b><small>Review sales and transaction history</small></div>
     </section>
 
     <section class="wp-section wp-features" id="wp-features">
-      <div class="wp-section-head"><div><span class="wp-eyebrow">THE WORKSPACE</span><h2>Everything your carwash needs.<br><em>Nothing you don’t.</em></h2></div><p>Less time juggling notebooks, chats, and spreadsheets. More time delivering a great customer experience.</p></div>
+      <div class="wp-section-head"><div><span class="wp-eyebrow">THE WASHPILOT WORKSPACE</span><h2>Everything your carwash needs.<br><em>In one clear place.</em></h2></div><p>From the first wash ticket to the final payment, keep daily operations organized in one beginner-friendly workspace.</p></div>
       <div class="wp-feature-grid">
         <article class="wp-feature-card wp-feature-large"><div class="wp-feature-icon wp-ico-blue">↗</div><span class="wp-feature-label">01 / DAILY OPERATIONS</span><h3>Your wash queue,<br>under control.</h3><p>Track each vehicle from arrival to washing, quality check, ready for pickup, and completed.</p><div class="wp-flow-mini"><span>Arrived</span><i></i><span>Washing</span><i></i><span>Ready</span><i></i><span>Done</span></div></article>
         <article class="wp-feature-card"><div class="wp-feature-icon wp-ico-cyan">₱</div><span class="wp-feature-label">02 / SALES & PAYMENTS</span><h3>See the money clearly.</h3><p>Record payments, review transactions, and keep daily sales within reach.</p><div class="wp-feature-stat"><small>TODAY'S SALES</small><b>₱12,850</b><span>One clear daily view</span></div></article>
