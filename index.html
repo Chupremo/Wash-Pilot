@@ -1131,6 +1131,45 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
 .wp-proof-link{font-size:11px;color:#3568f5;font-weight:800;text-decoration:none}.wp-booking-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}.wp-booking-actions button{font-size:10px!important;padding:7px 9px!important}
 .wp-booking-form select option:disabled{color:#9b3840}
 @media(max-width:760px){.wp-share-panel{grid-template-columns:1fr}.wp-qr-wrap{width:max-content;max-width:100%;justify-self:start}.wp-payment-settings{grid-template-columns:1fr}.wp-owner-gallery{grid-template-columns:repeat(3,minmax(0,1fr))}.wp-public-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}.wp-public-gallery img{height:135px}}
+
+/* WashPilot save confirmations and online booking notifications */
+.toast{
+ position:fixed!important;right:24px!important;bottom:24px!important;left:auto!important;top:auto!important;
+ display:none;background:#10233f!important;background-image:none!important;color:#fff!important;
+ border:1px solid #31527d!important;border-radius:13px!important;padding:15px 20px!important;
+ min-width:260px;max-width:min(520px,calc(100vw - 32px));font-size:13px!important;
+ font-weight:750!important;line-height:1.5!important;letter-spacing:.01em;
+ box-shadow:0 18px 48px rgba(5,18,40,.32)!important;z-index:100000!important;
+ opacity:1!important;text-shadow:none!important;pointer-events:none;
+}
+.toast.show{display:block!important;animation:wpToastIn .22s ease-out!important}
+@keyframes wpToastIn{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+.wp-booking-notification-badge{
+ display:inline-flex;align-items:center;justify-content:center;min-width:21px;height:21px;
+ padding:0 6px;margin-left:auto;border-radius:999px;background:#dc2626;color:#fff;
+ font-size:11px;line-height:1;font-weight:900;box-shadow:0 2px 8px rgba(220,38,38,.34);
+}
+.wp-booking-notification-badge[hidden]{display:none!important}
+.nav button .wp-booking-notification-badge{opacity:1!important}
+.wp-dashboard-booking-alert{
+ display:flex;align-items:center;gap:14px;margin:0 0 16px;padding:16px 18px;
+ border:1px solid #fecaca;border-left:4px solid #dc2626;border-radius:13px;background:#fff;
+ box-shadow:0 8px 20px rgba(25,45,75,.06);color:#172b49;
+}
+.wp-dashboard-booking-alert-icon{
+ flex:0 0 34px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
+ color:#fff;background:#dc2626;font-weight:900;font-size:18px;
+}
+.wp-dashboard-booking-alert-copy{min-width:0;flex:1}
+.wp-dashboard-booking-alert-kicker{display:block;color:#b42318;font-size:9px;font-weight:900;letter-spacing:.11em;margin-bottom:4px}
+.wp-dashboard-booking-alert-copy strong{display:block;color:#172b49;font-size:14px}
+.wp-dashboard-booking-alert-copy p{margin:4px 0 0;color:#66758d;font-size:11px;line-height:1.5}
+.wp-dashboard-booking-alert>.btn{white-space:nowrap;flex:0 0 auto}
+@media(max-width:700px){
+ .toast{left:16px!important;right:16px!important;bottom:88px!important;min-width:0;width:auto;max-width:none;text-align:center}
+ .wp-dashboard-booking-alert{align-items:flex-start;flex-wrap:wrap}
+ .wp-dashboard-booking-alert>.btn{width:100%;justify-content:center}
+}
 </style>
 </head>
 <body>
@@ -1269,7 +1308,7 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
     <button data-page="queue"><span class="ico">◷</span>Service Queue</button>
     <button data-page="transactions"><span class="ico">▤</span>Transactions</button>
     <button data-page="customers"><span class="ico">♙</span>Customers</button>
-    <button data-page="bookings"><span class="ico">▣</span>Bookings</button>
+    <button data-page="bookings" aria-label="Bookings"><span class="ico">▣</span>Bookings<span id="wpBookingsNotificationBadge" class="wp-booking-notification-badge" hidden>0</span></button>
     <button data-page="listing"><span class="ico">⌂</span>Facility Listing</button>
   </nav></div>
   <div id="easyToolsGroup" style="display:none"><div class="nav-label">More</div><nav class="nav"><button data-page="managementHub"><span class="ico">⚙</span>Business Management</button></nav></div>
@@ -1517,7 +1556,7 @@ function lockedPage(){
    ${isRegistered?'<p class="subtle" style="margin-top:14px">Registered workspaces cannot unlock paid features by switching a demo setting. Access changes only when the subscription on your account is updated.</p>':''}
  </section>`;
 }
-function dashboardPage(){if(viewMode==='easy')return easyDashboardPage();let todayTx=state.transactions.filter(isToday),sales=totalCollectedBetween(today(),today()),vehicles=todayTx.filter(t=>t.status!=='Cancelled').length,expenses=state.expenses.filter(e=>e.date===today()).reduce((s,e)=>s+e.amount,0),week=state.transactions.filter(t=>t.date>=isoAgo(6)&&t.status!=='Cancelled'),month=state.transactions.filter(t=>t.date.slice(0,7)===today().slice(0,7)&&t.status!=='Cancelled');let weekSales=totalCollectedBetween(isoAgo(6),today()),monthSales=totalCollectedBetween(today().slice(0,7)+'-01',today()),avg=vehicles?sales/vehicles:0,waiting=todayTx.filter(t=>t.status==='Waiting').length,washing=todayTx.filter(t=>t.status==='Washing').length,completed=todayTx.filter(t=>t.status==='Completed').length;let days=Array.from({length:7},(_,i)=>{let d=new Date();d.setDate(d.getDate()-(6-i));let key=dateKey(d);return {key,label:d.toLocaleDateString('en-US',{weekday:'short'}),value:totalCollectedBetween(key,key)}});let max=Math.max(1,...days.map(d=>d.value));return `${pageHead('Business Overview','Monitor sales, vehicles, queue activity and daily performance.',`<button class="btn" onclick="go('newwash')">＋ New Wash</button>`)}${dailyKpiStrip()}<div class="grid stats">${stat("Today's Sales",money(sales),`${vehicles} vehicles recorded today`,'₱','green')}${stat('This Week',money(weekSales),'Last 7 days','↗')}${stat('This Month',money(monthSales),'Current month','▣','purple')}${stat('Average per Vehicle',money(avg),'Average transaction value','🚘','amber')}</div><div class="grid two"><section class="panel"><div class="panel-head"><h3>Sales Overview</h3><span class="subtle">Last 7 days</span></div><div class="chart">${days.map(d=>`<div class="bar-wrap"><div class="bar" title="${money(d.value)}" style="height:${Math.max(3,d.value/max*78)}%"></div><span class="bar-label">${d.label}</span></div>`).join('')}</div><div class="grid three" style="margin-top:16px"><div class="mini-card"><small>Waiting</small><strong>${waiting}</strong></div><div class="mini-card"><small>Washing</small><strong>${washing}</strong></div><div class="mini-card"><small>Completed</small><strong>${completed}</strong></div></div></section><section class="panel"><div class="panel-head"><h3>Today's Service Queue</h3><button class="btn ghost small" onclick="go('queue')">View queue</button></div><div class="queue-list">${todayTx.filter(t=>t.status!=='Cancelled').slice(0,4).map(queueHtml).join('')||'<div class="empty">No vehicles in the queue yet.</div>'}</div></section></div><div class="grid two" style="margin-top:16px"><section class="panel"><div class="panel-head"><h3>Recent Transactions</h3><button class="btn ghost small" onclick="go('transactions')">View all</button></div>${transactionTable(state.transactions.slice().sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time)).slice(0,5),false)}</section><section class="panel"><div class="panel-head"><h3>Payment Breakdown</h3><span class="subtle">Today</span></div>${paymentBreakdown(paidTransactionsBetween(today(),today()))}<div class="divider"></div>${planRank(currentPlan)>=2?`<div class="panel-head"><h3>Daily Expenses</h3><strong>${money(expenses)}</strong></div><div class="muted-box"><div style="display:flex;justify-content:space-between;font-size:11px"><span>Estimated net earnings</span><b style="color:var(--green)">${money(sales-expenses)}</b></div><small class="subtle">Gross sales less recorded expenses. Not a full accounting profit calculation.</small></div>`:`<div class="muted-box"><b style="font-size:11px">Want to track expenses and estimated earnings?</b><p class="subtle">Upgrade to Business to record operating costs and see estimated net earnings.</p><button class="btn small" onclick="setPlan('business')">Preview Business</button></div>`}</section></div>`}
+function dashboardPage(){if(viewMode==='easy')return easyDashboardPage();let todayTx=state.transactions.filter(isToday),sales=totalCollectedBetween(today(),today()),vehicles=todayTx.filter(t=>t.status!=='Cancelled').length,expenses=state.expenses.filter(e=>e.date===today()).reduce((s,e)=>s+e.amount,0),week=state.transactions.filter(t=>t.date>=isoAgo(6)&&t.status!=='Cancelled'),month=state.transactions.filter(t=>t.date.slice(0,7)===today().slice(0,7)&&t.status!=='Cancelled');let weekSales=totalCollectedBetween(isoAgo(6),today()),monthSales=totalCollectedBetween(today().slice(0,7)+'-01',today()),avg=vehicles?sales/vehicles:0,waiting=todayTx.filter(t=>t.status==='Waiting').length,washing=todayTx.filter(t=>t.status==='Washing').length,completed=todayTx.filter(t=>t.status==='Completed').length;let days=Array.from({length:7},(_,i)=>{let d=new Date();d.setDate(d.getDate()-(6-i));let key=dateKey(d);return {key,label:d.toLocaleDateString('en-US',{weekday:'short'}),value:totalCollectedBetween(key,key)}});let max=Math.max(1,...days.map(d=>d.value));return `${pageHead('Business Overview','Monitor sales, vehicles, queue activity and daily performance.',`<button class="btn" onclick="go('newwash')">＋ New Wash</button>`)}${dailyKpiStrip()}<div id="wpDashboardBookingNotifications"></div><div class="grid stats">${stat("Today's Sales",money(sales),`${vehicles} vehicles recorded today`,'₱','green')}${stat('This Week',money(weekSales),'Last 7 days','↗')}${stat('This Month',money(monthSales),'Current month','▣','purple')}${stat('Average per Vehicle',money(avg),'Average transaction value','🚘','amber')}</div><div class="grid two"><section class="panel"><div class="panel-head"><h3>Sales Overview</h3><span class="subtle">Last 7 days</span></div><div class="chart">${days.map(d=>`<div class="bar-wrap"><div class="bar" title="${money(d.value)}" style="height:${Math.max(3,d.value/max*78)}%"></div><span class="bar-label">${d.label}</span></div>`).join('')}</div><div class="grid three" style="margin-top:16px"><div class="mini-card"><small>Waiting</small><strong>${waiting}</strong></div><div class="mini-card"><small>Washing</small><strong>${washing}</strong></div><div class="mini-card"><small>Completed</small><strong>${completed}</strong></div></div></section><section class="panel"><div class="panel-head"><h3>Today's Service Queue</h3><button class="btn ghost small" onclick="go('queue')">View queue</button></div><div class="queue-list">${todayTx.filter(t=>t.status!=='Cancelled').slice(0,4).map(queueHtml).join('')||'<div class="empty">No vehicles in the queue yet.</div>'}</div></section></div><div class="grid two" style="margin-top:16px"><section class="panel"><div class="panel-head"><h3>Recent Transactions</h3><button class="btn ghost small" onclick="go('transactions')">View all</button></div>${transactionTable(state.transactions.slice().sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time)).slice(0,5),false)}</section><section class="panel"><div class="panel-head"><h3>Payment Breakdown</h3><span class="subtle">Today</span></div>${paymentBreakdown(paidTransactionsBetween(today(),today()))}<div class="divider"></div>${planRank(currentPlan)>=2?`<div class="panel-head"><h3>Daily Expenses</h3><strong>${money(expenses)}</strong></div><div class="muted-box"><div style="display:flex;justify-content:space-between;font-size:11px"><span>Estimated net earnings</span><b style="color:var(--green)">${money(sales-expenses)}</b></div><small class="subtle">Gross sales less recorded expenses. Not a full accounting profit calculation.</small></div>`:`<div class="muted-box"><b style="font-size:11px">Want to track expenses and estimated earnings?</b><p class="subtle">Upgrade to Business to record operating costs and see estimated net earnings.</p><button class="btn small" onclick="setPlan('business')">Preview Business</button></div>`}</section></div>`}
 function paymentBreakdown(list){let methods=['Cash','GCash','Maya','Card','Other'];let paid=list.filter(t=>t.status!=='Cancelled'&&(t.financialStatus||'Paid')==='Paid');let total=totalSales(paid);return methods.map((m,i)=>{let v=paid.filter(t=>t.payment===m).reduce((s,t)=>s+Number(t.total||0),0);if(!v)return '';return `<div style="margin:11px 0"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px"><span>${m}</span><b>${money(v)}</b></div><div class="progress"><span style="width:${total?v/total*100:0}%"></span></div></div>`}).join('')||'<div class="empty">No payments recorded yet.</div>'}
 function newWashPage(){let main=state.services.filter(s=>s.type==='main'&&s.active),adds=state.services.filter(s=>s.type==='addon'&&s.active);if(window.wpRealWorkspaceActive&&!main.length)return pageHead('New Wash','Set up your main wash services before creating your first ticket.')+'<section class="panel" style="max-width:720px"><h2 style="margin:0 0 8px">Your service menu is empty</h2><p class="subtle" style="line-height:1.7">Add at least one main service with its price and estimated duration. Optional extras can be added afterward.</p><button class="btn" onclick="catalogTab=\'main\';go(\'catalog\')">Add your first main service</button></section>';return `${pageHead('New Wash','Register a vehicle, select the main service and add any extras.') }<div class="grid two"><div class="grid" style="gap:14px"><section class="form-section"><h3>① Vehicle information</h3><div class="form-grid"><div class="field"><label>Plate number *</label><input id="washPlate" placeholder="e.g. ABC 1234" value=""></div><div class="field"><label>Vehicle type *</label><select id="washVehicle"><option>Sedan</option><option>SUV</option><option>Pickup</option><option>Van</option><option>Motorcycle</option><option>Other</option></select></div></div><div class="field" style="margin-top:12px"><label>Customer name (optional)</label><input id="washCustomer" placeholder="Walk-in customer"></div></section><section class="form-section"><h3>② Select main service</h3><div class="choice-list">${main.map(s=>`<label class="choice ${selectedMain===s.name?'selected':''}"><input type="radio" name="mainService" value="${esc(s.name)}" ${selectedMain===s.name?'checked':''} onchange="selectMain('${esc(s.name)}')"><span class="choice-main"><b>${esc(s.name)}</b><small>${esc(s.description||'')} · ${s.duration} min</small></span><span class="choice-price" data-main-price="${s.id}">${money(servicePriceForSize(s,getSelectedVehicleSize()))}</span></label>`).join('')}</div></section><section class="form-section"><h3>③ Additional services / add-ons <span class="badge">Select multiple</span></h3><div class="choice-list">${adds.map(s=>`<label class="choice ${selectedAddons.includes(s.id)?'selected':''}"><input type="checkbox" ${selectedAddons.includes(s.id)?'checked':''} onchange="toggleAddon(${s.id},this.checked)"><span class="choice-main"><b>${esc(s.name)}</b><small>${esc(s.description||'')}</small></span><span class="choice-price">+ ${money(s.price)}</span></label>`).join('')||'<div class="empty">No active add-ons. Add them in Services & Pricing.</div>'}</div></section><section class="form-section"><h3>④ Payment details</h3><div class="form-grid"><div class="field"><label>Payment method</label><select id="washPayment"><option>Cash</option><option>GCash</option><option>Maya</option><option>Card</option><option>Other</option></select></div>${planRank(currentPlan)>=2?`<div class="field"><label>Assigned staff</label><select id="washEmployee"><option value="">Choose staff</option>${state.employees.filter(e=>e.status==='Active').map(e=>`<option>${esc(e.name)}</option>`).join('')}</select></div>`:''}</div><div class="field" style="margin-top:12px"><label>Notes (optional)</label><input id="washNotes" placeholder="Special instructions"></div></section></div><aside class="panel" style="height:max-content;position:sticky;top:92px"><div class="panel-head"><h3>Transaction Summary</h3><span class="badge">Live total</span></div><div id="washSummary">${washSummaryHtml()}</div><button class="btn success" style="width:100%;margin-top:15px;padding:13px" onclick="saveWash()">Save transaction & record payment</button><p class="subtle" style="line-height:1.5;margin-bottom:0">Saving records the sale, creates a queue entry and updates your dashboard. This demo uses local browser storage.</p></aside></div>`}
 const VEHICLE_SIZE_OPTIONS=['Small','Medium','Large','XL'];
@@ -1762,6 +1801,7 @@ function render(){
   if(currentPage==='subscription')loadMyBillingRequests();
   if(currentPage==='listing')loadFacilityListing();
   if(currentPage==='bookings')loadFacilityBookings();
+  if(currentPage==='dashboard'||currentPage==='bookings')refreshBookingNotificationCount();
  }catch(renderError){
   console.error('WashPilot dashboard render failed:',renderError);
   const message=renderError&&renderError.message?renderError.message:'An unexpected error occurred while loading this screen.';
@@ -1941,6 +1981,60 @@ async function uploadFacilityPhotos(input){
   renderFacilityGalleryDraft();toast('Photos uploaded. Save payment and gallery settings to publish them.');
  }catch(err){alert(err.message||'Could not upload facility photos.');}finally{input.disabled=false;input.value='';}
 }
+
+let wpPendingBookingVerificationCount=0;
+let wpBookingNotificationInitialized=false;
+let wpBookingNotificationTimer=null;
+let wpBookingNotificationRequestRunning=false;
+function renderBookingNotificationUi(){
+ const count=wpPendingBookingVerificationCount;
+ const badge=document.getElementById('wpBookingsNotificationBadge');
+ const bookingsButton=document.querySelector('#ownerWorkspaceGroup button[data-page="bookings"]');
+ if(badge){
+  badge.textContent=count>99?'99+':String(count);
+  badge.hidden=count<1;
+ }
+ if(bookingsButton){
+  bookingsButton.setAttribute('aria-label',count?('Bookings, '+count+' payment proof'+(count===1?'':'s')+' waiting for verification'):'Bookings');
+ }
+ const mount=document.getElementById('wpDashboardBookingNotifications');
+ if(mount){
+  mount.innerHTML=count>0
+   ?'<section class="wp-dashboard-booking-alert"><div class="wp-dashboard-booking-alert-icon">!</div><div class="wp-dashboard-booking-alert-copy"><span class="wp-dashboard-booking-alert-kicker">NEW ONLINE BOOKINGS</span><strong>'+count+' booking '+(count===1?'request needs':'requests need')+' your attention</strong><p>Payment proof '+(count===1?'is':'s are')+' waiting for verification. Review the customer details and verify payment before confirming the reservation.</p></div><button type="button" class="btn" onclick="go(\\'bookings\\')">Review bookings <span>→</span></button></section>'
+   :'';
+ }
+}
+async function refreshBookingNotificationCount(){
+ if(wpBookingNotificationRequestRunning||!window.wpRealWorkspaceActive||!window.wpRealBusinessId||!window.washPilotBookingApi)return;
+ wpBookingNotificationRequestRunning=true;
+ try{
+  const next=await window.washPilotBookingApi.getPendingVerificationCount();
+  const previous=wpPendingBookingVerificationCount;
+  const first=!wpBookingNotificationInitialized;
+  wpPendingBookingVerificationCount=next;
+  wpBookingNotificationInitialized=true;
+  renderBookingNotificationUi();
+  if(!first&&next>previous){
+   const added=next-previous;
+   toast(added===1?'New online booking received. Payment proof is waiting for verification.':added+' new online bookings received. Payment proofs are waiting for verification.');
+  }
+ }catch(err){
+  console.warn('Could not refresh online booking notifications:',err&&err.message?err.message:err);
+ }finally{wpBookingNotificationRequestRunning=false;}
+}
+function startBookingNotificationMonitor(){
+ if(wpBookingNotificationTimer)window.clearInterval(wpBookingNotificationTimer);
+ wpPendingBookingVerificationCount=0;
+ wpBookingNotificationInitialized=false;
+ refreshBookingNotificationCount();
+ wpBookingNotificationTimer=window.setInterval(refreshBookingNotificationCount,20000);
+}
+function stopBookingNotificationMonitor(){
+ if(wpBookingNotificationTimer)window.clearInterval(wpBookingNotificationTimer);
+ wpBookingNotificationTimer=null;wpPendingBookingVerificationCount=0;wpBookingNotificationInitialized=false;
+ renderBookingNotificationUi();
+}
+
 function bookingsPage(){
  if(!window.wpRealWorkspaceActive)return pageHead('Online Bookings','Sign in to a registered business account to manage reservations.')+'<section class="panel"><div class="empty">Registered business access is required.</div></section>';
  return pageHead('Online Bookings','Review customer requests made through your public BOOK A CAR WASH facility page.')+
@@ -1964,8 +2058,8 @@ async function loadFacilityBookings(){
    }).join('')+'</tbody></table></div>';
  }catch(err){el.innerHTML='<div class="empty">Could not load bookings: '+esc(err.message||err)+'</div>';}
 }
-async function verifyFacilityBookingPayment(id,status){try{await window.washPilotBookingApi.setPaymentStatus(id,status);toast(status==='verified'?'Payment verified. You can now confirm this booking.':'Payment proof rejected; the slot has been released.');loadFacilityBookings();}catch(err){alert(err.message||'Could not update payment status.');}}
-async function changeFacilityBookingStatus(id,status){try{await window.washPilotBookingApi.setBookingStatus(id,status);toast('Booking updated.');loadFacilityBookings();}catch(err){alert(err.message||'Could not update booking.');}}
+async function verifyFacilityBookingPayment(id,status){try{await window.washPilotBookingApi.setPaymentStatus(id,status);toast(status==='verified'?'Payment verified. You can now confirm this booking.':'Payment proof rejected; the slot has been released.');await loadFacilityBookings();await refreshBookingNotificationCount();}catch(err){alert(err.message||'Could not update payment status.');}}
+async function changeFacilityBookingStatus(id,status){try{await window.washPilotBookingApi.setBookingStatus(id,status);toast('Booking updated.');await loadFacilityBookings();await refreshBookingNotificationCount();}catch(err){alert(err.message||'Could not update booking.');}}
 
 function subscriptionPage(){
  if(!window.wpRealWorkspaceActive)return pageHead('Subscription & Billing','Sign in with a registered business account to manage billing.')+`<section class="panel"><div class="empty">Live subscription management is available to registered business accounts.</div></section>`;
@@ -2315,6 +2409,7 @@ function openRealWorkspace(user,business,subscription){
     const destination=allowedPages.has(requestedPage)?requestedPage:'dashboard';
     currentPage=destination;
     go(destination);
+    startBookingNotificationMonitor();
     window.scrollTo({top:0,behavior:'instant'});
   }
   function renderTrialAccount(user,business,subscription){
@@ -2478,6 +2573,11 @@ async syncServices(businessId,services){
     async getMyBookings(){
       const {data,error}=await getClient().from('facility_bookings').select('id,booking_code,service_name,customer_name,customer_phone,customer_email,vehicle_size,vehicle_plate,booking_date,start_time,end_time,price_php,status,created_at,notes,payment_method,payment_reference,payment_proof_path,payment_status,payment_verified_at').eq('business_id',window.wpRealBusinessId).order('booking_date',{ascending:false}).order('start_time',{ascending:false}).limit(200);
       if(error)throw error;return data||[];
+    },
+    async getPendingVerificationCount(){
+      const {count,error}=await getClient().from('facility_bookings').select('id',{count:'exact',head:true})
+        .eq('business_id',window.wpRealBusinessId).eq('status','pending').eq('payment_status','awaiting_verification');
+      if(error)throw error;return Number(count||0);
     },
     async setBookingStatus(id,status){const {error}=await getClient().rpc('set_facility_booking_status',{p_booking_id:id,p_status:status});if(error)throw error;return true;},
     async setPaymentStatus(id,status){const {error}=await getClient().rpc('set_facility_booking_payment_status',{p_booking_id:id,p_status:status});if(error)throw error;return true;},
