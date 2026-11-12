@@ -1747,17 +1747,28 @@ function logoutDemo(){
 
   async function activateTrial(user){
     if(!user||!user.id)throw new Error('Your account session is missing. Please sign in again.');
-    const sb=getClient(),meta=user.user_metadata||{},businessName=String(meta.business_name||'').trim();
-    if(!businessName)throw new Error('We could not find your business details. Please create your account again or contact support.');
-    const {data:businessId,error:rpcError}=await sb.rpc('create_business_with_trial',{
-      p_name:businessName,p_slug:String(meta.business_slug||safeSlug(businessName)),
-      p_contact_email:user.email||null,p_contact_phone:meta.business_phone||null,p_address:meta.business_address||null
-    });
-    if(rpcError)throw rpcError;
+    const sb=getClient(),meta=user.user_metadata||{};
+    let businessId=null, membershipError=null;
+    // Returning users must reopen their existing business; never create a new one on every sign-in.
+    const membership=await sb.from('business_members').select('business_id').eq('user_id',user.id).limit(1).maybeSingle();
+    if(!membership.error&&membership.data?.business_id)businessId=membership.data.business_id;
+    else membershipError=membership.error;
+    if(!businessId){
+      const businessName=String(meta.business_name||'').trim();
+      if(!businessName){
+        throw new Error(membershipError?.message||'We could not find a business linked to this account. Please contact WashPilot support.');
+      }
+      const {data,error}=await sb.rpc('create_business_with_trial',{
+        p_name:businessName,p_slug:String(meta.business_slug||safeSlug(businessName)),
+        p_contact_email:user.email||null,p_contact_phone:meta.business_phone||null,p_address:meta.business_address||null
+      });
+      if(error)throw error;
+      businessId=data;
+    }
     const {data:business,error:businessError}=await sb.from('businesses').select('id,name,status,created_at').eq('id',businessId).single();
-    if(businessError)throw businessError;
+    if(businessError)throw new Error('Your business was found, but its workspace could not be loaded: '+businessError.message);
     const {data:subscription,error:subscriptionError}=await sb.from('subscriptions').select('plan_code,status,trial_starts_at,trial_ends_at,current_period_ends_at').eq('business_id',businessId).single();
-    if(subscriptionError)throw subscriptionError;
+    if(subscriptionError)throw new Error('Your business is available, but its subscription could not be loaded: '+subscriptionError.message);
     openRealWorkspace(user,business,subscription);
   }
   function openRealWorkspace(user,business,subscription){
