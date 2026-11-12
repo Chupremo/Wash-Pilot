@@ -2950,6 +2950,7 @@ function openRealWorkspace(user,business,subscription){
       return (businessResult.data||[]).map(b=>{
         const sub=subscriptions.get(b.id)||null;
         const subStatus=sub?.status||'pending_verification';
+        const plan=sub?.plan_code||'basic';
         let status='Pending Verification';
         if(b.status==='suspended'||b.status==='frozen'||subStatus==='suspended')status='Suspended';
         else if(b.status==='closed'||subStatus==='cancelled')status='Cancelled';
@@ -2958,7 +2959,6 @@ function openRealWorkspace(user,business,subscription){
         else if(subStatus==='pending_verification')status='Pending Verification';
         else if(subStatus==='active'&&plan==='premium'&&sub?.current_period_ends_at&&Date.parse(sub.current_period_ends_at)<=Date.now())status='Past Due';
         else if(subStatus==='active')status='Active';
-        const plan=sub?.plan_code||'basic';
         const due=sub?.next_due_at||sub?.current_period_ends_at||(subStatus==='trialing'?sub?.trial_ends_at:null);
         return {
           id:b.id,reference:'WP-'+String(b.id).slice(0,8).toUpperCase(),name:b.name||'Unnamed business',
