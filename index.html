@@ -1872,7 +1872,7 @@ async function loadFacilityListing(){
  try{
   const f=await window.washPilotBookingApi.getMyFacility();if(!f){el.innerHTML='<div class="empty">No facility is linked to this business yet. Please contact support.</div>';return;}
   window.wpFacilityCurrent=f;window.wpFacilityGalleryDraft=(f.gallery_images||[]).slice(0,5);
-  const days=[['Sunday',0],['Monday',1],['Tuesday',2],['Wednesday',3],['Thursday',4],['Friday',5],['Saturday',6]],publicUrl=location.origin+'/book/'+f.slug;
+  const days=[['Sunday',0],['Monday',1],['Tuesday',2],['Wednesday',3],['Thursday',4],['Friday',5],['Saturday',6]],publicUrl='https://washpilot.shop/book/'+f.slug;
   el.innerHTML='<div class="wp-share-panel"><div><span class="wp-share-kicker">YOUR PUBLIC BOOKING LINK</span><div class="wp-share-url">'+esc(publicUrl)+'</div><div class="wp-share-actions"><button type="button" class="btn small" onclick="copyFacilityLink()">Copy link</button><button type="button" class="btn ghost small" onclick="copyFacilitySlug()">Copy slug</button><a class="btn ghost small" href="'+esc(publicUrl)+'" target="_blank" rel="noopener">Open page ↗</a></div></div><div class="wp-qr-wrap"><div id="wpFacilityQr"></div><button type="button" class="btn ghost small" onclick="downloadFacilityQr()">Download QR</button></div></div>'+
    '<form id="wpFacilityProfileForm" onsubmit="saveFacilityListing(event)"><h3>Facility details</h3><p class="wp-form-hint">Your business-name slug is used in the public link.</p><div class="grid two">'+
    '<div class="field"><label>Business / facility name</label><input name="name" maxlength="100" required value="'+esc(f.name)+'"></div><div class="field"><label>Public link slug</label><input name="slug" maxlength="50" pattern="[a-zA-Z0-9-]+" required value="'+esc(f.slug)+'"></div>'+
@@ -1916,7 +1916,7 @@ function renderFacilityQr(url){
  new QRCode(box,{text:url,width:156,height:156,colorDark:'#10233f',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});
 }
 async function copyFacilityLink(){
- const url=location.origin+'/book/'+(window.wpFacilityCurrent?.slug||'');
+ const url='https://washpilot.shop/book/'+(window.wpFacilityCurrent?.slug||'');
  try{await navigator.clipboard.writeText(url);toast('Booking link copied.');}catch(_){window.prompt('Copy your booking link:',url);}
 }
 async function copyFacilitySlug(){
