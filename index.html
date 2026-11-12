@@ -1764,8 +1764,7 @@ async function openPlanUpgradeModal(planCode){
    <section class="wp-payment-instructions"><div class="wp-payment-instructions-head"><b>GCash payment details</b><span>${configured?'READY':'NOT CONFIGURED'}</span></div>
    ${configured?qr+'<b>'+esc(settings.gcash_account_name)+'</b><strong>'+esc(settings.gcash_number)+'</strong><p>'+esc(settings.payment_instructions||'Send the exact amount and upload your receipt.')+'</p>':'<p class="wp-payment-unconfigured">The WashPilot administrator has not configured GCash receiving details yet. You can select a plan, but payment submission will be enabled after the receiving account and QR code are added in Platform Billing.</p>'}</section>
    <form onsubmit="submitPlanUpgrade(event,'${code}',${price})">
-    <div class="field"><label>GCash reference number *</label><input name="reference" type="text" minlength="4" maxlength="100" placeholder="Enter your GCash reference number" required></div>
-    <div class="field"><label>Payment receipt / screenshot *</label><input name="proof" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" required><small class="subtle">JPG, PNG, WebP or PDF · Up to 10 MB</small></div>
+    <div class="field"><label>Payment receipt / screenshot *</label><input name="proof" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" required><small class="subtle">Upload a clear screenshot or PDF receipt · Up to 10 MB</small></div>
     <div class="actions" style="justify-content:flex-end;margin-top:18px"><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn" ${configured?'':'disabled'} type="submit">Submit payment for verification</button></div>
    </form>`;
  }catch(err){
@@ -1776,7 +1775,7 @@ async function submitPlanUpgrade(e,planCode,amount){
  e.preventDefault();const form=e.currentTarget,submit=form.querySelector('button[type="submit"]');
  if(submit){submit.disabled=true;submit.textContent='Submitting…';}
  try{
-  await window.washPilotBillingApi.submitUpgrade({businessId:window.wpRealBusinessId,planCode,amount,paymentReference:form.elements.reference.value.trim(),file:form.elements.proof.files?.[0]});
+  await window.washPilotBillingApi.submitUpgrade({businessId:window.wpRealBusinessId,planCode,amount,file:form.elements.proof.files?.[0]});
   closeModal();toast('Payment request submitted. Your existing plan remains active until an administrator approves the upgrade.');
   render();loadMyBillingRequests();
  }catch(err){
@@ -1819,8 +1818,8 @@ async function loadPlatformBillingRequests(){
   const form=document.getElementById('wpBillingSettingsForm');
   if(form){form.elements.gcash_account_name.value=settings.gcash_account_name||'';form.elements.gcash_number.value=settings.gcash_number||'';form.elements.qr_image_url.value=settings.qr_image_url||'';form.elements.payment_instructions.value=settings.payment_instructions||'';}
   if(!rows.length){el.innerHTML='<div class="empty">No customer payment requests yet.</div>';return;}
-  el.innerHTML='<div class="table-wrap"><table><thead><tr><th>Business</th><th>Request</th><th>Plan</th><th>Amount</th><th>Reference</th><th>Submitted</th><th>Status</th><th>Proof</th><th>Action</th></tr></thead><tbody>'+
-   rows.map(r=>'<tr><td><b>'+esc(r.business_name)+'</b></td><td>'+esc(r.request_type||'reactivation')+'</td><td>'+esc(planName(planRank(r.plan_code)))+'</td><td>'+money(r.amount)+'</td><td>'+esc(r.payment_reference)+'</td><td>'+dateLabel(String(r.submitted_at).slice(0,10))+'</td><td>'+statusPill(String(r.status).toUpperCase())+'</td><td><button class="btn ghost small" onclick="viewUpgradeProof(\''+esc(r.proof_object_path)+'\')">View receipt</button></td><td>'+(r.status==='pending'?'<button class="btn success small" onclick="reviewPlatformBillingRequest(\''+r.id+'\',true)">Approve</button> <button class="btn danger small" onclick="reviewPlatformBillingRequest(\''+r.id+'\',false)">Reject</button>':'—')+'</td></tr>').join('')+'</tbody></table></div>';
+  el.innerHTML='<div class="table-wrap"><table><thead><tr><th>Business</th><th>Request</th><th>Plan</th><th>Amount</th><th>Submitted</th><th>Status</th><th>Payment proof</th><th>Action</th></tr></thead><tbody>'+
+   rows.map(r=>'<tr><td><b>'+esc(r.business_name)+'</b></td><td>'+esc(r.request_type||'reactivation')+'</td><td>'+esc(planName(planRank(r.plan_code)))+'</td><td>'+money(r.amount)+'</td><td>'+dateLabel(String(r.submitted_at).slice(0,10))+'</td><td>'+statusPill(String(r.status).toUpperCase())+'</td><td><button class="btn ghost small" onclick="viewUpgradeProof(\''+esc(r.proof_object_path)+'\')">View receipt</button></td><td>'+(r.status==='pending'?'<button class="btn success small" onclick="reviewPlatformBillingRequest(\''+r.id+'\',true)">Approve</button> <button class="btn danger small" onclick="reviewPlatformBillingRequest(\''+r.id+'\',false)">Reject</button>':'—')+'</td></tr>').join('')+'</tbody></table></div>';
  }catch(err){el.innerHTML='<div class="empty">Could not load live requests. Sign in as a WashPilot platform administrator to review payments. '+esc(err.message)+'</div>';}
 }
 async function savePlatformBillingSettings(e){
@@ -2164,7 +2163,7 @@ function openRealWorkspace(user,business,subscription){
       const {data,error}=await getClient().from('payment_reactivation_requests').select('id,plan_code,amount,payment_method,payment_reference,status,submitted_at,reviewer_note,request_type').eq('business_id',businessId).order('submitted_at',{ascending:false}).limit(10);
       if(error)throw error;return data||[];
     },
-    async submitUpgrade({businessId,planCode,amount,paymentReference,file}){
+    async submitUpgrade({businessId,planCode,amount,file}){
       if(!file)throw new Error('Please attach your payment receipt or screenshot.');
       if(file.size>10*1024*1024)throw new Error('Payment proof must be 10 MB or smaller.');
       const allowed=['image/jpeg','image/png','image/webp','application/pdf'];
@@ -2174,13 +2173,13 @@ function openRealWorkspace(user,business,subscription){
       const objectPath=businessId+'/'+Date.now()+'-'+token+'.'+ext;
       const {error:uploadError}=await sb.storage.from('washpilot-payment-proofs').upload(objectPath,file,{upsert:false,contentType:file.type});
       if(uploadError)throw uploadError;
-      const {data,error}=await sb.rpc('submit_plan_upgrade_request',{p_business_id:businessId,p_plan_code:planCode,p_payment_method:'GCash',p_payment_reference:paymentReference,p_amount:amount,p_proof_object_path:objectPath});
+      const {data,error}=await sb.rpc('submit_plan_upgrade_request',{p_business_id:businessId,p_plan_code:planCode,p_payment_method:'GCash',p_payment_reference:null,p_amount:amount,p_proof_object_path:objectPath});
       if(error){try{await sb.storage.from('washpilot-payment-proofs').remove([objectPath]);}catch(_){}throw error;}
       return {requestId:data,objectPath};
     },
     async listAdminRequests(){
       const sb=getClient();
-      const {data,error}=await sb.from('payment_reactivation_requests').select('id,business_id,plan_code,amount,payment_method,payment_reference,proof_object_path,status,submitted_at,reviewer_note,request_type,previous_plan_code').order('submitted_at',{ascending:false}).limit(50);
+      const {data,error}=await sb.from('payment_reactivation_requests').select('id,business_id,plan_code,amount,payment_method,proof_object_path,status,submitted_at,reviewer_note,request_type,previous_plan_code').order('submitted_at',{ascending:false}).limit(50);
       if(error)throw error;
       const rows=data||[],ids=[...new Set(rows.map(x=>x.business_id))];let names={};
       if(ids.length){const {data:businesses,error:businessError}=await sb.from('businesses').select('id,name').in('id',ids);if(businessError)throw businessError;(businesses||[]).forEach(b=>names[b.id]=b.name);}
