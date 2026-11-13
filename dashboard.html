@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard · WashPilot</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="washpilot-logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#0a0a0b; --black-2:#141416;
+  --blue:#1f5eff; --blue-d:#1648d6; --blue-l:#6b9bff; --blue-soft:#eef3ff;
+  --surface:#f5f6f8; --line:#e4e6ea;
+  --text:#0a0a0b; --text-2:#454c5a; --muted:#6a7180;
+  --font-d:"Sora",system-ui,sans-serif;
+  --font:"DM Sans",system-ui,sans-serif;
+  --r-ctl:12px; --r-card:20px;
+  --side:264px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--font);color:var(--text);background:var(--surface);line-height:1.55;min-height:100vh;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+img{display:block;max-width:100%}
+ul{list-style:none}
+button{font:inherit}
+[hidden]{display:none!important}
+:focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:6px}
+.skip{position:absolute;left:-999px;top:8px;background:var(--black);color:#fff;padding:10px 16px;border-radius:var(--r-ctl);z-index:300}
+.skip:focus{left:8px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+.app{display:grid;grid-template-columns:var(--side) 1fr;min-height:100vh}
+
+/* ---------- Sidebar ---------- */
+.sidebar{
+  position:sticky;top:0;height:100vh;background:#fff;border-right:1px solid var(--line);
+  display:flex;flex-direction:column;padding:22px 16px;z-index:150;
+}
+.logo{display:inline-block;padding:2px 8px 22px}
+.logo img{height:34px;width:auto}
+.nav{display:grid;gap:4px;flex:1;align-content:start}
+.nav-item{
+  display:flex;align-items:center;gap:12px;min-height:46px;padding:0 12px;border-radius:var(--r-ctl);
+  font-weight:500;font-size:15.5px;color:var(--text-2);text-decoration:none;transition:background .15s,color .15s;
+}
+.nav-item svg{flex:none;width:20px;height:20px}
+a.nav-item:hover{background:var(--surface);color:var(--text)}
+.nav-item[aria-current="page"]{background:var(--blue-soft);color:var(--blue-d);font-weight:600}
+.nav-item.disabled{color:#9aa1ae;cursor:not-allowed}
+.nav-item .soon{margin-left:auto;font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--surface);color:var(--muted)}
+.side-foot{border-top:1px solid var(--line);padding-top:16px;display:grid;gap:12px}
+.who{display:flex;align-items:center;gap:12px;padding:0 4px}
+.avatar{flex:none;width:38px;height:38px;border-radius:50%;background:var(--black);color:#fff;display:grid;place-items:center;font-family:var(--font-d);font-weight:700;font-size:15px}
+.who b{display:block;font-size:14.5px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:158px}
+.who span{display:block;font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:158px}
+.scrim{display:none}
+
+/* ---------- Main ---------- */
+.main{min-width:0;display:flex;flex-direction:column}
+.topbar{
+  position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:14px;min-height:72px;padding:0 32px;
+  background:rgba(245,246,248,.9);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);
+}
+.menu-btn{display:none;width:44px;height:44px;border:1.5px solid var(--line);background:#fff;border-radius:var(--r-ctl);cursor:pointer;place-items:center;color:var(--text)}
+.menu-btn svg{width:22px;height:22px}
+.topbar h1{font-family:var(--font-d);font-weight:700;font-size:20px;letter-spacing:-.02em}
+.top-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.badge{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;background:var(--blue-soft);color:var(--blue-d)}
+.badge i{width:7px;height:7px;border-radius:50%;background:var(--blue)}
+.badge.premium{background:var(--black);color:#fff}
+.badge.premium i{background:var(--blue-l)}
+.biz{font-weight:600;font-size:15px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.content{padding:32px;max-width:1240px;width:100%;margin:0 auto;display:grid;gap:24px}
+
+.notice{
+  display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:var(--r-ctl);
+  background:var(--blue-soft);color:var(--blue-d);border:1px solid #cddcff;font-size:15px;
+}
+.notice svg{flex:none;width:20px;height:20px;margin-top:2px}
+.notice.sample{background:#fff7e0;color:#7a5600;border-color:#f1dc9d}
+
+.head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px}
+.head h2{font-family:var(--font-d);font-weight:800;letter-spacing:-.03em;line-height:1.1;font-size:clamp(26px,3.2vw,34px)}
+.head p{color:var(--text-2);margin-top:6px}
+
+/* Buttons */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 24px;
+  font-weight:600;font-size:16px;cursor:pointer;border:1.5px solid transparent;border-radius:var(--r-ctl);
+  text-decoration:none;white-space:nowrap;transition:background .15s,transform .15s,border-color .15s,color .15s;
+}
+.btn svg{width:18px;height:18px}
+.btn-primary{background:var(--blue);color:#fff;box-shadow:0 8px 20px -8px rgba(31,94,255,.6)}
+.btn-primary:hover{background:var(--blue-d);transform:translateY(-1px)}
+.btn-outline{background:#fff;color:var(--text);border-color:var(--line)}
+.btn-outline:hover{border-color:var(--blue);color:var(--blue)}
+.btn-light{background:#fff;color:var(--black)}
+.btn-light:hover{transform:translateY(-1px)}
+.btn-sm{min-height:42px;padding:0 18px;font-size:15px}
+.btn[disabled]{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none}
+.cta-note{font-size:13.5px;color:var(--muted);margin-top:6px;text-align:right}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:20px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:var(--r-card);padding:24px}
+.stat .k{font-size:14.5px;font-weight:500;color:var(--text-2)}
+.stat .v{font-family:var(--font-d);font-weight:800;letter-spacing:-.03em;font-size:clamp(26px,2.6vw,34px);line-height:1.15;margin-top:10px;overflow-wrap:anywhere}
+.stat .s{font-size:13.5px;color:var(--muted);margin-top:6px}
+.stat.dark{background:var(--black);border-color:var(--black);color:#fff;position:relative;overflow:hidden}
+.stat.dark::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(320px 220px at 100% 0%,rgba(31,94,255,.55),transparent 70%)}
+.stat.dark > *{position:relative}
+.stat.dark .k{color:rgba(255,255,255,.72)}
+.stat.dark .v{font-size:clamp(30px,3.4vw,44px)}
+.stat.dark .s{color:rgba(255,255,255,.6)}
+
+/* Panels */
+.grid2{display:grid;grid-template-columns:1.5fr 1fr;gap:20px;align-items:start}
+.stack{display:grid;gap:20px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:var(--r-card);padding:26px;min-width:0}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.panel h3{font-family:var(--font-d);font-weight:700;font-size:18px;letter-spacing:-.02em}
+.panel-link{font-size:14.5px;font-weight:600;color:var(--blue);text-decoration:none}
+.panel-link:hover{color:var(--blue-d);text-decoration:underline}
+
+.empty{text-align:center;padding:28px 12px;color:var(--text-2)}
+.empty .ei{width:48px;height:48px;border-radius:14px;background:var(--blue-soft);color:var(--blue);display:grid;place-items:center;margin:0 auto 14px}
+.empty .ei svg{width:24px;height:24px}
+.empty b{display:block;font-family:var(--font-d);font-size:16px;color:var(--text);margin-bottom:4px}
+.empty p{font-size:15px;max-width:340px;margin:0 auto}
+
+/* Chart */
+.bars{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;align-items:end;height:220px}
+.bar-col{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:6px;min-width:0}
+.bar-val{font-size:12.5px;font-weight:600;color:var(--text-2);height:18px}
+.bar{width:100%;max-width:56px;border-radius:10px 10px 4px 4px;background:var(--blue-soft);min-height:4px;transition:height .5s ease}
+.bar.today{background:var(--blue)}
+.bar.zero{background:var(--line);min-height:3px}
+.bar-day{font-size:13px;color:var(--muted);font-weight:500}
+.bar-day.today{color:var(--text);font-weight:700}
+
+/* Rows */
+.rows li{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}
+.rows li:last-child{border-bottom:0;padding-bottom:0}
+.rows li:first-child{padding-top:0}
+.rows .ri{flex:none;width:40px;height:40px;border-radius:12px;background:var(--blue-soft);color:var(--blue);display:grid;place-items:center}
+.rows .ri svg{width:20px;height:20px}
+.rows .rt{flex:1;min-width:0}
+.rows .rt b{display:block;font-weight:600;font-size:15.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rows .rt span{display:block;font-size:13.5px;color:var(--muted)}
+.rows .ra{font-family:var(--font-d);font-weight:700;font-size:15.5px;white-space:nowrap}
+
+/* Plan */
+.plan p{color:var(--text-2);font-size:15.5px;margin:6px 0 18px}
+.plan .badge{margin-bottom:12px}
+.plan.premium{background:var(--black);border-color:var(--black);color:#fff;position:relative;overflow:hidden}
+.plan.premium::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(300px 200px at 100% 0%,rgba(31,94,255,.5),transparent 70%)}
+.plan.premium > *{position:relative}
+.plan.premium p{color:rgba(255,255,255,.75)}
+.plan.premium .badge{background:rgba(255,255,255,.12);color:#fff}
+
+/* Responsive */
+@media (max-width:1100px){
+  .stats{grid-template-columns:1fr 1fr}
+  .stat.dark{grid-column:span 2}
+  .grid2{grid-template-columns:1fr}
+}
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .sidebar{position:fixed;left:0;top:0;bottom:0;width:min(86vw,300px);transform:translateX(-102%);transition:transform .25s;box-shadow:0 0 60px rgba(10,10,11,.3)}
+  .sidebar.open{transform:none}
+  .scrim{display:block;position:fixed;inset:0;background:rgba(10,10,11,.5);z-index:140;opacity:0;pointer-events:none;transition:opacity .25s}
+  .scrim.show{opacity:1;pointer-events:auto}
+  .menu-btn{display:grid}
+  .topbar{padding:0 16px}
+  .content{padding:20px 16px 40px}
+  .biz{display:none}
+}
+@media (max-width:560px){
+  .stats{grid-template-columns:1fr}
+  .stat.dark{grid-column:auto}
+  .panel{padding:20px}
+  .bars{gap:6px;height:190px}
+  .head .btn{width:100%}
+  .cta-note{text-align:left}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms!important;animation-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#content">Skip to dashboard</a>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar" aria-label="Sidebar">
+    <a class="logo" id="logoLink" href="home.html" aria-label="WashPilot home"><img src="washpilot-logo.svg" alt="WashPilot" height="34"></a>
+    <nav class="nav" id="nav" aria-label="Dashboard"></nav>
+    <div class="side-foot">
+      <div class="who">
+        <span class="avatar" id="avatar" aria-hidden="true">W</span>
+        <div><b id="whoName">Your account</b><span id="whoBiz"></span></div>
+      </div>
+      <button class="btn btn-outline btn-sm" id="signOut" type="button">Sign out</button>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <!-- Main -->
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="sidebar" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <h1>Dashboard</h1>
+      <div class="top-right">
+        <span class="biz" id="bizName"></span>
+        <span class="badge" id="planBadge" hidden><i></i><span id="planBadgeText"></span></span>
+      </div>
+    </header>
+
+    <main class="content" id="content" tabindex="-1">
+
+      <div class="notice" id="notice" role="status" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>
+        <span id="noticeText"></span>
+      </div>
+
+      <div class="head">
+        <div>
+          <h2 id="greeting">Welcome back</h2>
+          <p id="dateLine"></p>
+        </div>
+        <div>
+          <div id="ctaSlot"></div>
+          <p class="cta-note" id="ctaNote" hidden></p>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <section class="stats" aria-label="Today at a glance">
+        <div class="stat dark"><p class="k">Today's sales</p><p class="v" id="sToday">—</p><p class="s" id="sTodaySub"></p></div>
+        <div class="stat"><p class="k">Sales recorded today</p><p class="v" id="sCount">—</p></div>
+        <div class="stat"><p class="k">Average sale today</p><p class="v" id="sAvg">—</p></div>
+        <div class="stat"><p class="k">Last 7 days</p><p class="v" id="sWeek">—</p></div>
+      </section>
+
+      <div class="grid2">
+        <div class="stack">
+          <!-- Chart -->
+          <section class="panel" aria-labelledby="chartTitle">
+            <div class="panel-head"><h3 id="chartTitle">Daily sales, last 7 days</h3><a class="panel-link" id="reportsLink" hidden>View reports</a></div>
+            <div id="chartBody"></div>
+          </section>
+
+          <!-- Recent sales -->
+          <section class="panel" aria-labelledby="recentTitle">
+            <div class="panel-head"><h3 id="recentTitle">Recent sales</h3><a class="panel-link" id="salesLink" hidden>View all</a></div>
+            <div id="recentBody"></div>
+          </section>
+        </div>
+
+        <div class="stack">
+          <!-- Plan -->
+          <section class="panel plan" id="planCard" aria-labelledby="planTitle" hidden>
+            <span class="badge" id="planTag"><i></i><span id="planTagText"></span></span>
+            <h3 id="planTitle">Your plan</h3>
+            <p id="planText"></p>
+            <a class="btn btn-primary btn-sm" id="upgradeBtn" hidden>Upgrade to Premium</a>
+          </section>
+
+          <!-- Services -->
+          <section class="panel" aria-labelledby="svcTitle">
+            <div class="panel-head"><h3 id="svcTitle">Your services</h3><a class="panel-link" id="servicesLink" hidden>Manage</a></div>
+            <div id="svcBody"></div>
+          </section>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/washpilot-pages.js"></script>
+
+<script>
+/* ============ EDIT HERE ============ */
+const CONFIG = {
+  homeUrl: "/home.html",
+  signinUrl: "/signin.html",
+  currency: "₱",            // assumed. Change if wrong
+
+  /* Page addresses. Anything left empty is shown as "Soon" / hidden,
+     so there are no dead links. */
+  posUrl: "/pos.html",               // the page where a sale is recorded
+  salesUrl: "/transactions",
+  reportsUrl: "/reports",
+  servicesUrl: "/services-pricing",
+  profileUrl: "/facility-listing",
+  subscriptionUrl: "/subscription-billing",
+  upgradeUrl: "/subscription-billing",           // shows "Upgrade to Premium" on Free accounts when filled
+
+  /* OPTIONAL. If set, it must return a Promise resolving to a truthy value
+     when the user is signed in. If it resolves falsy, the visitor is sent to
+     the sign-in page.
+     IMPORTANT: this only hides the page. Real protection must be enforced by
+     your server or database rules, never by front-end code alone. */
+  getSession: () => window.WashPilotPages.getSession(),
+
+  /* OPTIONAL. Runs when "Sign out" is pressed, then goes to the sign-in page. */
+  signOut: () => window.WashPilotPages.signOut(),
+
+  /* Connect your real data here. It must return a Promise resolving to:
+     {
+       user:     { name: "Juan" },
+       business: { name: "Juan's Car Wash" },
+       plan:     "Free" | "Premium",
+       sales:    [ { id: "1", createdAt: "2025-01-31T14:05:00", service: "Basic wash", amount: 150 } ],
+       services: [ { name: "Basic wash", price: 150 } ]
+     }
+     Every part is optional. Until this is set, the page shows empty states. */
+  loadData: () => window.WashPilotPages.loadDashboardData()
+};
+/* =================================== */
+
+const $ = id => document.getElementById(id);
+const SAMPLE = new URLSearchParams(location.search).get("sample") === "1";
+
+/* ---------- Icons ---------- */
+const ICON = {
+  dashboard:'<path d="M3 12l9-8 9 8M5 10v10h14V10"/>',
+  pos:'<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
+  sales:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  reports:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  services:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+  profile:'<path d="M3 21h18M5 21V8l7-5 7 5v13M10 21v-6h4v6"/>',
+  subscription:'<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 11h18M7 15h3"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  receipt:'<path d="M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6"/>'
+};
+function svg(name){
+  const s = document.createElementNS("http://www.w3.org/2000/svg","svg");
+  s.setAttribute("viewBox","0 0 24 24"); s.setAttribute("fill","none"); s.setAttribute("stroke","currentColor");
+  s.setAttribute("stroke-width","2"); s.setAttribute("stroke-linecap","round"); s.setAttribute("stroke-linejoin","round");
+  s.setAttribute("aria-hidden","true"); s.innerHTML = ICON[name]; return s;
+}
+
+/* ---------- Helpers ---------- */
+const money = n => CONFIG.currency + Number(n || 0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+const short = n => n >= 1000 ? (n/1000).toFixed(n >= 10000 ? 0 : 1) + "k" : String(Math.round(n));
+const dayKey = d => d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate();
+function el(tag, cls, text){ const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+function setLink(id, url){ const a = $(id); if (url){ a.href = url; a.hidden = false; } else a.hidden = true; }
+function emptyState(icon, title, text){
+  const d = el("div","empty"), i = el("div","ei"); i.appendChild(svg(icon));
+  d.append(i, el("b",null,title), el("p",null,text)); return d;
+}
+
+/* ---------- Static setup ---------- */
+$("logoLink").href = CONFIG.homeUrl;
+$("dateLine").textContent = new Date().toLocaleDateString(undefined,{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+
+(function buildNav(){
+  const items = [
+    ["Dashboard","dashboard",null,true],
+    ["POS","pos",CONFIG.posUrl],
+    ["Sales","sales",CONFIG.salesUrl],
+    ["Reports","reports",CONFIG.reportsUrl],
+    ["Services","services",CONFIG.servicesUrl],
+    ["Business profile","profile",CONFIG.profileUrl],
+    ["Subscription","subscription",CONFIG.subscriptionUrl]
+  ];
+  const nav = $("nav");
+  items.forEach(([label, icon, url, current]) => {
+    let n;
+    if (current){ n = el("a","nav-item"); n.href = "dashboard.html"; n.setAttribute("aria-current","page"); }
+    else if (url){ n = el("a","nav-item"); n.href = url; }
+    else { n = el("span","nav-item disabled"); n.setAttribute("aria-disabled","true"); }
+    n.appendChild(svg(icon));
+    n.appendChild(el("span",null,label));
+    if (!current && !url) n.appendChild(el("span","soon","Soon"));
+    nav.appendChild(n);
+  });
+})();
+
+/* Primary action */
+(function(){
+  const slot = $("ctaSlot");
+  if (CONFIG.posUrl){
+    const a = el("a","btn btn-primary"); a.href = CONFIG.posUrl;
+    a.append(svg("plus"), "Record a sale"); slot.appendChild(a);
+  } else {
+    const b = el("button","btn btn-primary"); b.type = "button"; b.disabled = true;
+    b.append(svg("plus"), "Record a sale"); slot.appendChild(b);
+    $("ctaNote").textContent = "The POS page isn't linked yet."; $("ctaNote").hidden = false;
+  }
+})();
+
+/* Mobile drawer */
+const menuBtn = $("menuBtn"), sidebar = $("sidebar"), scrim = $("scrim");
+function setMenu(open){
+  sidebar.classList.toggle("open", open); scrim.classList.toggle("show", open);
+  menuBtn.setAttribute("aria-expanded", String(open));
+  menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+}
+menuBtn.addEventListener("click", () => setMenu(!sidebar.classList.contains("open")));
+scrim.addEventListener("click", () => setMenu(false));
+document.addEventListener("keydown", e => { if (e.key === "Escape" && sidebar.classList.contains("open")){ setMenu(false); menuBtn.focus(); } });
+
+/* Sign out */
+$("signOut").addEventListener("click", async function(){
+  try { if (typeof CONFIG.signOut === "function") await CONFIG.signOut(); }
+  catch (err){ console.error(err); }
+  location.href = CONFIG.signinUrl;
+});
+
+/* ---------- Notices ---------- */
+function showNotice(text, sample){
+  $("noticeText").textContent = text;
+  $("notice").classList.toggle("sample", !!sample);
+  $("notice").hidden = false;
+}
+
+/* ---------- Sample data (only with ?sample=1, for checking the layout) ---------- */
+function sampleData(){
+  const sales = [], now = new Date();
+  const amounts = [120,150,200,180,250,90,160,300,140,210];
+  for (let d = 0; d < 7; d++){
+    const n = d === 0 ? 5 : 3 + ((d * 2) % 4);
+    for (let i = 0; i < n; i++){
+      const t = new Date(now); t.setDate(now.getDate() - d); t.setHours(8 + i, 10 * i, 0, 0);
+      if (t > now) t.setTime(now.getTime() - (i + 1) * 60000);
+      sales.push({ id:"s" + d + "-" + i, createdAt:t.toISOString(), service:"Sample service " + (1 + (i % 3)), amount:amounts[(d + i) % amounts.length] });
+    }
+  }
+  return {
+    user:{ name:"Sample User" }, business:{ name:"Sample Car Wash" }, plan:"Free", sales,
+    services:[{name:"Sample service 1",price:120},{name:"Sample service 2",price:200},{name:"Sample service 3",price:300}]
+  };
+}
+
+/* ---------- Render ---------- */
+function render(data){
+  data = data || {};
+  const user = (data.user && data.user.name) || "";
+  const biz = (data.business && data.business.name) || "";
+  const plan = data.plan === "Premium" ? "Premium" : (data.plan === "Free" ? "Free" : "");
+  const sales = (Array.isArray(data.sales) ? data.sales : [])
+    .map(s => ({ ...s, _d:new Date(s.createdAt), amount:Number(s.amount) || 0 }))
+    .filter(s => !isNaN(s._d));
+  const services = Array.isArray(data.services) ? data.services : [];
+
+  /* Header / identity */
+  $("greeting").textContent = user ? "Welcome back, " + user.split(" ")[0] : "Welcome back";
+  $("whoName").textContent = user || "Your account";
+  $("whoBiz").textContent = biz;
+  $("avatar").textContent = (user || biz || "W").trim().charAt(0).toUpperCase();
+  $("bizName").textContent = biz;
+
+  /* Plan badge + card */
+  if (plan){
+    const prem = plan === "Premium";
+    $("planBadge").hidden = false;
+    $("planBadge").classList.toggle("premium", prem);
+    $("planBadgeText").textContent = plan;
+    const card = $("planCard");
+    card.hidden = false; card.classList.toggle("premium", prem);
+    $("planTitle").textContent = "Your plan";
+    $("planTagText").textContent = plan;
+    $("planText").textContent = prem
+      ? "Your car wash has a public listing in the WashPilot facilities directory, plus access to additional business features."
+      : "Free accounts have access to basic platform functionality and are not listed in the public facilities directory. Premium adds a public listing and additional business features.";
+    if (!prem && CONFIG.upgradeUrl){ $("upgradeBtn").href = CONFIG.upgradeUrl; $("upgradeBtn").hidden = false; }
+    else $("upgradeBtn").hidden = true;
+  }
+
+  /* Stats */
+  const today = dayKey(new Date());
+  const todays = sales.filter(s => dayKey(s._d) === today);
+  const total = todays.reduce((a, s) => a + s.amount, 0);
+  const days = [];
+  for (let i = 6; i >= 0; i--){ const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() - i); days.push(d); }
+  const perDay = days.map(d => sales.filter(s => dayKey(s._d) === dayKey(d)).reduce((a, s) => a + s.amount, 0));
+  const weekTotal = perDay.reduce((a, b) => a + b, 0);
+  const hasAny = sales.length > 0;
+
+  $("sToday").textContent = hasAny ? money(total) : "—";
+  $("sTodaySub").textContent = hasAny ? "" : "No sales recorded yet";
+  $("sCount").textContent = hasAny ? String(todays.length) : "—";
+  $("sAvg").textContent = hasAny && todays.length ? money(total / todays.length) : "—";
+  $("sWeek").textContent = hasAny ? money(weekTotal) : "—";
+
+  /* Chart */
+  const cb = $("chartBody"); cb.replaceChildren();
+  if (!hasAny || weekTotal === 0){
+    cb.appendChild(emptyState("reports","No sales to chart yet","Once you record sales, your daily totals for the last 7 days appear here."));
+  } else {
+    const max = Math.max(...perDay);
+    const wrap = el("div","bars"); wrap.setAttribute("role","img");
+    wrap.setAttribute("aria-label","Bar chart of daily sales for the last 7 days. Full values are in the table below.");
+    perDay.forEach((v, i) => {
+      const col = el("div","bar-col"), isToday = i === 6;
+      col.appendChild(el("span","bar-val", v > 0 ? short(v) : ""));
+      const bar = el("div","bar" + (isToday ? " today" : "") + (v === 0 ? " zero" : ""));
+      bar.style.height = v > 0 ? Math.max(4, Math.round((v / max) * 150)) + "px" : "";
+      col.appendChild(bar);
+      col.appendChild(el("span","bar-day" + (isToday ? " today" : ""), isToday ? "Today" : days[i].toLocaleDateString(undefined,{weekday:"short"})));
+      wrap.appendChild(col);
+    });
+    cb.appendChild(wrap);
+    const tbl = el("table","sr"); tbl.appendChild(el("caption",null,"Daily sales, last 7 days"));
+    days.forEach((d, i) => {
+      const tr = el("tr"); tr.append(el("th",null,d.toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"})), el("td",null,money(perDay[i])));
+      tbl.appendChild(tr);
+    });
+    cb.appendChild(tbl);
+  }
+
+  /* Recent sales */
+  const rb = $("recentBody"); rb.replaceChildren();
+  if (!hasAny){
+    rb.appendChild(emptyState("receipt","No sales yet","Record your first sale in the POS and it will show up here."));
+  } else {
+    const ul = el("ul","rows");
+    sales.sort((a, b) => b._d - a._d).slice(0, 8).forEach(s => {
+      const li = el("li"), ic = el("span","ri"); ic.appendChild(svg("receipt"));
+      const t = el("div","rt");
+      const isToday = dayKey(s._d) === today;
+      const when = (isToday ? "Today" : s._d.toLocaleDateString(undefined,{month:"short",day:"numeric"})) + ", " + s._d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"});
+      t.append(el("b",null,s.service || "Sale"), el("span",null,when));
+      li.append(ic, t, el("span","ra",money(s.amount)));
+      ul.appendChild(li);
+    });
+    rb.appendChild(ul);
+  }
+
+  /* Services */
+  const sb = $("svcBody"); sb.replaceChildren();
+  if (!services.length){
+    sb.appendChild(emptyState("services","No services yet","Add your services and prices so you can use them when recording sales."));
+  } else {
+    const ul = el("ul","rows");
+    services.slice(0, 6).forEach(s => {
+      const li = el("li"), ic = el("span","ri"); ic.appendChild(svg("services"));
+      const t = el("div","rt"); t.appendChild(el("b",null,s.name || "Service"));
+      li.append(ic, t, el("span","ra",money(s.price)));
+      ul.appendChild(li);
+    });
+    sb.appendChild(ul);
+  }
+
+  setLink("reportsLink", CONFIG.reportsUrl);
+  setLink("salesLink", hasAny ? CONFIG.salesUrl : "");
+  setLink("servicesLink", CONFIG.servicesUrl);
+}
+
+/* ---------- Start ---------- */
+(async function init(){
+  if (typeof CONFIG.getSession === "function"){
+    try {
+      const ok = await CONFIG.getSession();
+      if (!ok){ location.replace(CONFIG.signinUrl); return; }
+    } catch (err){ console.error(err); location.replace(CONFIG.signinUrl); return; }
+  }
+
+  if (SAMPLE){
+    showNotice("Sample data. These are not your real numbers. Remove ?sample=1 from the address to hide this.", true);
+    render(sampleData());
+    return;
+  }
+
+  if (typeof CONFIG.loadData !== "function"){
+    console.warn("WashPilot dashboard: CONFIG.loadData is not connected yet.");
+    showNotice("This dashboard isn't connected to your data yet, so there are no numbers to show.");
+    render(null);
+    return;
+  }
+
+  try {
+    render(await CONFIG.loadData());
+  } catch (err){
+    console.error(err);
+    showNotice("We couldn't load your data. Please refresh the page and try again.");
+    render(null);
+  }
+})();
+</script>
+</body>
+</html>
