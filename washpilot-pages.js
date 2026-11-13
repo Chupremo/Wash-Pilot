@@ -181,7 +181,7 @@
     const { data, error } = await getClient().auth.signUp({
       email,
       password,
-      options: { data: meta, emailRedirectTo: window.location.origin + '/dashboard.html' }
+      options: { data: meta, emailRedirectTo: window.location.origin }
     });
     if (error) return { ok: false, message: error.message || 'We could not create your account.' };
 
