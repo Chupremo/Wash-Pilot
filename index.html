@@ -2427,6 +2427,7 @@ function facilityListingPage(){
  if(!window.wpRealWorkspaceActive)return pageHead('Facility Listing','Sign in with a registered business account to manage your public facility.')+'<section class="panel"><div class="empty">Registered business access is required.</div></section>';
  return pageHead('Facility Listing','Your facility is automatically listed in the WashPilot Business Directory. Update public details and opening hours here.')+'<section class="panel" style="max-width:900px"><div id="wpFacilityListingPanel" class="empty">Loading your public facility…</div></section>';
 }
+let wpFacilityGooglePlace = null;
 async function loadFacilityListing(){
  const el=document.getElementById('wpFacilityListingPanel');if(!el||!window.washPilotBookingApi)return;
  try{
@@ -2449,7 +2450,7 @@ async function loadFacilityListing(){
    '<div class="actions" style="justify-content:flex-end;margin-top:16px"><button type="button" class="btn" onclick="saveFacilityPaymentAndGallery()">Save payment and gallery settings</button></div>';
   renderFacilityQr(publicUrl);
   wpFacilityGooglePlace=(f.google_place_id&&f.latitude!=null&&f.longitude!=null)?{placeId:f.google_place_id,latitude:Number(f.latitude),longitude:Number(f.longitude),formattedAddress:f.address||''}:null;
-  await mountGoogleAddressPicker('wpFacilityAddressPicker','wpFacilityAddress',f.address||'',wpFacilityGooglePlace,place=>{wpFacilityGooglePlace=place;});
+  await window.mountGoogleAddressPicker('wpFacilityAddressPicker','wpFacilityAddress',f.address||'',wpFacilityGooglePlace,place=>{wpFacilityGooglePlace=place;});
  }catch(err){el.innerHTML='<div class="empty">Could not load facility details: '+esc(err.message||err)+'</div>';}
 }
 async function saveFacilityListing(e){e.preventDefault();await persistFacilityProfile(document.getElementById('wpFacilityProfileForm'));}
@@ -2895,7 +2896,6 @@ function logoutDemo(){
   let client = null;
   let wpGoogleMapsLoaderPromise = null;
   let wpSignupGooglePlace = null;
-  let wpFacilityGooglePlace = null;
   let authMode = 'account';
   let selectedSignupPlan = 'starter';
   const $ = id => document.getElementById(id);
@@ -2981,6 +2981,8 @@ function logoutDemo(){
       container.innerHTML='<div class="wp-google-address-error">'+esc(err.message||'Google Maps address search is unavailable.')+'</div>';
     }
   }
+  // The facility editor lives in the app script, outside this auth closure.
+  window.mountGoogleAddressPicker=mountGoogleAddressPicker;
   function setAuthMode(){authMode='account';if($('wpLoginHeading'))$('wpLoginHeading').textContent='Sign in to your account';if($('wpLoginDescription'))$('wpLoginDescription').textContent='Use your registered email address and password to access your WashPilot account.';if($('wpLoginIdentityLabel'))$('wpLoginIdentityLabel').textContent='Email address';const input=$('loginUsername');if(input){input.type='email';input.name='email';input.placeholder='you@yourbusiness.com';input.autocomplete='email';input.value='';}const password=$('loginPassword');if(password)password.value='';if($('wpForgotRow'))$('wpForgotRow').style.display='';if($('loginSubmitButton'))$('loginSubmitButton').innerHTML='Sign in <span aria-hidden="true">→</span>';if($('loginRegisterButton'))$('loginRegisterButton').style.display='';loginError('');}
   window.setLoginMode=setAuthMode;
   window.wpRequestPasswordReset=async function(email){
