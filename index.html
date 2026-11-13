@@ -3470,7 +3470,7 @@ async listPublicFacilities(){const {data,error}=await getClient().rpc('list_publ
   if(currentRole==='platform'||snapshot)return true;
   if(typeof wpBusinessOnHold==='function'&&wpBusinessOnHold()){toast('Your account is on hold. Choose a plan or contact WashPilot Administration.');return false;}
   const content=document.getElementById('content'),crumb=document.getElementById('crumb');
-  snapshot={state,page:currentPage,plan:currentPlan,main:selectedMain,addons:selectedAddons,receipt:lastReceipt,catalog:catalogTab,search:transactionSearch,nodes:[...content.childNodes],crumb:crumb.innerHTML,title:document.title,url:location.pathname+location.search+location.hash,scroll:window.scrollY,storage:window.wpStorage,bookingApi:window.washPilotBookingApi,billingApi:window.washPilotBillingApi,facilityGlobals:Object.fromEntries(Object.keys(window).filter(k=>k.startsWith('wpFacility')).map(k=>[k,window[k]]))};
+  snapshot={state,facilityGooglePlace:wpFacilityGooglePlace,page:currentPage,plan:currentPlan,main:selectedMain,addons:selectedAddons,receipt:lastReceipt,catalog:catalogTab,search:transactionSearch,nodes:[...content.childNodes],crumb:crumb.innerHTML,title:document.title,url:location.pathname+location.search+location.hash,scroll:window.scrollY,storage:window.wpStorage,bookingApi:window.washPilotBookingApi,billingApi:window.washPilotBillingApi,facilityGlobals:Object.fromEntries(Object.keys(window).filter(k=>k.startsWith('wpFacility')).map(k=>[k,window[k]]))};
   window.wpTourSandboxActive=true;document.body.classList.add('wp-tour-practising');
   const transient=new Map(),originalStorage=snapshot.storage;
   window.wpStorage=new Proxy(originalStorage,{get(target,key){if(key==='setItem')return(k,v)=>transient.set(String(k),String(v));if(key==='removeItem')return k=>transient.set(String(k),null);if(key==='getItem')return k=>transient.has(String(k))?transient.get(String(k)):target.getItem(String(k));if(key==='clear')return()=>{};const value=target[key];return typeof value==='function'?value.bind(target):value;}});
@@ -3485,7 +3485,7 @@ async listPublicFacilities(){const {data,error}=await getClient().rpc('list_publ
   if(!snapshot)return;
   const real=snapshot;snapshot=null;window.wpTourSandboxActive=false;document.body.classList.remove('wp-tour-practising');
   window.wpStorage=real.storage;window.washPilotBookingApi=real.bookingApi;window.washPilotBillingApi=real.billingApi;
-  state=real.state;currentPage=real.page;currentPlan=real.plan;selectedMain=real.main;selectedAddons=real.addons;lastReceipt=real.receipt;catalogTab=real.catalog;transactionSearch=real.search;
+  wpFacilityGooglePlace=real.facilityGooglePlace;state=real.state;currentPage=real.page;currentPlan=real.plan;selectedMain=real.main;selectedAddons=real.addons;lastReceipt=real.receipt;catalogTab=real.catalog;transactionSearch=real.search;
   for(const key of Object.keys(window).filter(k=>k.startsWith('wpFacility')&&!(k in real.facilityGlobals)))delete window[key];Object.assign(window,real.facilityGlobals);
   practiceBookings=[];practiceFacility=null;for(const url of objectUrls)URL.revokeObjectURL(url);objectUrls=[];
   closeModal();if(window.wpRestoreTourRoute)window.wpRestoreTourRoute(real.page);renderNav();
