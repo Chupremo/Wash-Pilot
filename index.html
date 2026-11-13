@@ -639,7 +639,7 @@ html{scroll-behavior:smooth;scroll-padding-top:85px}
 .wp-tour-launch:hover{background:#eaf3ff;border-color:#b8d0ef}
 .wp-tour-backdrop{position:fixed;inset:0;background:rgba(7,20,40,.025);z-index:1;pointer-events:none}
 #washpilotApp:not(.auth-hidden){position:relative;z-index:2}
-.wp-tour-spotlight{position:relative!important;z-index:10011!important;outline:3px solid #31b9ee!important;outline-offset:4px!important;box-shadow:0 0 0 8px rgba(49,185,238,.18)!important;border-radius:12px!important}
+.wp-tour-spotlight{scroll-margin-top:100px;position:relative!important;z-index:10011!important;outline:3px solid #31b9ee!important;outline-offset:4px!important;box-shadow:0 0 0 8px rgba(49,185,238,.18)!important;border-radius:12px!important}
 .wp-tour-panel{position:fixed;right:24px;bottom:24px;z-index:10020;width:min(450px,calc(100vw - 32px));background:#fff;border:1px solid #d8e4f3;border-radius:20px;box-shadow:0 22px 70px rgba(7,25,55,.28);padding:20px;color:#1a2b45;font-family:inherit}
 .wp-tour-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
 .wp-tour-kicker{font-size:10px;letter-spacing:.09em;text-transform:uppercase;font-weight:900;color:#2871c7}
@@ -1408,6 +1408,11 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
 .brand .brand-lockup,.login-brand .brand-lockup,.wp-trial-brand img{object-fit:contain;border-radius:0}
 .topbar-brand-icon{width:104px;height:32px;flex-basis:104px;object-fit:contain;background:#0b1830;padding:5px;border-radius:6px}
 @media print{.receipt-brand{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+
+.wp-tour-sample-notice{padding:13px 15px;margin-bottom:18px;border:1px solid #bcd5fb;border-radius:12px;background:#edf4ff;color:#183f73}.wp-tour-sample-notice b{display:block;font-size:13px}.wp-tour-sample-notice span{display:block;font-size:12px;line-height:1.6;margin-top:4px}
+.wp-tour-collapse{width:100%;margin-bottom:12px;background:#edf4ff;color:#194b86}.wp-tour-compact h2,.wp-tour-compact p,.wp-tour-compact .wp-tour-purpose,.wp-tour-compact .wp-tour-try,.wp-tour-compact .wp-tour-progress{display:none}.wp-tour-practising #content aside.panel{position:static!important}.wp-tour-practising .wp-tour-panel{max-height:70dvh;overflow-y:auto}.wp-tour-practising .wp-tour-actions{position:sticky;bottom:-20px;background:white;padding:12px 0 0}
+@media(max-width:700px){.wp-tour-practising .wp-tour-panel{max-height:44dvh;padding:14px}.wp-tour-practising #content{padding-bottom:calc(48dvh + 90px)!important}.wp-tour-practising .wp-tour-panel p{font-size:12px;line-height:1.5}.wp-tour-practising .wp-tour-panel h2{font-size:18px}.wp-tour-practising .wp-tour-actions{bottom:-14px}.wp-tour-practising .wp-tour-panel button{min-height:44px}}
+@media(max-width:760px){#wpTourLaunch{display:inline-flex!important;align-items:center;justify-content:center;min-height:44px;font-size:11px}}
 </style>
 </head>
 <body>
@@ -1807,7 +1812,7 @@ const initial={services:seedServices,transactions:[
 ],employees:[{id:1,name:'Juan Dela Cruz',role:'Washer',status:'Active',today:2,sales:270},{id:2,name:'Mark Santos',role:'Senior Detailer',status:'Active',today:2,sales:5680},{id:3,name:'Paolo Reyes',role:'Cashier',status:'Active',today:0,sales:0}],expenses:[{id:1,date:today(),category:'Cleaning Supplies',description:'Car shampoo and microfiber',amount:450},{id:2,date:isoAgo(1),category:'Utilities',description:'Water and electricity',amount:800}],inventory:[{id:1,name:'Car Shampoo',unit:'Liters',stock:24,min:30},{id:2,name:'Tire Black',unit:'Liters',stock:12,min:8},{id:3,name:'Microfiber Cloth',unit:'Pieces',stock:36,min:15},{id:4,name:'Spray Wax',unit:'Bottles',stock:15,min:10}],branches:[{id:1,name:'Main Branch',location:'Lipa City',status:'Active'},{id:2,name:'North Branch',location:'Batangas City',status:'Active'},{id:3,name:'South Branch',location:'Tanauan City',status:'Active'}],customers:[]};
 let state=loadState();window.wpReadWorkspaceServices=()=>Array.isArray(state?.services)?state.services:[];let currentPage='dashboard';let currentPlan=window.wpStorage.getItem('wp_plan')||'basic';let selectedMain='Basic Car Wash';let selectedAddons=[];let lastReceipt=null;let transactionSearch='';let catalogTab='main';
 function loadState(){try{let d=window.wpStorage.getItem('washpilot_demo_data');return d?JSON.parse(d):structuredClone(initial)}catch(e){return structuredClone(initial)}}
-function save(){window.wpStorage.setItem('washpilot_demo_data',JSON.stringify(state));window.wpStorage.setItem('wp_plan',currentPlan)}
+function save(){if(window.wpTourSandboxActive)return;window.wpStorage.setItem('washpilot_demo_data',JSON.stringify(state));window.wpStorage.setItem('wp_plan',currentPlan)}
 function money(n){return '₱'+Number(n||0).toLocaleString('en-PH',{maximumFractionDigits:2})}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function dateLabel(d){return new Date(d+'T12:00:00Z').toLocaleDateString('en-PH',{timeZone:BUSINESS_TIME_ZONE,month:'short',day:'numeric',year:'numeric'})}
@@ -1847,7 +1852,7 @@ async function refreshWorkspaceAccess(manual=false){
   const before=JSON.stringify([window.wpRealBusiness,window.wpRealSubscription]),state=await window.washPilotBillingApi.getWorkspaceAccess(window.wpRealBusinessId);
   window.wpRealBusiness={...window.wpRealBusiness,...state.business};window.wpRealSubscription=state.subscription;
   const changed=before!==JSON.stringify([window.wpRealBusiness,window.wpRealSubscription]);
-  if(changed||manual){if(wpBusinessOnHold())closeModal();renderNav();render();}wpAccessHeld=wpBusinessOnHold();wpAccessLastRefresh=Date.now();if(manual)toast(wpAccessHeld?'Your account is still on hold. Submit payment or wait for approval.':'Your account status is up to date.');
+  if(changed||manual){if(wpBusinessOnHold()&&window.wpTourSandboxActive)window.closeWashPilotTour(false);if(wpBusinessOnHold())closeModal();renderNav();render();}wpAccessHeld=wpBusinessOnHold();wpAccessLastRefresh=Date.now();if(manual)toast(wpAccessHeld?'Your account is still on hold. Submit payment or wait for approval.':'Your account status is up to date.');
  }catch(err){if(manual)alert(err.message||'Could not refresh account status.');}
  finally{wpAccessRefreshing=false;}
 }
@@ -1855,7 +1860,7 @@ function startWorkspaceAccessMonitor(){
  if(wpAccessMonitor)clearInterval(wpAccessMonitor);wpAccessHeld=wpBusinessOnHold();wpAccessLastRefresh=Date.now();
  wpAccessMonitor=setInterval(()=>{
   if(!window.wpRealWorkspaceActive){clearInterval(wpAccessMonitor);wpAccessMonitor=null;return;}
-  const held=wpBusinessOnHold();if(held!==wpAccessHeld){wpAccessHeld=held;closeModal();renderNav();render();}
+  const held=wpBusinessOnHold();if(held!==wpAccessHeld){if(held&&window.wpTourSandboxActive)window.closeWashPilotTour(false);wpAccessHeld=held;closeModal();renderNav();render();}
   if(Date.now()-wpAccessLastRefresh>=60000)refreshWorkspaceAccess();
  },10000);
 }
@@ -1869,6 +1874,7 @@ function premiumPeriodExpired(sub){
  return normalizePlan(s.plan_code)==='premium'&&(s.status==='expired'||(end&&Date.parse(end)<=Date.now()));
 }
 function effectivePlan(){
+ if(window.wpTourSandboxActive)return 'premium';
  if(window.wpRealWorkspaceActive){
   const sub=window.wpRealSubscription||{};
   return wpAdminTrialActive()?'premium':premiumPeriodExpired(sub)?'basic':normalizePlan(sub.plan_code||'basic');
@@ -2111,7 +2117,7 @@ function ensureDemoState(){
  state.transactions.forEach(t=>{if(!t.financialStatus)t.financialStatus=t.status==='Cancelled'?'Void':'Paid';if(t.discount==null)t.discount=0});
 }
 function loadState(){try{let d=window.wpStorage.getItem('washpilot_demo_data')||window.wpStorage.getItem('washboss_demo_data');return d?JSON.parse(d):structuredClone(initial)}catch(e){return structuredClone(initial)}}
-function save(){if(window.wpRealWorkspaceActive&&window.wpRealBusinessId){window.wpStorage.setItem('wp_real_workspace_data_'+window.wpRealBusinessId,JSON.stringify(state));window.wpStorage.setItem('wp_real_workspace_plan_'+window.wpRealBusinessId,currentPlan);return;}window.wpStorage.setItem('washpilot_demo_data',JSON.stringify(state));window.wpStorage.setItem('wp_plan',currentPlan);}
+function save(){if(window.wpTourSandboxActive)return;if(window.wpRealWorkspaceActive&&window.wpRealBusinessId){window.wpStorage.setItem('wp_real_workspace_data_'+window.wpRealBusinessId,JSON.stringify(state));window.wpStorage.setItem('wp_real_workspace_plan_'+window.wpRealBusinessId,currentPlan);return;}window.wpStorage.setItem('washpilot_demo_data',JSON.stringify(state));window.wpStorage.setItem('wp_plan',currentPlan);}
 function demoPassword(){return window.wpStorage.getItem('wp_demo_password')||window.wpStorage.getItem('wb_demo_password')||''}
 function setLoginRole(role){
  // Login is for registered accounts. Never prefill demo owner credentials.
@@ -2203,8 +2209,8 @@ function renderNav(){
  const planSelect=document.getElementById('planSelect');if(planSelect)planSelect.style.display='none';
  const resetDemoButton=document.querySelector('.reset-demo-button');if(resetDemoButton)resetDemoButton.style.display='none';
  const sidePlan=document.getElementById('sidePlan'),sideText=document.getElementById('sidePlanText');
- sidePlan.textContent=wpBusinessOnHold()?'ON HOLD':wpAdminTrialActive()?'7-DAY FREE TRIAL':isPlatform?'PLATFORM ADMIN':isOwner?(activePlan==='premium'?'PREMIUM PLAN':'FREE PLAN'):currentStaffRole.toUpperCase();
- sideText.textContent=isPlatform?'Central control for all customer businesses.':isOwner?(activePlan==='premium'?'Premium access · ₱499 per 30 days.':'Free forever · Core carwash operations.'):currentStaffRole==='washer'?'Assigned vehicles and service progress.':currentStaffRole==='cashier'?'New washes, payments and customer records.':'Team operations and daily oversight.';
+ sidePlan.textContent=window.wpTourSandboxActive?'PRACTICE MODE':wpBusinessOnHold()?'ON HOLD':wpAdminTrialActive()?'7-DAY FREE TRIAL':isPlatform?'PLATFORM ADMIN':isOwner?(activePlan==='premium'?'PREMIUM PLAN':'FREE PLAN'):currentStaffRole.toUpperCase();
+ sideText.textContent=window.wpTourSandboxActive?'Temporary sample data. Closing the tour restores your workspace.':isPlatform?'Central control for all customer businesses.':isOwner?(activePlan==='premium'?'Premium access · ₱499 per 30 days.':'Free forever · Core carwash operations.'):currentStaffRole==='washer'?'Assigned vehicles and service progress.':currentStaffRole==='cashier'?'New washes, payments and customer records.':'Team operations and daily oversight.';
  document.querySelector('.top-actions .avatar').textContent=isPlatform?'SA':isOwner?'BO':currentStaffRole==='supervisor'?'SU':currentStaffRole==='cashier'?'CA':'WA';
  document.querySelectorAll('.nav button[data-page]').forEach(b=>{
   const page=b.dataset.page,allowedRole=canAccessRolePage(page),locked=!isPlatform&&(isOwner||isSupervisor)&&!allowed(page)&&!['managementHub','subscription'].includes(page);
@@ -2238,6 +2244,7 @@ function render(){
   const markup=pageRenderer();
   if(typeof markup!=='string'||!markup.trim())throw new Error('The '+(names[currentPage]||'Dashboard')+' renderer returned empty content.');
   c.innerHTML=markup;
+  if(window.wpTourSandboxActive)c.insertAdjacentHTML('afterbegin','<div class="wp-tour-sample-notice" role="status"><b>Practice mode · Sample data only</b><span>Try the controls. Closing or finishing the tour removes every sample and restores your workspace.</span></div>');
   if(currentPage==='subscription')loadMyBillingRequests();
   if(currentPage==='listing')loadFacilityListing();
   if(currentPage==='bookings')loadFacilityBookings();
@@ -2408,15 +2415,15 @@ function renderFacilityQr(url){
  if(typeof QRCode==='undefined'){box.textContent='QR code library unavailable';return;}
  new QRCode(box,{text:url,width:156,height:156,colorDark:'#10233f',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});
 }
-async function copyFacilityLink(){
+async function copyFacilityLink(){if(window.wpTourSandboxActive){toast('Practice only: close the tour before copying or downloading your real booking link.');return;}
  const url='https://washpilot.shop/book/'+(window.wpFacilityCurrent?.slug||'');
  try{await navigator.clipboard.writeText(url);toast('Booking link copied.');}catch(_){window.prompt('Copy your booking link:',url);}
 }
-async function copyFacilitySlug(){
+async function copyFacilitySlug(){if(window.wpTourSandboxActive){toast('Practice only: close the tour before copying or downloading your real booking link.');return;}
  const slug=window.wpFacilityCurrent?.slug||'';
  try{await navigator.clipboard.writeText(slug);toast('Business slug copied.');}catch(_){window.prompt('Copy your business slug:',slug);}
 }
-function downloadFacilityQr(){
+function downloadFacilityQr(){if(window.wpTourSandboxActive){toast('Practice only: close the tour before copying or downloading your real booking link.');return;}
  const canvas=document.querySelector('#wpFacilityQr canvas');if(!canvas){toast('QR code is not ready yet.');return;}
  const a=document.createElement('a');a.href=canvas.toDataURL('image/png');a.download=(window.wpFacilityCurrent?.slug||'washpilot')+'-booking-qr.png';a.click();
 }
@@ -3348,6 +3355,72 @@ async listPublicFacilities(){const {data,error}=await getClient().rpc('list_publ
 
 
 <script>
+
+/* Guided practice uses a separate in-memory workspace; never persist or publish its samples. */
+(function(){
+ let snapshot=null,practiceBookings=[],practiceFacility=null,objectUrls=[];
+ const sampleBusinessId='00000000-0000-4000-8000-000000000001';
+ function sampleState(){
+  const demo=structuredClone(initial);demo.services=demo.services.filter(x=>[1,2,3,8,9,12].includes(x.id));
+  demo.services.forEach(x=>{if(x.type==='main')x.priceBySize={Small:x.price,Medium:x.price+30,Large:x.price+60,XL:x.price+100};});
+  demo.employees=[{id:1,name:'Sample Washer',role:'Washer',status:'Active',today:2,sales:250},{id:2,name:'Sample Cashier',role:'Cashier',status:'Active',today:1,sales:250}];
+  demo.branches=[{id:1,name:'Main Branch',location:'Sample City',status:'Active'}];demo.expenses=[{id:1,date:today(),category:'Cleaning Supplies',description:'Sample cleaning supplies',amount:50}];
+  demo.transactions=['Waiting','Washing','Ready','Completed'].map((status,i)=>({id:'PRACTICE-'+(i+1),date:today(),createdAt:new Date().toISOString(),time:'10:00 AM',plate:i===0?'DEMO 2026':'DEMO '+(2026+i),vehicle:'SUV',vehicleSize:'Medium',customer:i===0?'Alex Sample':'Sample Customer '+(i+1),customerPhone:'09000000000',main:'Basic Car Wash',mainPrice:150,addons:[{name:'Spray Wax',price:100}],subtotal:250,total:250,discount:0,estimatedDuration:35,status,financialStatus:status==='Completed'?'Paid':'Unpaid',payment:status==='Completed'?'Cash':'',paidAt:status==='Completed'?new Date().toISOString():null,paymentDate:status==='Completed'?today():null,employee:'Sample Washer',branch:'Main Branch',notes:'Temporary guided-tour sample'}));
+  demo.customers=demo.transactions.map(t=>({plate:t.plate,name:t.customer,phone:t.customerPhone,vehicle:t.vehicle,visits:1,lastVisit:today(),spent:t.financialStatus==='Paid'?t.total:0,loyaltyPoints:0,rewardBalance:0,membership:'Standard',packageBalance:[]}));
+  return demo;
+ }
+ function apiSandbox(api,kind){
+  if(!api)return api;
+  return new Proxy(api,{get(target,key){
+   if(key==='getWorkspaceAccess')return target[key]?.bind(target);
+   const reads={getMyFacility:()=>structuredClone(practiceFacility),getMyBookings:()=>structuredClone(practiceBookings),getConfirmedQueueBookings:()=>structuredClone(practiceBookings.filter(b=>b.status==='confirmed')),getPendingVerificationCount:()=>practiceBookings.filter(b=>b.status==='pending'&&b.payment_status==='awaiting_verification').length,getPaymentSettings:()=>({payment_methods:{},payment_instructions:'Practice only. No payment is required or processed.'}),getMyRequests:()=>[],listAdminRequests:()=>[]};
+   if(key in reads)return async()=>reads[key]();
+   if(key==='syncServices')return async()=>0;
+   if(key==='setPaymentStatus')return async(id,status)=>{const b=practiceBookings.find(b=>b.id===id);if(b){b.payment_status=status;if(status==='rejected')b.status='rejected';}return true;};
+   if(key==='setBookingStatus')return async(id,status)=>{const b=practiceBookings.find(b=>b.id===id);if(b)b.status=status;return true;};
+   if(key==='updateMyFacility')return async values=>{practiceFacility={...practiceFacility,...structuredClone(values)};return structuredClone(practiceFacility);};
+   if(key==='uploadFacilityPhoto')return async file=>{const url=URL.createObjectURL(file);objectUrls.push(url);return url;};
+   if(typeof target[key]==='function')return async()=>{throw new Error('Practice mode: live uploads, links, billing and account changes are disabled. Close the tour to use your real workspace.');};
+   return target[key];
+  }});
+ }
+ window.wpBeginTourPractice=function(){
+  if(currentRole==='platform'||snapshot)return true;
+  if(typeof wpBusinessOnHold==='function'&&wpBusinessOnHold()){toast('Your account is on hold. Choose a plan or contact WashPilot Administration.');return false;}
+  const content=document.getElementById('content'),crumb=document.getElementById('crumb');
+  snapshot={state,page:currentPage,plan:currentPlan,main:selectedMain,addons:selectedAddons,receipt:lastReceipt,catalog:catalogTab,search:transactionSearch,nodes:[...content.childNodes],crumb:crumb.innerHTML,title:document.title,url:location.pathname+location.search+location.hash,scroll:window.scrollY,storage:window.wpStorage,bookingApi:window.washPilotBookingApi,billingApi:window.washPilotBillingApi,facilityGlobals:Object.fromEntries(Object.keys(window).filter(k=>k.startsWith('wpFacility')).map(k=>[k,window[k]]))};
+  window.wpTourSandboxActive=true;document.body.classList.add('wp-tour-practising');
+  const transient=new Map(),originalStorage=snapshot.storage;
+  window.wpStorage=new Proxy(originalStorage,{get(target,key){if(key==='setItem')return(k,v)=>transient.set(String(k),String(v));if(key==='removeItem')return k=>transient.set(String(k),null);if(key==='getItem')return k=>transient.has(String(k))?transient.get(String(k)):target.getItem(String(k));if(key==='clear')return()=>{};const value=target[key];return typeof value==='function'?value.bind(target):value;}});
+  state=sampleState();ensureDemoState();selectedMain='Basic Car Wash';selectedAddons=[9];lastReceipt=null;transactionSearch='';catalogTab='main';
+  practiceFacility={id:sampleBusinessId,business_id:sampleBusinessId,name:'Sample Service Studio',slug:'practice-preview-only',address:'Sample City — practice address',phone:'',opening_time:'08:00',closing_time:'18:00',operating_days:[0,1,2,3,4,5,6],timezone:'Asia/Manila',is_listed:false,gallery_images:[],logo_url:'/washpilot-brand.png',public_description:'Sample facility for guided practice. This is not a published business listing.',gcash_account_name:'SAMPLE ONLY — DO NOT PAY',gcash_mobile_number:'DEMO',bank_name:'',bank_account_name:'',bank_account_number:''};
+  practiceBookings=[{id:'PRACTICE-ONLINE',booking_code:'PRACTICE-ONLINE',service_name:'Basic Car Wash + Spray Wax',customer_name:'Sample Online Customer',customer_phone:'09000000000',vehicle_size:'Medium',vehicle_plate:'DEMO 3000',booking_date:today(),start_time:'14:00',end_time:'14:35',price_php:250,status:'pending',payment_method:'gcash',payment_status:'awaiting_verification',payment_reference:'PRACTICE ONLY',payment_proof_path:null,notes:'Temporary sample reservation'}];
+  window.washPilotBookingApi=apiSandbox(snapshot.bookingApi,'booking');window.washPilotBillingApi=apiSandbox(snapshot.billingApi,'billing');
+  if(typeof stopBookingNotificationMonitor==='function')stopBookingNotificationMonitor();
+  if(typeof closeModal==='function')closeModal();setSidebarOpen(false);currentPage='__practice_start__';return true;
+ };
+ window.wpEndTourPractice=function(){
+  if(!snapshot)return;
+  const real=snapshot;snapshot=null;window.wpTourSandboxActive=false;document.body.classList.remove('wp-tour-practising');
+  window.wpStorage=real.storage;window.washPilotBookingApi=real.bookingApi;window.washPilotBillingApi=real.billingApi;
+  state=real.state;currentPage=real.page;currentPlan=real.plan;selectedMain=real.main;selectedAddons=real.addons;lastReceipt=real.receipt;catalogTab=real.catalog;transactionSearch=real.search;
+  for(const key of Object.keys(window).filter(k=>k.startsWith('wpFacility')&&!(k in real.facilityGlobals)))delete window[key];Object.assign(window,real.facilityGlobals);
+  practiceBookings=[];practiceFacility=null;for(const url of objectUrls)URL.revokeObjectURL(url);objectUrls=[];
+  closeModal();if(window.wpRestoreTourRoute)window.wpRestoreTourRoute(real.page);renderNav();
+  const content=document.getElementById('content');if(typeof wpBusinessOnHold==='function'&&wpBusinessOnHold())render();else{content.replaceChildren(...real.nodes);document.getElementById('crumb').innerHTML=real.crumb;document.title=real.title;}
+  history.replaceState(history.state,'',real.url);
+  window.scrollTo({top:real.scroll,behavior:'instant'});if(window.wpRealWorkspaceActive&&typeof startBookingNotificationMonitor==='function')startBookingNotificationMonitor();
+ };
+ window.wpPrefillTourWash=function(){
+  if(!window.wpTourSandboxActive||currentPage!=='newwash')return;
+  const values={washPlate:'DEMO 2026',washCustomer:'Alex Sample',washCustomerPhone:'09000000000',washVehicle:'SUV',washVehicleSize:'Medium',washEmployee:'Sample Washer',washNotes:'Practice ticket — removed when the tour closes'};
+  for(const [id,value] of Object.entries(values)){const input=document.getElementById(id);if(input&&!input.dataset.tourPrefilled){input.value=value;input.dataset.tourPrefilled='1';}}
+  refreshWash();
+ };
+ for(const action of ['logoutDemo','washPilotSignOut']){const original=window[action];if(typeof original==='function')window[action]=function(){window.closeWashPilotTour?.(false);return original.apply(this,arguments);};}
+ document.addEventListener('click',event=>{if(!window.wpTourSandboxActive)return;const a=event.target.closest('a[href]');if(a&&!a.getAttribute('href').startsWith('#')){event.preventDefault();event.stopImmediatePropagation();toast('This is a sample link. Close the tour before sharing or opening your real booking link.');}},true);
+})();
+
 (function(){
  var active=false,steps=[],stepIndex=0,spotlight=null,card=null,backdrop=null;
  function addStep(out,step){
@@ -3359,8 +3432,30 @@ async listPublicFacilities(){const {data,error}=await getClient().rpc('list_publ
   }
   out.push(step);
  }
+ function ownerPracticeSteps(extended){
+  const out=[],add=step=>addStep(out,step);
+  add({page:'catalog',section:'1 · SET UP YOUR MENU',title:'Start with services and prices',description:'Your practice menu is already filled with main services, vehicle-size prices and add-ons.',purpose:'Set your menu first so every ticket uses the correct price and duration.',tryThis:'Open Edit on Basic Car Wash. Try changing a sample rate and save. This will not change your live menu.',targets:['#content .table-wrap','#content .panel']});
+  add({page:'newwash',section:'2 · CUSTOMER & VEHICLE',title:'A customer arrives',description:'Alex Sample and vehicle DEMO 2026 are pre-filled. The SUV uses the Medium price.',purpose:'Customer and plate details connect this visit to the vehicle history.',tryThis:'Change the vehicle size and watch the total update. These are practice details only.',targets:['#content .form-section:nth-of-type(1)']});
+  add({page:'newwash',section:'3 · SERVICE & EXTRAS',title:'See how the total is calculated',description:'Basic Car Wash and Spray Wax are selected. Main-service pricing follows the vehicle size; add-ons have their own prices.',purpose:'Record the requested work clearly before the team starts.',tryThis:'Select a different service or toggle an add-on. Review the total in the summary.',targets:['#content .form-section:nth-of-type(2)','#content aside.panel']});
+  add({page:'newwash',section:'4 · CREATE AN UNPAID TICKET',title:'Register the practice job',description:'The customer pays at pickup. Creating a ticket puts the vehicle in the Waiting queue without recording a payment.',purpose:'Creating a job and collecting payment are separate actions.',tryThis:'Click Create wash ticket. You can close the sample ticket window and continue.',targets:['#content button[onclick="saveWash()"]']});
+  add({page:'queue',section:'5 · MANAGE THE WORK',title:'Follow vehicles through the queue',description:'Sample jobs are waiting, washing and ready for pickup. Follow DEMO 2026 or move any sample job forward.',purpose:'The normal workflow is Waiting → Washing → Quality Check → Ready.',tryThis:'Use a job’s status action to move it to the next stage.',targets:['#content .kanban','#content .panel']});
+  add({page:'queue',section:'6 · COLLECT AT PICKUP',title:'Record a sample payment',description:'A Ready sample job is included so you can practise checkout immediately.',purpose:'Only collected payments should appear in your sales totals.',tryThis:'Choose Collect Payment on the Ready job, select Cash or GCash, then confirm. No real money is collected.',targets:['#content .kanban','#content .panel']});
+  add({page:'transactions',section:'7 · CHECK THE RECEIPT',title:'Find tickets and payments',description:'Practice transactions show their service, amount, wash stage and payment status.',purpose:'Use this screen when checking a customer’s receipt or a recorded sale.',tryThis:'Search DEMO and open a sample ticket or receipt.',targets:['#content .table-wrap','#content .panel']});
+  add({page:'bookings',section:'8 · ONLINE BOOKINGS',title:'Review an online booking request',description:'A sample reservation is waiting. In your live workspace, check the uploaded payment receipt before verifying payment and confirming a booking.',purpose:'Payment verification and booking confirmation are separate steps.',tryThis:'Verify the sample payment, then confirm its booking. Only this temporary example will change.',targets:['#content .table-wrap','#content .panel']});
+  add({page:'listing',section:'9 · YOUR BOOKING PAGE',title:'Set up your customer booking link',description:'The facility form contains practice details. Your real public page has not changed.',purpose:'After the tour, add your real description, hours, photos and receiving-payment details, then share your booking link.',tryThis:'Review the sample facility form. Practice edits stay local, and sample links cannot be shared from the tour.',targets:['#wpFacilityListingPanel','#content .panel']});
+  add({page:'dashboard',section:'10 · DAILY CHECK',title:'See what the owner tracks',description:'Sample jobs and payments fill the dashboard so you can see the daily workflow in one place.',purpose:'Use collected sales, workload and completed jobs to review your day.',tryThis:'Compare the counters with the sample tickets you tried. Finish or close the tour to restore your workspace.',targets:['#content .grid.stats','#content .panel']});
+  if(extended){
+   add({page:'customers',section:'CUSTOMER HISTORY',title:'Recognise a returning vehicle',description:'Sample customers include plates, visits and recorded spend.',tryThis:'Open a sample vehicle history.',targets:['#content .table-wrap','#content .panel']});
+   add({page:'employees',section:'YOUR TEAM',title:'Assign work to staff',description:'A Sample Washer and Sample Cashier are included.',tryThis:'Review a practice staff record. Live team accounts are untouched.',targets:['#content .panel']});
+   add({page:'expenses',section:'COSTS',title:'Track operating costs',description:'A sample cleaning-supplies expense shows how costs compare with collected sales.',tryThis:'Try adding a practice expense, then review the total.',targets:['#content .panel']});
+   add({page:'inventory',section:'SUPPLIES',title:'Review stock and reorder levels',description:'Sample supplies show quantities and low-stock warnings.',tryThis:'Review a sample item. Changes disappear when the tour ends.',targets:['#content .panel']});
+   add({page:'reports',section:'REPORTS',title:'Review the sample business results',description:'Reports use only the temporary practice jobs, payments and costs while this tour is open.',tryThis:'Review sales and payment mix, then finish to remove the sample workspace.',targets:['#content .grid.stats','#content .panel']});
+  }
+  return out;
+ }
  function buildSteps(){
   var out=[],role=currentRole==='platform'?'platform':currentStaffRole;
+  if(role==='owner'||role==='supervisor')return ownerPracticeSteps(true);
   if(role==='platform'){
    addStep(out,{page:'platform',section:'PLATFORM ADMIN',title:'Platform overview',description:'This is the WashPilot control center. It summarizes active businesses, trial accounts, past-due accounts and recurring subscription revenue.',purpose:'Use this screen to monitor the health of the SaaS platform—not an individual carwash.',targets:['#content .admin-banner','#content .grid.stats']});
    addStep(out,{page:'tenants',section:'PLATFORM ADMIN',title:'Customer businesses',description:'Review businesses using WashPilot, check their account status and open a tenant record. This is where platform support and account administration begin.',purpose:'Use the business list to manage customer accounts and follow up on account issues.',targets:['#content .panel','#content .table-wrap']});
@@ -3409,6 +3504,7 @@ async listPublicFacilities(){const {data,error}=await getClient().rpc('list_publ
 
  function buildQuickStartSteps(){
   var out=[],role=currentRole==='platform'?'platform':currentStaffRole;
+  if(role==='owner'||role==='supervisor')return ownerPracticeSteps(false);
   function add(step){
    if(step.page&&typeof canAccessRolePage==='function'&&!canAccessRolePage(step.page))return;
    out.push(step);
@@ -3443,8 +3539,8 @@ async listPublicFacilities(){const {data,error}=await getClient().rpc('list_publ
  function drawTourChooser(){
   if(!card){card=document.createElement('section');card.id='wpTourPanel';card.className='wp-tour-panel';card.setAttribute('role','dialog');card.setAttribute('aria-modal','false');card.setAttribute('aria-live','polite');document.body.appendChild(card);}
   var role=currentRole==='platform'?'platform':currentStaffRole;
-  var quickTitle=role==='washer'?'Learn the wash queue':'Follow one complete wash';
-  var quickDesc=role==='washer'?'See how to work through your assigned vehicles and update each wash stage.':'Register a vehicle, choose services and add-ons, follow the queue, collect payment and review the receipt.';
+  var quickTitle=role==='washer'?'Learn the wash queue':'Owner essentials · Start here';
+  var quickDesc=role==='washer'?'See how to work through your assigned vehicles and update each wash stage.':'Practise services, ticket creation, queue progress, checkout and online bookings with temporary pre-filled examples.';
   if(role==='platform'){
    quickTitle='Platform admin overview';
    quickDesc='Understand the platform-level business, account and subscription controls.';
@@ -3452,18 +3548,19 @@ async listPublicFacilities(){const {data,error}=await getClient().rpc('list_publ
   card.innerHTML=
    '<div class="wp-tour-top"><span class="wp-tour-kicker">WELCOME TO WASHPILOT</span><button class="wp-tour-close" type="button" aria-label="Close tour" onclick="closeWashPilotTour(false)">×</button></div>'+
    '<h2>What would you like to learn?</h2>'+
-   '<p class="wp-tour-chooser-intro">Choose a guided walkthrough. Each step explains what a screen does, why it matters and where to look in the demo.</p>'+
+   '<p class="wp-tour-chooser-intro">Start with Owner essentials, then explore the extra tools. Samples are temporary and your real workspace stays separate.</p>'+
    '<div class="wp-tour-choice-grid">'+
    '<button class="wp-tour-choice" type="button" onclick="startWashPilotQuickStartTour()"><span class="wp-tour-choice-icon">↗</span><span class="wp-tour-choice-copy"><strong>'+esc(quickTitle)+'</strong><small>'+esc(quickDesc)+'</small></span><span class="wp-tour-choice-arrow">→</span></button>'+
    '<button class="wp-tour-choice" type="button" onclick="startWashPilotTour()"><span class="wp-tour-choice-icon">▦</span><span class="wp-tour-choice-copy"><strong>Explore all features</strong><small>Take a tour of the dashboard, service menu, customers, team tools, reports and other workspace sections.</small></span><span class="wp-tour-choice-arrow">→</span></button>'+
    '</div>'+
-   '<p class="wp-tour-chooser-foot">Demo only: changes you make are saved in this browser’s demo workspace. No real customer payment is processed.</p>'+
+   '<p class="wp-tour-chooser-foot">Practice only: closing or finishing the tour removes the sample information and restores your real workspace. No practice changes are saved or published.</p>'+
    '<div class="wp-tour-actions"><div class="wp-tour-actions-left"><button class="wp-tour-skip" type="button" onclick="closeWashPilotTour(false)">Maybe later</button></div></div>';
  }
  window.openWashPilotTourChooser=function(){
   active=true;steps=[];stepIndex=0;ensureTourBackdrop();drawTourChooser();
  };
  window.startWashPilotQuickStartTour=function(){
+  if(!window.wpBeginTourPractice())return;
   steps=buildQuickStartSteps();
   if(!steps.length){closeWashPilotTour(false);toast('There is no quick-start tour for this workspace.');return;}
   active=true;stepIndex=0;ensureTourBackdrop();displayStep();
@@ -3477,24 +3574,29 @@ async listPublicFacilities(){const {data,error}=await getClient().rpc('list_publ
  }
  function drawPanel(){
   if(!card){card=document.createElement('section');card.id='wpTourPanel';card.className='wp-tour-panel';card.setAttribute('role','dialog');card.setAttribute('aria-modal','false');card.setAttribute('aria-live','polite');document.body.appendChild(card);}
+  card.classList.remove('wp-tour-compact');
   var step=steps[stepIndex],count=steps.length,progress=Math.round(((stepIndex+1)/count)*100);
   card.innerHTML=
    '<div class="wp-tour-top"><span class="wp-tour-kicker">'+esc(step.section||'WASHPILOT TOUR')+'</span><span class="wp-tour-count">Step '+(stepIndex+1)+' of '+count+'</span><button class="wp-tour-close" type="button" aria-label="Close tour" onclick="closeWashPilotTour(true)">×</button></div>'+
+   '<button class="wp-tour-collapse" type="button" onclick="this.parentElement.classList.toggle(\'wp-tour-compact\');this.textContent=this.parentElement.classList.contains(\'wp-tour-compact\')?\'Show instructions\':\'Hide instructions to try this step\'">Hide instructions to try this step</button>'+
    '<div class="wp-tour-progress"><span style="width:'+progress+'%"></span></div>'+
    '<h2>'+esc(step.title)+'</h2><p>'+esc(step.description)+'</p>'+
    (step.purpose?'<div class="wp-tour-purpose"><b>What this is for</b><span>'+esc(step.purpose)+'</span></div>':'')+
-   (step.tryThis?'<div class="wp-tour-try"><b>TRY IT IN THE DEMO</b><span>'+esc(step.tryThis)+'</span></div>':'')+
+   (step.tryThis?'<div class="wp-tour-try"><b>TRY IT WITH THE SAMPLE</b><span>'+esc(step.tryThis)+'</span></div>':'')+
    (step.locked?'<p class="wp-tour-tip">This is a plan preview step. You can still learn what the feature does here.</p>':'')+
    '<div class="wp-tour-actions"><div class="wp-tour-actions-left"><button class="wp-tour-skip" type="button" onclick="closeWashPilotTour(true)">Skip tour</button></div><div class="wp-tour-actions-right"><button class="wp-tour-prev" type="button" '+(stepIndex===0?'disabled':'')+' onclick="previousWashPilotTourStep()">Previous</button><button class="wp-tour-next" type="button" onclick="nextWashPilotTourStep()">'+(stepIndex===count-1?'Finish tour':'Next step →')+'</button></div></div>';
  }
  function displayStep(){
   if(!active||!steps.length)return;
   var step=steps[stepIndex];
+  if(typeof closeModal==='function')closeModal();
   if(step.page&&currentPage!==step.page)go(step.page);
+  window.wpPrefillTourWash();
   drawPanel();
-  window.setTimeout(function(){if(!active)return;clearSpotlight();spotlight=findTarget(step);if(spotlight&&spotlight!==document.body){spotlight.classList.add('wp-tour-spotlight');spotlight.scrollIntoView({behavior:'smooth',block:'center',inline:'nearest'});}},80);
+  window.setTimeout(function(){if(!active)return;clearSpotlight();spotlight=findTarget(step);if(spotlight&&spotlight!==document.body){spotlight.classList.add('wp-tour-spotlight');spotlight.scrollIntoView({behavior:'smooth',block:'start',inline:'nearest'});}},80);
  }
  window.startWashPilotTour=function(){
+  if(!window.wpBeginTourPractice())return;
   steps=buildSteps();
   if(!steps.length){toast('There is no guided tour for this workspace.');return;}
   active=true;stepIndex=0;
@@ -3505,14 +3607,15 @@ async listPublicFacilities(){const {data,error}=await getClient().rpc('list_publ
  window.previousWashPilotTourStep=function(){if(!active||stepIndex===0)return;stepIndex--;displayStep();};
  window.closeWashPilotTour=function(markSeen){
   active=false;clearSpotlight();if(card){card.remove();card=null;}if(backdrop){backdrop.remove();backdrop=null;}
-  if(markSeen&&typeof window.wpStorage!=='undefined'){var key='wp_tour_seen_'+(currentRole==='platform'?'platform':currentStaffRole);window.wpStorage.setItem(key,'1');}
+  window.wpEndTourPractice();
+  if(markSeen&&typeof window.wpStorage!=='undefined'){var key='wp_tour_seen_v2_'+(window.wpRealBusinessId||'demo')+'_'+(currentRole==='platform'?'platform':currentStaffRole);window.wpStorage.setItem(key,'1');}
  };
  var previousHandleLogin=window.handleLogin;
  if(typeof previousHandleLogin==='function'){
   window.handleLogin=async function(){
    await previousHandleLogin.apply(this,arguments);
-   if(!window.wpRealWorkspaceActive&&typeof window.wpStorage!=='undefined'&&window.wpStorage.getItem('wp_demo_authenticated')==='1'){
-    var key='wp_tour_seen_'+(currentRole==='platform'?'platform':currentStaffRole);
+   if((window.wpRealWorkspaceActive&&!wpBusinessOnHold())||(!window.wpRealWorkspaceActive&&typeof window.wpStorage!=='undefined'&&window.wpStorage.getItem('wp_demo_authenticated')==='1')){
+    var key='wp_tour_seen_v2_'+(window.wpRealBusinessId||'demo')+'_'+(currentRole==='platform'?'platform':currentStaffRole);
     if(window.wpStorage.getItem(key)!=='1')window.setTimeout(function(){window.openWashPilotTourChooser();},650);
    }
   };
@@ -3854,6 +3957,7 @@ async function submitPublicBooking(e){
     window.wpStorage?.getItem('wp_demo_authenticated')==='1' ||
     window.wpStorage?.getItem('wb_demo_authenticated')==='1'
   );
+  window.wpRestoreTourRoute=function(page){requestedAppPage=page;window.wpRequestedRoutePage=page;};
   const originalGo=window.go;
   const originalRender=window.render;
   const originalShowLogin=window.showLoginScreen;
@@ -3982,6 +4086,7 @@ async function submitPublicBooking(e){
 
   if(typeof originalGo==='function'){
     window.go=function(page){
+      if(window.wpTourSandboxActive){requestedAppPage=page;return originalGo.apply(this,arguments);}
       if(!pagePaths[page])return originalGo.apply(this,arguments);
       if(typeof window.canAccessRolePage==='function'&&!window.canAccessRolePage(page))return originalGo.apply(this,arguments);
       requestedAppPage=page;
@@ -3999,7 +4104,7 @@ async function submitPublicBooking(e){
     window.render=function(){
       if(requestedAppPage&&isAuthenticated())currentPage=requestedAppPage;
       const result=originalRender.apply(this,arguments);
-      if(isAuthenticated()&&pagePaths[currentPage]){
+      if(isAuthenticated()&&pagePaths[currentPage]&&!window.wpTourSandboxActive){
         requestedAppPage=currentPage;
         window.wpRouteIsWorkspace=true;window.wpRouteIsLogin=false;
         setPath(pagePaths[currentPage],true);
