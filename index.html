@@ -8,8 +8,9 @@
 (function () {
   var path = window.location.pathname.replace(/\/+$/, '') || '/';
   var query = new URLSearchParams(window.location.search);
+  var hasAuthCallback = /access_token=|error_description=|error=/.test(window.location.hash) || query.has('code');
   var target = null;
-  if (path === '/' && !query.has('wpRecovery')) target = '/home.html';
+  if (path === '/' && !query.has('wpRecovery') && !hasAuthCallback) target = '/home.html';
   else if (path === '/login') target = '/signin.html';
   else if (path === '/signup') target = '/signup.html';
   if (target) window.location.replace(target + window.location.search + window.location.hash);
