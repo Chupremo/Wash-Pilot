@@ -1355,6 +1355,33 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
 .wp-google-address-selected{display:block;margin-top:7px;font-size:10px;line-height:1.45;color:#16845d;font-weight:700}
 .wp-google-address-status,.wp-google-address-error{padding:12px 13px;border:1px solid #dce6f2;border-radius:10px;background:#f7faff;color:#61738e;font-size:11px;line-height:1.5}
 .wp-google-address-error{background:#fff4f4;border-color:#f2d4d4;color:#b94d56}
+
+/* Public availability calendar */
+.wp-availability{margin:18px 0;border:1px solid #dce4ef;border-radius:14px;padding:18px;min-width:0}
+.wp-calendar-head,.wp-slot-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.wp-calendar-head button,.wp-slot-heading button{border:1px solid #dce4ef;background:white;border-radius:8px;padding:8px 12px;color:#173453;cursor:pointer;font:inherit}
+.wp-calendar-head button:disabled{opacity:.4;cursor:default}
+.wp-calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.wp-calendar-weekday{text-align:center;color:#66758b;font-size:11px;padding:5px 0}
+.wp-calendar-day{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:60px;min-width:0;border:1px solid #dbe4ed;border-radius:9px;background:white;color:#142d4e;font:inherit;cursor:pointer}
+.wp-calendar-day small{font-size:9px;line-height:1.2}
+.wp-calendar-day.available{border-color:#b8d6cb;color:#176447}
+.wp-calendar-day.booked{background:#143e33;border-color:#143e33;color:white}
+.wp-calendar-day.closed,.wp-calendar-day.past{background:#f1f4f8;color:#8692a3}
+.wp-calendar-day.selected{outline:3px solid #3568f5;outline-offset:1px}
+.wp-calendar-day:disabled{cursor:default}
+.wp-calendar-day:focus-visible,.wp-time-card:focus-visible{outline:3px solid #3568f5;outline-offset:2px}
+.wp-availability-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:10px;color:#52647e;margin:14px 0}
+.wp-availability-legend span{display:flex;align-items:center;gap:5px}
+.wp-availability-legend i{width:10px;height:10px;border:1px solid #b8d6cb;border-radius:3px;background:white}
+.wp-availability-legend .booked i{background:#143e33;border-color:#143e33}
+.wp-availability-legend .closed i{background:#edf1f6;border-color:#dce4ef}
+.wp-time-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
+.wp-time-card{display:grid;gap:5px;text-align:left;padding:12px 10px;background:white;color:#173e32;border:1px solid #b8d6cb;border-radius:9px;cursor:pointer;font:inherit;font-size:12px}
+.wp-time-card small{font-size:10px}.wp-time-card.booked{background:#143e33;color:white;border-color:#143e33}.wp-time-card.unavailable{background:#f1f4f8;color:#7c889a;border-color:#e0e6ee}
+.wp-time-card:disabled{cursor:default}.wp-time-card.selected{background:#edf3ff;border:2px solid #3568f5;color:#214fba;padding:11px 9px}
+.wp-slot-message{font-size:12px;line-height:1.6;color:#52647e;margin:10px 0}.wp-slot-heading{margin-top:20px;margin-bottom:0}.wp-slot-heading strong{font-size:13px}
+@media(max-width:540px){.wp-availability{padding:12px}.wp-calendar-grid{gap:4px}.wp-calendar-day{min-height:54px}.wp-calendar-day small{font-size:8px}.wp-time-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -3442,7 +3469,7 @@ async function loadPublicFacility(slug){
   ((f.gallery_images||[]).length?'<div class="wp-public-gallery">'+f.gallery_images.slice(0,5).map((src,i)=>'<img src="'+esc(src)+'" alt="'+esc(f.facility_name)+' facility photo '+(i+1)+'" loading="lazy">').join('')+'</div>':'')+
   '<div class="wp-booking-layout"><section class="wp-booking-form">'+(bookingOn?'<h2>Book a car wash</h2><form id="wpPublicBookingForm" onsubmit="submitPublicBooking(event)">'+
   '<div class="field"><label>Choose a service</label><select name="service_id" id="wpPublicService" required onchange="refreshPublicBookingSlots()">'+wpCurrentPublicServices.map(s=>'<option value="'+s.service_id+'">'+esc(s.name)+' · '+money(s.base_price_php)+'</option>').join('')+'</select></div>'+
-  '<div class="grid two"><div class="field"><label>Booking date</label><input type="date" name="booking_date" id="wpPublicBookingDate" min="'+new Date().toISOString().slice(0,10)+'" max="'+new Date(Date.now()+60*86400000).toISOString().slice(0,10)+'" required onchange="refreshPublicBookingSlots()"></div><div class="field"><label>Available time</label><select name="start_time" id="wpPublicBookingTime" required><option value="">Choose a date first</option></select></div></div>'+
+  '<input type="hidden" name="booking_date" id="wpPublicBookingDate"><input type="hidden" name="start_time" id="wpPublicBookingTime"><section class="wp-availability" aria-label="Booking availability"><div class="wp-calendar-head"><button type="button" id="wpPreviousMonth" aria-label="Previous month" onclick="movePublicBookingMonth(-1)">←</button><strong id="wpCalendarMonth"></strong><button type="button" id="wpNextMonth" aria-label="Next month" onclick="movePublicBookingMonth(1)">→</button></div><div class="wp-calendar-grid" id="wpCalendarGrid" aria-label="Choose a booking date"></div><div class="wp-availability-legend"><span><i></i>Available</span><span class="booked"><i></i>Fully booked</span><span class="closed"><i></i>Closed / unavailable</span></div><p class="wp-slot-message" id="wpCalendarStatus" role="status"></p><div class="wp-slot-heading"><strong id="wpSlotDateHeading">Choose a date</strong><button type="button" onclick="refreshPublicBookingSlots()">Refresh</button></div><div id="wpPublicTimeSlots" aria-live="polite"></div><p class="wp-slot-message" id="wpSlotSelection" role="status">Select an available time to continue.</p></section>'+
   '<div class="field"><label>Vehicle size</label><select name="vehicle_size"><option>Small</option><option selected>Medium</option><option>Large</option><option>XL</option></select></div>'+
   '<div class="field"><label>Payment method</label><select name="payment_method" id="wpBookingPaymentMethod" required onchange="updatePublicPaymentInstructions()">'+
    (f.gcash_mobile_number&&f.gcash_account_name?'<option value="gcash">GCash</option>':'')+
@@ -3454,25 +3481,84 @@ async function loadPublicFacility(slug){
   '<div class="field"><label>Notes (optional)</label><textarea name="notes" rows="2" maxlength="500"></textarea></div><div class="wp-booking-note" id="wpPublicBookingPrice">Select a service and date to view available slots.</div><button class="wp-btn-primary" style="width:100%;justify-content:center;border:0;cursor:pointer;margin-top:16px" type="submit" id="wpPublicBookingSubmit">Request booking <span>→</span></button></form>':
   '<h2>Online booking unavailable</h2><p class="wp-booking-note">This facility has a public WashPilot listing, but has not activated online booking yet. Contact the facility directly or browse another carwash.</p><a class="wp-btn-primary" href="/businesses" style="display:flex;justify-content:center;padding:14px;text-decoration:none;border-radius:10px">Browse businesses</a>')+
   '</section><aside class="wp-booking-summary"><h3>'+esc(f.facility_name)+'</h3><p>'+esc(f.address||'')+'</p><p>Opening hours<br><b>'+wpFormatClock(f.opening_time)+' – '+wpFormatClock(f.closing_time)+'</b></p><p>Timezone: '+esc(f.timezone||'Asia/Manila')+'</p><p>Pay by GCash or bank transfer only. Upload your proof so the facility can verify it before confirming. Cash is not accepted for online bookings.</p><div class="wp-summary-price">'+(bookingOn?'Available services':'Listed on WashPilot')+'</div>'+(bookingOn?renderPublicServiceBulletList():'')+'<p>Only available times within published operating hours can be requested.</p></aside></div>'+renderPublicLocationCta(f);
-  if(bookingOn){refreshPublicBookingSlots();updatePublicPaymentInstructions();}
+  if(bookingOn){wpPublicAvailabilityCache.clear();wpPublicCalendarMonth=wpPublicDateParts().date.slice(0,7);document.getElementById('wpPublicBookingDate').value=wpPublicDateParts().date;refreshPublicBookingSlots();updatePublicPaymentInstructions();}
  }catch(err){el.innerHTML='<div class="wp-directory-empty">Could not load this facility: '+esc(err.message||err)+'</div>';}
 }
-async function refreshPublicBookingSlots(){
+let wpPublicCalendarMonth='',wpPublicAvailabilityRequest=0;
+const wpPublicAvailabilityCache=new Map();
+function wpPublicDateParts(now=new Date()){
+ const parts=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:wpCurrentPublicFacility?.timezone||'Asia/Manila',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(now).map(p=>[p.type,p.value]));
+ return {date:parts.year+'-'+parts.month+'-'+parts.day,minutes:Number(parts.hour)*60+Number(parts.minute)};
+}
+function wpPublicLastDate(){const d=new Date(wpPublicDateParts().date+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+60);return d.toISOString().slice(0,10);}
+function wpPublicSlotChoices(date,service,busyRows,now=wpPublicDateParts()){
+ const f=wpCurrentPublicFacility;
+ if(!service||date<now.date||date>wpPublicLastDate()||!(f.operating_days||[]).map(Number).includes(new Date(date+'T12:00:00Z').getUTCDay()))return [];
+ const duration=Math.max(5,Number(service.duration_minutes||30)),closing=wpTimeMinutes(f.closing_time),busy=busyRows.map(x=>[wpTimeMinutes(x.start_time),wpTimeMinutes(x.end_time)]),slots=[];
+ for(let start=wpTimeMinutes(f.opening_time);start<closing;start+=30){
+  const value=String(Math.floor(start/60)).padStart(2,'0')+':'+String(start%60).padStart(2,'0');
+  const status=date===now.date&&start<=now.minutes?'Past':start+duration>closing?'Unavailable':busy.some(([a,b])=>start<b&&start+duration>a)?'Booked':'Available';
+  slots.push({value,status,end:String(Math.floor((start+duration)/60)).padStart(2,'0')+':'+String((start+duration)%60).padStart(2,'0')});
+ }
+ return slots;
+}
+function wpPublicDayState(date,service){
+ if(date<wpPublicDateParts().date||date>wpPublicLastDate())return 'past';
+ if(!(wpCurrentPublicFacility.operating_days||[]).map(Number).includes(new Date(date+'T12:00:00Z').getUTCDay()))return 'closed';
+ const rows=wpPublicAvailabilityCache.get(date);if(!rows)return 'loading';
+ if(rows.error)return 'error';
+ const slots=wpPublicSlotChoices(date,service,rows);
+ return slots.some(x=>x.status==='Available')?'available':slots.some(x=>x.status==='Booked')?'booked':'closed';
+}
+function renderPublicBookingCalendar(service){
+ const grid=document.getElementById('wpCalendarGrid');if(!grid)return;
+ const first=new Date(wpPublicCalendarMonth+'-01T12:00:00Z'),count=new Date(Date.UTC(first.getUTCFullYear(),first.getUTCMonth()+1,0)).getUTCDate(),selected=document.getElementById('wpPublicBookingDate').value;
+ document.getElementById('wpCalendarMonth').textContent=first.toLocaleDateString('en-PH',{month:'long',year:'numeric',timeZone:'UTC'});
+ document.getElementById('wpPreviousMonth').disabled=wpPublicCalendarMonth<=wpPublicDateParts().date.slice(0,7);
+ document.getElementById('wpNextMonth').disabled=wpPublicCalendarMonth>=wpPublicLastDate().slice(0,7);
+ grid.innerHTML=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>'<span class="wp-calendar-weekday">'+d+'</span>').join('')+'<span aria-hidden="true"></span>'.repeat(first.getUTCDay())+Array.from({length:count},(_,i)=>{
+  const date=wpPublicCalendarMonth+'-'+String(i+1).padStart(2,'0'),state=wpPublicDayState(date,service),label={available:'Available',booked:'Full',closed:'Unavailable',past:'—',loading:'Checking',error:'Retry'}[state];
+  return '<button type="button" class="wp-calendar-day '+state+(date===selected?' selected':'')+'" '+(['past','closed'].includes(state)?'disabled ':'')+'aria-pressed="'+(date===selected)+'" aria-label="'+date+', '+label+'" onclick="choosePublicBookingDate(\''+date+'\')"><b>'+(i+1)+'</b><small>'+label+'</small></button>';
+ }).join('');
+}
+function choosePublicBookingDate(date){document.getElementById('wpPublicBookingDate').value=date;refreshPublicBookingSlots(!!wpPublicAvailabilityCache.get(date)?.error);}
+function movePublicBookingMonth(delta){
+ const d=new Date(wpPublicCalendarMonth+'-01T12:00:00Z');d.setUTCMonth(d.getUTCMonth()+delta);
+ const month=d.toISOString().slice(0,7);if(month<wpPublicDateParts().date.slice(0,7)||month>wpPublicLastDate().slice(0,7))return;
+ wpPublicCalendarMonth=month;refreshPublicBookingSlots(false);
+}
+function choosePublicBookingTime(value){
+ const form=document.getElementById('wpPublicBookingForm'),service=wpCurrentPublicServices.find(s=>s.service_id===form.elements.service_id.value),date=form.elements.booking_date.value,rows=wpPublicAvailabilityCache.get(date);
+ if(!rows||rows.error||!wpPublicSlotChoices(date,service,rows).some(x=>x.value===value&&x.status==='Available'))return;
+ form.elements.start_time.value=value;
+ document.querySelectorAll('.wp-time-card').forEach(b=>{const selected=b.dataset.time===value;b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',String(selected));});
+ document.getElementById('wpSlotSelection').textContent='Selected: '+date+' at '+wpFormatClock(value)+' · '+service.duration_minutes+' minutes.';
+ document.getElementById('wpPublicBookingSubmit').disabled=false;
+}
+function renderPublicBookingTimes(service){
+ const box=document.getElementById('wpPublicTimeSlots');if(!box)return;
+ const date=document.getElementById('wpPublicBookingDate').value,rows=wpPublicAvailabilityCache.get(date);
+ document.getElementById('wpSlotDateHeading').textContent=new Date(date+'T12:00:00Z').toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'});
+ if(!(wpCurrentPublicFacility.operating_days||[]).map(Number).includes(new Date(date+'T12:00:00Z').getUTCDay())){box.innerHTML='<p class="wp-slot-message">The facility is closed on this date. Please choose another date.</p>';return;}
+ if(!rows||rows.error){box.innerHTML='<p class="wp-slot-message">'+(rows?.error?'Availability could not be loaded. Tap Refresh to try again.':'Checking available times…')+'</p>';return;}
+ const slots=wpPublicSlotChoices(date,service,rows);
+ box.innerHTML=slots.length?'<div class="wp-time-grid">'+slots.map(x=>'<button type="button" data-time="'+x.value+'" class="wp-time-card '+(x.status==='Booked'?'booked':x.status!=='Available'?'unavailable':'')+'" '+(x.status!=='Available'?'disabled ':'')+'aria-pressed="false" onclick="choosePublicBookingTime(\''+x.value+'\')"><b>'+wpFormatClock(x.value)+'</b><small>'+x.status+'</small></button>').join('')+'</div>':'<p class="wp-slot-message">'+(!(wpCurrentPublicFacility.operating_days||[]).map(Number).includes(new Date(date+'T12:00:00Z').getUTCDay())?'The facility is closed on this date.':'No times are available for this service on this date.')+'</p>';
+ document.getElementById('wpSlotSelection').textContent=Number(service.duration_minutes)>wpTimeMinutes(wpCurrentPublicFacility.closing_time)-wpTimeMinutes(wpCurrentPublicFacility.opening_time)?'This service takes '+service.duration_minutes+' minutes and exceeds the published daily opening hours. Please contact the facility to arrange it.':slots.some(x=>x.status==='Available')?'Select an available time to continue.':'No available times. Please choose another date or service.';
+}
+async function refreshPublicBookingSlots(force=true){
  const f=wpCurrentPublicFacility,form=document.getElementById('wpPublicBookingForm');if(!f||!form)return;
- const date=form.elements.booking_date.value,select=document.getElementById('wpPublicBookingTime'),service=wpCurrentPublicServices.find(s=>s.service_id===form.elements.service_id.value);
+ const request=++wpPublicAvailabilityRequest,service=wpCurrentPublicServices.find(s=>s.service_id===form.elements.service_id.value),date=form.elements.booking_date.value;
+ form.elements.start_time.value='';document.getElementById('wpPublicBookingSubmit').disabled=true;
+ document.getElementById('wpSlotSelection').textContent='Select an available time to continue.';
  const note=document.getElementById('wpPublicBookingPrice');if(note&&service)note.textContent='Starting at '+money(service.base_price_php)+' · '+service.duration_minutes+' minutes. Final price may vary by vehicle size.';
- if(!date){select.innerHTML='<option value="">Choose a date first</option>';return;}
- const day=new Date(date+'T12:00:00').getDay();if(!(f.operating_days||[]).includes(day)){select.innerHTML='<option value="">Facility is closed on this day</option>';return;}
- select.innerHTML='<option value="">Checking availability…</option>';
- try{
-  wpCurrentBusySlots=await window.washPilotBookingApi.getBusySlots(f.facility_slug,date);
-  const duration=Math.max(5,Number(service?.duration_minutes||30)),opening=wpTimeMinutes(f.opening_time),closing=wpTimeMinutes(f.closing_time),busy=wpCurrentBusySlots.map(x=>[wpTimeMinutes(x.start_time),wpTimeMinutes(x.end_time)]),options=[];
-  for(let start=opening;start+duration<=closing;start+=30){
-   const end=start+duration,blocked=busy.some(([a,b])=>start<b&&end>a),value=String(Math.floor(start/60)).padStart(2,'0')+':'+String(start%60).padStart(2,'0');
-   options.push('<option value="'+value+'" '+(blocked?'disabled':'')+'>'+wpFormatClock(value)+(blocked?' — BOOKED / UNAVAILABLE':' — Available')+'</option>');
-  }
-  select.innerHTML=options.length?'<option value="">Choose a time (booked slots are disabled)</option>'+options.join(''):'<option value="">No slots fit this service today</option>';
- }catch(err){select.innerHTML='<option value="">Availability temporarily unavailable</option>';}
+ if(force)wpPublicAvailabilityCache.clear();
+ renderPublicBookingCalendar(service);renderPublicBookingTimes(service);
+ document.getElementById('wpCalendarStatus').textContent='Checking availability for the selected service…';
+ const count=new Date(Number(wpPublicCalendarMonth.slice(0,4)),Number(wpPublicCalendarMonth.slice(5)),0).getDate();
+ const dates=[date,...Array.from({length:count},(_,i)=>wpPublicCalendarMonth+'-'+String(i+1).padStart(2,'0'))].filter((d,i,a)=>a.indexOf(d)===i&&d>=wpPublicDateParts().date&&d<=wpPublicLastDate()&&!wpPublicAvailabilityCache.has(d)&&(f.operating_days||[]).map(Number).includes(new Date(d+'T12:00:00Z').getUTCDay()));
+ async function worker(){while(dates.length&&request===wpPublicAvailabilityRequest){const day=dates.shift();let rows;try{rows=await window.washPilotBookingApi.getBusySlots(f.facility_slug,day);}catch(err){rows={error:true};}if(request!==wpPublicAvailabilityRequest||f!==wpCurrentPublicFacility)return;wpPublicAvailabilityCache.set(day,rows);renderPublicBookingCalendar(service);if(day===date)renderPublicBookingTimes(service);}}
+ await Promise.all(Array.from({length:Math.min(4,dates.length)},worker));
+ if(request===wpPublicAvailabilityRequest&&document.getElementById('wpCalendarStatus'))document.getElementById('wpCalendarStatus').textContent='Availability for '+service.name+'. Times shown in '+(f.timezone||'Asia/Manila')+'. Refresh for the latest bookings.';
 }
 function updatePublicPaymentInstructions(){
  const f=wpCurrentPublicFacility,method=document.getElementById('wpBookingPaymentMethod')?.value,box=document.getElementById('wpPublicPaymentInstructions');if(!f||!box)return;
@@ -3483,10 +3569,14 @@ function updatePublicPaymentInstructions(){
 async function submitPublicBooking(e){
  e.preventDefault();const form=e.currentTarget,btn=document.getElementById('wpPublicBookingSubmit'),f=wpCurrentPublicFacility;if(!f)return;
  const data=new FormData(form),proof=form.elements.payment_proof.files[0];
+ const service=wpCurrentPublicServices.find(s=>s.service_id===data.get('service_id'));
+ if(!data.get('booking_date')||!data.get('start_time')){alert('Choose an available date and time first.');return;}
  if(!proof){alert('Upload your GCash or bank transfer payment proof before submitting.');return;}
  if(proof.size>5*1024*1024||!['image/jpeg','image/png','image/webp','application/pdf'].includes(proof.type)){alert('Payment proof must be JPG, PNG, WEBP or PDF up to 5 MB.');return;}
  if(btn){btn.disabled=true;btn.textContent='Uploading proof and submitting…';}
  try{
+  const latestBusy=await window.washPilotBookingApi.getBusySlots(f.facility_slug,data.get('booking_date'));
+  if(!wpPublicSlotChoices(data.get('booking_date'),service,latestBusy).some(x=>x.value===data.get('start_time')&&x.status==='Available'))throw new Error('This time is no longer available. Please choose another available slot.');
   const result=await window.washPilotBookingApi.createPublicBooking({
    slug:f.facility_slug,business_id:f.business_id,service_id:data.get('service_id'),booking_date:data.get('booking_date'),
    start_time:data.get('start_time'),customer_name:data.get('customer_name'),customer_phone:data.get('customer_phone'),
@@ -3494,7 +3584,7 @@ async function submitPublicBooking(e){
    notes:data.get('notes'),payment_method:data.get('payment_method'),payment_reference:data.get('payment_reference'),proof_file:proof
   });
   document.getElementById('wpPublicFacilityContent').innerHTML='<div class="wp-booking-success"><h2>Booking request submitted</h2><p>Your payment proof has been uploaded privately. The facility will verify it before confirming your reservation.</p><p><b>Booking reference: '+esc(result.booking_code)+'</b></p><p>Date: '+esc(result.booking_date)+' · '+esc(wpFormatClock(result.start_time))+'</p><p>Service amount: '+money(result.price_php)+'</p><p>Payment status: Awaiting verification</p><a href="/business" style="color:#176c49;font-weight:800">Browse more businesses →</a></div>';
- }catch(err){alert(err.message||'We could not submit your booking. Please choose another slot.');refreshPublicBookingSlots();if(btn){btn.disabled=false;btn.innerHTML='Request booking <span>→</span>';}}
+ }catch(err){alert(err.message||'We could not submit your booking. Please choose another slot.');refreshPublicBookingSlots();if(btn){btn.disabled=true;btn.innerHTML='Request booking <span>→</span>';}}
 }
 
 (function(){
