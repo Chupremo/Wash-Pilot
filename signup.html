@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Create your account · WashPilot</title>
+<meta name="description" content="Create your WashPilot account to start managing your car wash business digitally.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="washpilot-logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#0a0a0b; --black-2:#141416;
+  --blue:#1f5eff; --blue-d:#1648d6; --blue-l:#6b9bff; --blue-soft:#eef3ff;
+  --surface:#f5f6f8; --line:#e4e6ea;
+  --text:#0a0a0b; --text-2:#454c5a; --muted:#6a7180;
+  --danger:#c62828; --danger-soft:#fdecec;
+  --font-d:"Sora",system-ui,sans-serif;
+  --font:"DM Sans",system-ui,sans-serif;
+  --r-ctl:12px; --r-card:20px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--font);color:var(--text);background:#fff;line-height:1.55;min-height:100vh;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+img{display:block;max-width:100%}
+:focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:6px}
+.skip{position:absolute;left:-999px;top:8px;background:var(--black);color:#fff;padding:10px 16px;border-radius:var(--r-ctl);z-index:100}
+.skip:focus{left:8px}
+
+.shell{display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
+
+/* ---------- Left black panel ---------- */
+.panel{
+  position:sticky;top:0;height:100vh;align-self:start;
+  overflow:hidden;color:#fff;background:var(--black);
+  padding:48px 56px;display:flex;flex-direction:column;justify-content:space-between;
+}
+.panel::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(520px 380px at 90% 0%,rgba(31,94,255,.45),transparent 70%),
+    radial-gradient(420px 320px at 0% 100%,rgba(31,94,255,.25),transparent 70%);
+}
+.panel::after{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);
+  background-size:44px 44px;
+  -webkit-mask-image:radial-gradient(ellipse at 50% 40%,#000 20%,transparent 75%);
+          mask-image:radial-gradient(ellipse at 50% 40%,#000 20%,transparent 75%);
+}
+.panel > *{position:relative;z-index:1}
+.pill{
+  display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;align-self:flex-start;
+  padding:7px 14px;border-radius:999px;background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.14);color:#fff;
+}
+.pill i{width:7px;height:7px;border-radius:50%;background:var(--blue-l)}
+.panel-body{max-width:460px;margin:48px 0}
+.panel h2{
+  font-family:var(--font-d);font-weight:800;letter-spacing:-.03em;line-height:1.08;
+  font-size:clamp(32px,3.6vw,46px);margin:20px 0 16px;
+}
+.panel h2 span{color:var(--blue-l)}
+.panel p.lede{color:rgba(255,255,255,.72);font-size:17px}
+.checks{list-style:none;margin-top:32px;display:grid;gap:14px}
+.checks li{display:flex;align-items:center;gap:12px;font-weight:500;color:rgba(255,255,255,.9)}
+.checks svg{flex:none;width:26px;height:26px;padding:6px;border-radius:50%;background:rgba(31,94,255,.25);color:var(--blue-l)}
+.panel-foot{font-size:14px;color:rgba(255,255,255,.55)}
+
+/* ---------- Right form side ---------- */
+.side{display:flex;flex-direction:column;padding:32px 24px;min-height:100vh}
+.side-top{display:flex;align-items:center;justify-content:space-between;gap:16px;max-width:440px;width:100%;margin:0 auto}
+.logo img{height:36px;width:auto}
+.back{
+  display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;
+  color:var(--text-2);text-decoration:none;padding:8px 4px;
+}
+.back:hover{color:var(--blue)}
+.back svg{width:16px;height:16px}
+.form-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:32px 0}
+.card{width:100%;max-width:440px}
+.card h1{font-family:var(--font-d);font-weight:800;letter-spacing:-.03em;font-size:clamp(28px,3vw,36px);line-height:1.1}
+.card .sub{color:var(--text-2);margin:10px 0 28px}
+
+.alert{
+  display:none;gap:10px;align-items:flex-start;margin-bottom:20px;padding:12px 14px;
+  border-radius:var(--r-ctl);font-size:14.5px;background:var(--danger-soft);color:var(--danger);
+  border:1px solid #f5c2c2;
+}
+.alert.show{display:flex}
+.alert.info{background:var(--blue-soft);color:var(--blue-d);border-color:#cddcff}
+.alert svg{flex:none;width:18px;height:18px;margin-top:2px}
+
+.field{margin-bottom:18px}
+label{display:block;font-weight:600;font-size:14.5px;margin-bottom:8px}
+.input-wrap{position:relative}
+input[type="text"],input[type="email"],input[type="password"],input[type="tel"]{
+  width:100%;min-height:50px;padding:0 16px;font:inherit;font-size:16px;color:var(--text);
+  background:#fff;border:1.5px solid var(--line);border-radius:var(--r-ctl);
+  transition:border-color .15s,box-shadow .15s;
+}
+input::placeholder{color:#9aa1ae}
+input:hover{border-color:#cfd3da}
+input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px rgba(31,94,255,.14)}
+input[aria-invalid="true"]{border-color:var(--danger)}
+input[aria-invalid="true"]:focus{box-shadow:0 0 0 4px rgba(198,40,40,.14)}
+.has-toggle input{padding-right:52px}
+.toggle{
+  position:absolute;right:6px;top:50%;transform:translateY(-50%);
+  width:40px;height:40px;display:grid;place-items:center;border:0;background:none;
+  color:var(--muted);border-radius:10px;cursor:pointer;
+}
+.toggle:hover{color:var(--text);background:var(--surface)}
+.toggle svg{width:20px;height:20px}
+.toggle .off{display:none}
+.toggle[aria-pressed="true"] .on{display:none}
+.toggle[aria-pressed="true"] .off{display:block}
+.hint{margin-top:6px;font-size:13.5px;color:var(--muted)}
+.err{display:none;margin-top:6px;font-size:13.5px;color:var(--danger);font-weight:500}
+.err.show{display:block}
+
+.check{display:flex;gap:12px;align-items:flex-start;margin-bottom:18px;font-size:14.5px;color:var(--text-2)}
+.check input{flex:none;width:20px;height:20px;margin-top:2px;accent-color:var(--blue)}
+.check a{color:var(--blue);font-weight:600}
+.check-wrap .err{margin-left:32px;margin-top:-10px;margin-bottom:12px}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;width:100%;
+  min-height:50px;padding:0 24px;font:inherit;font-weight:600;font-size:16px;cursor:pointer;
+  border:1.5px solid transparent;border-radius:var(--r-ctl);text-decoration:none;
+  transition:background .15s,transform .15s,box-shadow .15s;
+}
+.btn-primary{background:var(--blue);color:#fff;box-shadow:0 8px 20px -8px rgba(31,94,255,.6)}
+.btn-primary:hover{background:var(--blue-d);transform:translateY(-1px)}
+.btn-primary:active{transform:none}
+.btn[disabled]{opacity:.7;cursor:progress;transform:none}
+.spinner{display:none;width:18px;height:18px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+.btn.loading .spinner{display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.divider{height:1px;background:var(--line);margin:28px 0}
+.switch{text-align:center;color:var(--text-2);font-size:15px}
+.switch a{color:var(--blue);font-weight:600;text-decoration:none}
+.switch a:hover{color:var(--blue-d);text-decoration:underline}
+
+.side-foot{max-width:440px;width:100%;margin:0 auto;display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13.5px;color:var(--muted)}
+.side-foot a{text-decoration:none}
+.side-foot a:hover{color:var(--blue);text-decoration:underline}
+
+/* ---------- Responsive ---------- */
+@media (max-width:900px){
+  .shell{grid-template-columns:1fr}
+  .panel{display:none}
+  .side{padding:24px 20px;min-height:0}
+  .form-wrap{align-items:flex-start;padding-top:24px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#form">Skip to sign-up form</a>
+
+<div class="shell">
+
+  <!-- Brand panel (desktop only) -->
+  <aside class="panel" aria-label="About WashPilot">
+    <span class="pill"><i></i> Digital POS for car washes</span>
+
+    <div class="panel-body">
+      <h2>Ready to put your car wash <span>under control?</span></h2>
+      <p class="lede">Still using a notebook or spreadsheet? It's time to go digital with WashPilot.</p>
+      <ul class="checks">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Record every sale digitally</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Manage your services and prices</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Review sales and performance reports</li>
+      </ul>
+    </div>
+
+    <p class="panel-foot">Works on desktop and mobile.</p>
+  </aside>
+
+  <!-- Form side -->
+  <main class="side">
+    <div class="side-top">
+      <a class="logo" id="logoLink" href="home.html" aria-label="WashPilot home">
+        <img src="washpilot-logo.svg" alt="WashPilot" height="36">
+      </a>
+      <a class="back" id="backLink" href="home.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+        Back to home
+      </a>
+    </div>
+
+    <div class="form-wrap">
+      <section class="card" aria-labelledby="title">
+        <h1 id="title">Create your account</h1>
+        <p class="sub">Set up your WashPilot account to start managing your car wash.</p>
+
+        <div class="alert" id="alert" role="alert" aria-live="assertive">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>
+          <span id="alertText"></span>
+        </div>
+
+        <form id="form" novalidate>
+          <div id="fields"></div>
+          <div id="terms"></div>
+
+          <button class="btn btn-primary" id="submit" type="submit">
+            <span class="spinner" aria-hidden="true"></span>
+            <span id="submitText">Create account</span>
+          </button>
+        </form>
+
+        <div class="divider"></div>
+        <p class="switch">Already have an account? <a id="signinLink" href="signin.html">Sign in</a></p>
+      </section>
+    </div>
+
+    <div class="side-foot" id="sideFoot"></div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/washpilot-pages.js"></script>
+
+<script>
+/* ============ EDIT HERE ============ */
+const CONFIG = {
+  homeUrl: "/home.html",
+  signinUrl: "/signin.html",
+  successUrl: "/dashboard.html",   // where to go after a successful sign-up
+  contactEmail: "",
+  termsUrl: "",               // if filled, an "I agree" checkbox appears and is required
+  privacyUrl: "",
+
+  /* The form is built from this list. These are PLACEHOLDER fields.
+     Change them to match what your real sign-up saves.
+       id          unique name, passed to register() as the key
+       label       text above the input
+       type        "text" | "email" | "password" | "tel"
+       autocomplete browser autofill hint
+       required    default true. Set false for an optional field
+       minLength   minimum characters (optional)
+       hint        small help text under the input (optional)
+       matchWith   id of another field that must match (e.g. confirm password)
+       noSubmit    true = checked on the page but not sent to register() */
+  fields: [
+    { id:"name",     label:"Full name",        type:"text",     autocomplete:"name" },
+    { id:"business", label:"Business name",    type:"text",     autocomplete:"organization" },
+    { id:"email",    label:"Email",            type:"email",    autocomplete:"email" },
+    { id:"password", label:"Password",         type:"password", autocomplete:"new-password", minLength:8, hint:"At least 8 characters." },
+    { id:"confirm",  label:"Confirm password", type:"password", autocomplete:"new-password", matchWith:"password", noSubmit:true }
+  ],
+
+  /* Connect your real sign-up here. It receives an object of the field values
+     and must return a Promise resolving to:
+       { ok: true }  or  { ok: false, message: "Text to show the user" }
+     Until this is set, the form shows a "not connected" message. */
+  register: values => window.WashPilotPages.signUp(values)
+  /* Example shape:
+  register: async (values) => {
+    const res = await yourExistingSignupFunction(values);
+    return res.success ? { ok: true } : { ok: false, message: "That email is already registered." };
+  } */
+};
+/* =================================== */
+
+const $ = id => document.getElementById(id);
+const form = $("form"), alertBox = $("alert"), alertText = $("alertText");
+
+const EYE_ON  = '<svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+const EYE_OFF = '<svg class="off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18M10.6 5.1A10.4 10.4 0 0112 5c6.4 0 10 7 10 7a17 17 0 01-3.2 4M6.5 6.6A16.6 16.6 0 002 12s3.6 7 10 7c1.7 0 3.2-.4 4.5-1M9.9 9.9a3 3 0 004.2 4.2"/></svg>';
+
+/* Links */
+$("logoLink").href = CONFIG.homeUrl;
+$("backLink").href = CONFIG.homeUrl;
+$("signinLink").href = CONFIG.signinUrl;
+
+/* Footer: links appear only when filled */
+(function(){
+  const foot = $("sideFoot");
+  const span = document.createElement("span");
+  span.textContent = "© " + new Date().getFullYear() + " WashPilot";
+  foot.appendChild(span);
+  const items = [];
+  if (CONFIG.termsUrl)     items.push(["Terms", CONFIG.termsUrl]);
+  if (CONFIG.privacyUrl)   items.push(["Privacy", CONFIG.privacyUrl]);
+  if (CONFIG.contactEmail) items.push(["Contact", "mailto:" + CONFIG.contactEmail]);
+  items.forEach(([t,h]) => { const a = document.createElement("a"); a.href = h; a.textContent = t; foot.appendChild(a); });
+})();
+
+/* ---------- Build fields ---------- */
+const inputs = {};   // id -> input element
+
+function buildField(f){
+  const wrap = document.createElement("div");
+  wrap.className = "field";
+
+  const label = document.createElement("label");
+  label.htmlFor = "f_" + f.id;
+  label.textContent = f.label + (f.required === false ? " (optional)" : "");
+  wrap.appendChild(label);
+
+  const isPw = f.type === "password";
+  const box = document.createElement("div");
+  box.className = "input-wrap" + (isPw ? " has-toggle" : "");
+
+  const input = document.createElement("input");
+  input.id = "f_" + f.id;
+  input.name = f.id;
+  input.type = f.type || "text";
+  if (f.autocomplete) input.autocomplete = f.autocomplete;
+  if (f.placeholder)  input.placeholder = f.placeholder;
+  if (f.type === "email" || f.type === "password") { input.autocapitalize = "none"; input.spellcheck = false; }
+  const describedBy = [];
+  if (f.hint) describedBy.push("h_" + f.id);
+  describedBy.push("e_" + f.id);
+  input.setAttribute("aria-describedby", describedBy.join(" "));
+  if (f.required !== false) input.setAttribute("aria-required", "true");
+  box.appendChild(input);
+
+  if (isPw){
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "toggle";
+    btn.setAttribute("aria-label", "Show password");
+    btn.setAttribute("aria-pressed", "false");
+    btn.innerHTML = EYE_ON + EYE_OFF;
+    btn.addEventListener("click", function(){
+      const show = input.type === "password";
+      input.type = show ? "text" : "password";
+      btn.setAttribute("aria-pressed", String(show));
+      btn.setAttribute("aria-label", show ? "Hide password" : "Show password");
+    });
+    box.appendChild(btn);
+  }
+  wrap.appendChild(box);
+
+  if (f.hint){
+    const h = document.createElement("p");
+    h.className = "hint"; h.id = "h_" + f.id; h.textContent = f.hint;
+    wrap.appendChild(h);
+  }
+  const err = document.createElement("p");
+  err.className = "err"; err.id = "e_" + f.id;
+  wrap.appendChild(err);
+
+  input.addEventListener("input", () => { if (input.getAttribute("aria-invalid") === "true") validate(f); });
+  inputs[f.id] = input;
+  return wrap;
+}
+
+CONFIG.fields.forEach(f => $("fields").appendChild(buildField(f)));
+
+/* ---------- Terms checkbox (only if a Terms URL exists) ---------- */
+let termsBox = null;
+if (CONFIG.termsUrl){
+  const wrap = document.createElement("div");
+  wrap.className = "check-wrap";
+  const row = document.createElement("div");
+  row.className = "check";
+  termsBox = document.createElement("input");
+  termsBox.type = "checkbox"; termsBox.id = "agree";
+  termsBox.setAttribute("aria-describedby", "e_agree");
+  const lab = document.createElement("label");
+  lab.htmlFor = "agree"; lab.style.cssText = "font-weight:400;margin:0";
+  lab.append("I agree to the ");
+  const t = document.createElement("a"); t.href = CONFIG.termsUrl; t.textContent = "Terms"; t.target = "_blank"; t.rel = "noopener";
+  lab.appendChild(t);
+  if (CONFIG.privacyUrl){
+    lab.append(" and ");
+    const p = document.createElement("a"); p.href = CONFIG.privacyUrl; p.textContent = "Privacy Policy"; p.target = "_blank"; p.rel = "noopener";
+    lab.appendChild(p);
+  }
+  row.appendChild(termsBox); row.appendChild(lab);
+  const err = document.createElement("p");
+  err.className = "err"; err.id = "e_agree"; err.textContent = "Please accept to continue.";
+  wrap.appendChild(row); wrap.appendChild(err);
+  $("terms").appendChild(wrap);
+  termsBox.addEventListener("change", () => { if (termsBox.checked) err.classList.remove("show"); });
+}
+
+/* ---------- Validation ---------- */
+function messageFor(f){
+  const input = inputs[f.id];
+  const raw = input.value;
+  const val = f.type === "password" ? raw : raw.trim();
+  const name = f.label.toLowerCase();
+
+  if (!val){
+    return f.required === false ? "" : "Please enter your " + name + ".";
+  }
+  if (f.type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)){
+    return "Please enter a valid email address.";
+  }
+  if (f.minLength && val.length < f.minLength){
+    return f.label + " must be at least " + f.minLength + " characters.";
+  }
+  if (f.matchWith && inputs[f.matchWith] && val !== inputs[f.matchWith].value){
+    return "Passwords don't match.";
+  }
+  return "";
+}
+function validate(f){
+  const msg = messageFor(f);
+  const input = inputs[f.id], err = $("e_" + f.id);
+  input.setAttribute("aria-invalid", msg ? "true" : "false");
+  err.textContent = msg;
+  err.classList.toggle("show", !!msg);
+  return !msg;
+}
+
+function setAlert(msg, info){
+  alertText.textContent = msg || "";
+  alertBox.classList.toggle("show", !!msg);
+  alertBox.classList.toggle("info", !!info);
+}
+function setLoading(on){
+  const b = $("submit");
+  b.disabled = on; b.classList.toggle("loading", on);
+  $("submitText").textContent = on ? "Creating account…" : "Create account";
+}
+
+/* ---------- Submit ---------- */
+form.addEventListener("submit", async function(e){
+  e.preventDefault();
+  setAlert("");
+
+  let firstBad = null;
+  CONFIG.fields.forEach(f => { if (!validate(f) && !firstBad) firstBad = inputs[f.id]; });
+
+  if (termsBox && !termsBox.checked){
+    $("e_agree").classList.add("show");
+    if (!firstBad) firstBad = termsBox;
+  }
+  if (firstBad){ firstBad.focus(); return; }
+
+  if (typeof CONFIG.register !== "function"){
+    console.warn("WashPilot sign-up: CONFIG.register is not connected yet.");
+    setAlert("Sign-up isn't connected on this page yet.", true);
+    return;
+  }
+
+  const values = {};
+  CONFIG.fields.forEach(f => {
+    if (f.noSubmit) return;
+    const v = inputs[f.id].value;
+    values[f.id] = f.type === "password" ? v : v.trim();
+  });
+
+  setLoading(true);
+  try {
+    const res = await CONFIG.register(values);
+    if (res && res.ok){
+      if (res.redirectUrl){
+        window.location.href = res.redirectUrl;
+        return;
+      }
+      if (res.message){
+        setAlert(res.message, true);
+        form.reset();
+        setLoading(false);
+        return;
+      }
+      window.location.href = CONFIG.successUrl;
+      return;
+    }
+    setAlert((res && res.message) || "We couldn't create your account. Please try again.");
+  } catch (err){
+    console.error(err);
+    setAlert("Something went wrong. Please try again.");
+  }
+  setLoading(false);
+});
+</script>
+</body>
+</html>
