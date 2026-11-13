@@ -1805,6 +1805,48 @@ function normalizePlan(p){
  const value=String(p||'basic').toLowerCase();
  return ({starter:'basic',business:'premium',pro:'premium',standard:'premium'})[value]||(['basic','premium'].includes(value)?value:'basic');
 }
+
+function wpAdminTrialActive(sub=window.wpRealSubscription){return !!(window.wpRealWorkspaceActive&&sub?.admin_trial_enabled&&sub.status==='trialing'&&Date.parse(sub.trial_ends_at)>Date.now());}
+function wpBusinessOnHold(){
+ if(!window.wpRealWorkspaceActive||currentRole==='platform')return false;
+ const sub=window.wpRealSubscription||{},business=window.wpRealBusiness||{};
+ if(['frozen','suspended','closed'].includes(business.status))return true;
+ return !!(sub.admin_trial_enabled&&!wpAdminTrialActive(sub)&&!(sub.status==='active'&&normalizePlan(sub.plan_code)==='premium'&&Date.parse(sub.current_period_ends_at)>Date.now()));
+}
+function wpAccountHoldPage(){
+ const blocked=['suspended','closed'].includes(window.wpRealBusiness?.status);
+ return pageHead(blocked?'Account unavailable':'Your account is on hold',blocked?'Please contact WashPilot Administration.':'Your 7-day trial has ended or your account has been placed on hold.')+'<section class="panel" style="max-width:720px"><span class="badge">'+(blocked?'CONTACT ADMIN':'ON HOLD')+'</span><h2 style="margin:18px 0 10px">'+(blocked?'Contact WashPilot to restore access':'Choose a plan to continue')+'</h2><p class="subtle" style="font-size:14px;line-height:1.8">'+(blocked?'Your workspace is locked by the administrator.':'Your workspace is frozen. Choose Premium for ₱499 / 30 days, pay using GCash, Maya or BPI when enabled, and upload your receipt. Your data stays saved, and access resumes after Super Admin payment approval.')+'</p><div class="actions" style="margin-top:20px">'+(blocked?'':'<button class="btn" onclick="go(\'subscription\')">Choose plan & pay →</button>')+'<button class="btn ghost" onclick="refreshWorkspaceAccess(true)">Check account status</button></div></section>';
+}
+async function grantBusinessTrial(id,button){
+ if(button){button.disabled=true;button.textContent='Granting trial…';}
+ try{const end=await window.washPilotBillingApi.grantTrial(id);await refreshPlatformAdminData();toast('Full Premium access granted free until '+new Date(end).toLocaleString('en-PH',{timeZone:'Asia/Manila'})+'. The account freezes after expiry.');}
+ catch(err){alert(err.message||'Could not grant the trial.');if(button){button.disabled=false;button.textContent='Grant 7-day trial';}}
+}
+let wpAccessMonitor=null,wpAccessLastRefresh=0,wpAccessRefreshing=false,wpAccessHeld=false;
+async function refreshWorkspaceAccess(manual=false){
+ if(!window.wpRealWorkspaceActive||!window.wpRealBusinessId||wpAccessRefreshing)return;
+ wpAccessRefreshing=true;
+ try{
+  const before=JSON.stringify([window.wpRealBusiness,window.wpRealSubscription]),state=await window.washPilotBillingApi.getWorkspaceAccess(window.wpRealBusinessId);
+  window.wpRealBusiness={...window.wpRealBusiness,...state.business};window.wpRealSubscription=state.subscription;
+  const changed=before!==JSON.stringify([window.wpRealBusiness,window.wpRealSubscription]);
+  if(changed||manual){if(wpBusinessOnHold())closeModal();renderNav();render();}wpAccessHeld=wpBusinessOnHold();wpAccessLastRefresh=Date.now();if(manual)toast(wpAccessHeld?'Your account is still on hold. Submit payment or wait for approval.':'Your account status is up to date.');
+ }catch(err){if(manual)alert(err.message||'Could not refresh account status.');}
+ finally{wpAccessRefreshing=false;}
+}
+function startWorkspaceAccessMonitor(){
+ if(wpAccessMonitor)clearInterval(wpAccessMonitor);wpAccessHeld=wpBusinessOnHold();wpAccessLastRefresh=Date.now();
+ wpAccessMonitor=setInterval(()=>{
+  if(!window.wpRealWorkspaceActive){clearInterval(wpAccessMonitor);wpAccessMonitor=null;return;}
+  const held=wpBusinessOnHold();if(held!==wpAccessHeld){wpAccessHeld=held;closeModal();renderNav();render();}
+  if(Date.now()-wpAccessLastRefresh>=60000)refreshWorkspaceAccess();
+ },10000);
+}
+document.addEventListener('click',function(event){
+ if(!wpBusinessOnHold())return;
+ const modal=document.getElementById('modal');if(modal?.contains(event.target)&&!modal.querySelector('form[onsubmit*="submitPlanUpgrade"]')){event.preventDefault();event.stopImmediatePropagation();closeModal();render();}
+},true);
+
 function premiumPeriodExpired(sub){
  const s=sub||{},end=s.current_period_ends_at||s.next_due_at;
  return normalizePlan(s.plan_code)==='premium'&&(s.status==='expired'||(end&&Date.parse(end)<=Date.now()));
@@ -1812,7 +1854,7 @@ function premiumPeriodExpired(sub){
 function effectivePlan(){
  if(window.wpRealWorkspaceActive){
   const sub=window.wpRealSubscription||{};
-  return premiumPeriodExpired(sub)?'basic':normalizePlan(sub.plan_code||'basic');
+  return wpAdminTrialActive()?'premium':premiumPeriodExpired(sub)?'basic':normalizePlan(sub.plan_code||'basic');
  }
  return normalizePlan(currentPlan);
 }
@@ -1868,6 +1910,7 @@ function lockedPage(){
  </section>`;
 }
 function subscriptionStatusBanner(){
+ if(wpAdminTrialActive()){const end=new Date(window.wpRealSubscription.trial_ends_at);return '<div class="inline-note" style="margin-bottom:18px"><b>7-day free trial · All Premium features unlocked</b><br>Ends '+esc(end.toLocaleString('en-PH',{timeZone:'Asia/Manila'}))+'. Your account goes on hold after the trial. Choose Premium and submit payment to continue.</div>';}
  if(!window.wpRealWorkspaceActive||currentRole==='platform')return '';
  const sub=window.wpRealSubscription||{},rawEnd=sub.current_period_ends_at||sub.next_due_at;
  const end=rawEnd?new Date(rawEnd):null,valid=!!(end&&!Number.isNaN(end.getTime()));
@@ -2115,6 +2158,7 @@ function openRealPlatformWorkspace(user){
  renderNav();render();window.scrollTo({top:0,behavior:'instant'});
 }
 function canAccessRolePage(page){
+ if(wpBusinessOnHold()&&page==='subscription')return true;
  if(currentRole==='platform')return ['platform','tenants','platformBilling'].includes(page);
  const permissions={owner:null,supervisor:['dashboard','newwash','queue','transactions','customers','bookings','listing','catalog','employees','reports','reconcile','managementHub','addons','inventory','recipes','expenses','branches','loyalty','subscription'],cashier:['dashboard','newwash','queue','transactions','customers'],washer:['queue']};
  const list=permissions[currentStaffRole];return list===null||list===undefined||list.includes(page);
@@ -2131,7 +2175,7 @@ function renderNav(){
  const planSelect=document.getElementById('planSelect');if(planSelect)planSelect.style.display='none';
  const resetDemoButton=document.querySelector('.reset-demo-button');if(resetDemoButton)resetDemoButton.style.display='none';
  const sidePlan=document.getElementById('sidePlan'),sideText=document.getElementById('sidePlanText');
- sidePlan.textContent=isPlatform?'PLATFORM ADMIN':isOwner?(activePlan==='premium'?'PREMIUM PLAN':'FREE PLAN'):currentStaffRole.toUpperCase();
+ sidePlan.textContent=wpBusinessOnHold()?'ON HOLD':wpAdminTrialActive()?'7-DAY FREE TRIAL':isPlatform?'PLATFORM ADMIN':isOwner?(activePlan==='premium'?'PREMIUM PLAN':'FREE PLAN'):currentStaffRole.toUpperCase();
  sideText.textContent=isPlatform?'Central control for all customer businesses.':isOwner?(activePlan==='premium'?'Premium access · ₱499 per 30 days.':'Free forever · Core carwash operations.'):currentStaffRole==='washer'?'Assigned vehicles and service progress.':currentStaffRole==='cashier'?'New washes, payments and customer records.':'Team operations and daily oversight.';
  document.querySelector('.top-actions .avatar').textContent=isPlatform?'SA':isOwner?'BO':currentStaffRole==='supervisor'?'SU':currentStaffRole==='cashier'?'CA':'WA';
  document.querySelectorAll('.nav button[data-page]').forEach(b=>{
@@ -2157,6 +2201,7 @@ function render(){
  document.getElementById('crumb').innerHTML=(names[currentPage]||'Dashboard')+`<small id="crumbSub">${subs[currentPage]||''}</small>`;
  const planSelect=document.getElementById('planSelect');if(planSelect)planSelect.value=currentPlan;const c=document.getElementById('content');
  if(currentRole==='platform'){const pp={platform:platformDashboard,tenants:tenantsPage,platformBilling:platformBillingPage};c.innerHTML=pp[currentPage]();if(currentPage==='platformBilling')loadPlatformBillingRequests();return}
+ if(wpBusinessOnHold()&&currentPage!=='subscription'){c.innerHTML=wpAccountHoldPage();return;}
  if(currentPage==='managementHub'){c.innerHTML=managementHubPage();return}
  if(!allowed(currentPage)){c.innerHTML=lockedPage();return}
  const pages={dashboard:dashboardPage,newwash:newWashPage,queue:queuePage,transactions:transactionsPage,customers:customersPage,bookings:bookingsPage,listing:facilityListingPage,catalog:catalogPage,addons:addonsPage,employees:employeesPage,expenses:expensesPage,reports:reportsPage,inventory:inventoryPage,branches:branchesPage,loyalty:loyaltyPage,recipes:recipesPage,reconcile:reconcilePage,subscription:subscriptionPage};
@@ -2448,26 +2493,26 @@ function subscriptionPage(){
  if(!window.wpRealWorkspaceActive)return pageHead('Subscription & Billing','Sign in with a registered business account to manage billing.')+'<section class="panel"><div class="empty">Live subscription management is available to registered business accounts.</div></section>';
  const sub=window.wpRealSubscription||{};
  const plan=effectivePlan();
- const rawEnd=sub.current_period_ends_at||sub.next_due_at||null;
+ const rawEnd=wpAdminTrialActive()?sub.trial_ends_at:(sub.current_period_ends_at||sub.next_due_at||null);
  const end=rawEnd?new Date(rawEnd):null;
  const validEnd=end&&!Number.isNaN(end.getTime());
  const daysLeft=validEnd?Math.max(0,Math.ceil((end.getTime()-Date.now())/86400000)):null;
  const premiumExpired=!!(validEnd&&end.getTime()<=Date.now())||sub.status==='expired';
- const status=premiumExpired?'EXPIRED · FREE ACCESS':String(sub.status||'active').replace(/_/g,' ').toUpperCase();
+ const status=wpBusinessOnHold()?'ON HOLD':wpAdminTrialActive()?'7-DAY FREE TRIAL':premiumExpired?'EXPIRED · FREE ACCESS':String(sub.status||'active').replace(/_/g,' ').toUpperCase();
  const isPremium=plan==='premium'&&!premiumExpired;
  const expiryText=validEnd?end.toLocaleDateString('en-PH',{month:'long',day:'numeric',year:'numeric'}):'No expiry';
- const periodCard=isPremium
+ const periodCard=wpBusinessOnHold()?'<div class="wp-subscription-expiry is-expired"><small>ACCOUNT ON HOLD</small><strong>Your trial has ended or your account is on hold</strong><span>Choose Premium for ₱499 / 30 days, pay using an enabled payment option and upload your receipt. Access resumes after Super Admin approval.</span></div>':wpAdminTrialActive()?'<div class="wp-subscription-expiry"><small>7-DAY FREE TRIAL</small><b>'+esc(expiryText)+'</b><strong>'+daysLeft+' days remaining</strong><span>All Premium features are available at no charge during your trial. The workspace freezes when the trial ends.</span></div>':isPremium
   ? '<div class="wp-subscription-expiry"><small>PREMIUM EXPIRES ON</small><b>'+esc(expiryText)+'</b><strong>'+daysLeft+' day'+(daysLeft===1?'':'s')+' left</strong><span>Renew for ₱499 to add another 30 days after your current period.</span></div>'
   : premiumExpired
    ? '<div class="wp-subscription-expiry is-expired"><small>PREMIUM PERIOD ENDED</small><b>'+esc(expiryText)+'</b><strong>Premium access has ended</strong><span>Your workspace is on the Free plan. Submit a renewal and upload payment proof to restore Premium.</span></div>'
    : '<div class="wp-subscription-expiry"><small>FREE PLAN</small><b>Free forever</b><strong>No expiry date</strong><span>Upgrade to Premium for ₱499 and get full access for 30 days after approval.</span></div>';
- const requestAction=isPremium?'Renew Premium · ₱499':'Get Premium · ₱499';
+ const requestAction=isPremium&&!wpAdminTrialActive()?'Renew Premium · ₱499':'Get Premium · ₱499';
  const primary='<button class="btn" onclick="openPlanUpgradeModal(\'premium\')">'+requestAction+' <span>→</span></button>';
  const planCard=(code,name,price,desc,features,current)=>'<article class="wp-billing-plan '+(current?'is-current':'')+'"><div class="wp-billing-plan-top"><span>'+name+'</span>'+(current?'<span class="status Completed">CURRENT PLAN</span>':'')+'</div><div class="wp-billing-price">'+price+'</div><p>'+desc+'</p><ul>'+features.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>'+(current?'<button class="btn ghost" disabled>Current plan</button>':primary)+'</article>';
- const cards=planCard('basic','Free','₱0 · Forever','Essential tools for daily carwash operations',['One location','Core POS and wash queue','Services, add-ons, receipts and customer history','Daily sales summary'],plan==='basic')+
-  planCard('premium','Premium','₱499 · 30 days','The complete WashPilot management workspace',['Bookings and online reservations','Employees, expenses and inventory','Reports, loyalty and add-on analytics','Multiple branches and service recipes'],plan==='premium');
+ const cards=(wpBusinessOnHold()?'':planCard('basic','Free','₱0 · Forever','Essential tools for daily carwash operations',['One location','Core POS and wash queue','Services, add-ons, receipts and customer history','Daily sales summary'],plan==='basic'))+
+  planCard('premium','Premium','₱499 · 30 days','The complete WashPilot management workspace',['Bookings and online reservations','Employees, expenses and inventory','Reports, loyalty and add-on analytics','Multiple branches and service recipes'],plan==='premium'&&!wpAdminTrialActive()&&!wpBusinessOnHold());
  return pageHead('Subscription & Billing','Manage your Free or Premium plan and renew without losing your existing workspace.')+
-  '<div class="grid stats">'+stat('Current Plan',plan==='premium'?'PREMIUM':'FREE','Subscription tier','✓','green')+stat('Account Status',status,'Business access','▣')+stat('Premium Price', '₱499','Per 30-day period','₱','purple')+stat('Days Remaining',isPremium?daysLeft:'—',isPremium?'Until Premium expires':'Free plan does not expire','◷')+'</div>'+
+  '<div class="grid stats">'+stat('Current Plan',wpAdminTrialActive()?'PREMIUM TRIAL':plan==='premium'?'PREMIUM':'FREE','Subscription tier','✓','green')+stat('Account Status',status,'Business access','▣')+stat('Premium Price', '₱499','Per 30-day period','₱','purple')+stat('Days Remaining',isPremium?daysLeft:'—',isPremium?'Until Premium expires':'Free plan does not expire','◷')+'</div>'+
   periodCard+
   '<section class="wp-billing-plans">'+cards+'</section>'+
   '<section class="panel" style="margin-top:16px"><div class="panel-head"><h3>Payment and renewal requests</h3><span class="subtle">Your payment proof goes to the WashPilot Super Admin for verification</span></div><div id="wpMyBillingRequests" class="empty">Loading payment request history…</div></section>'+
@@ -2515,7 +2560,7 @@ function platformDashboard(){
  const ts=Array.isArray(platformData.tenants)?platformData.tenants:[];
  const active=ts.filter(t=>t.status==='Active');
  const trials=ts.filter(t=>t.status==='Trial');
- const past=ts.filter(t=>t.status==='Past Due'||t.status==='Pending Verification');
+ const past=ts.filter(t=>['Past Due','Pending Verification','On Hold'].includes(t.status));
  const suspended=ts.filter(t=>t.status==='Suspended'||t.status==='Cancelled');
  const mrr=active.reduce((a,t)=>a+Number(t.mrr||0),0);
  const refreshed=window.wpPlatformLastSyncedAt?new Date(window.wpPlatformLastSyncedAt).toLocaleString():'Not synced';
@@ -2550,7 +2595,7 @@ function tenantTable(rows,actions=true){
    '<td><b>'+esc(t.owner||'Business owner')+'</b><br><span class="subtle">'+esc(t.email||'No contact email')+'</span></td>'+
    '<td><span class="badge">'+esc(String(t.plan||'basic').toUpperCase())+'</span></td><td>'+statusPill(t.status||'Pending Verification')+'</td>'+
    '<td>'+Number(t.branches||0)+'</td><td class="amount">'+money(t.status==='Active'?Number(t.mrr||0):0)+'</td>'+
-   '<td>'+(t.renewal?dateLabel(t.renewal):'—')+'</td>'+(actions?'<td><button class="btn ghost small" onclick="openTenantEditModal(\''+esc(t.id)+'\')">Manage</button></td>':'')+'</tr>').join('')+
+   '<td>'+(t.renewal?dateLabel(t.renewal):'—')+(t.status==='Trial'&&t.trialEndsAt?'<br><small>Free trial ends '+esc(new Date(t.trialEndsAt).toLocaleTimeString('en-PH',{timeZone:'Asia/Manila',hour:'numeric',minute:'2-digit'}))+'</small>':'')+'</td>'+(actions?'<td>'+(t.status==='Active'&&t.plan==='premium'?'':'<button class="btn small" style="margin:0 5px 5px 0" onclick="grantBusinessTrial(\''+esc(t.id)+'\',this)">'+(t.status==='Trial'?'Restart 7-day trial':'Grant 7-day trial')+'</button>')+'<button class="btn ghost small" onclick="openTenantEditModal(\''+esc(t.id)+'\')">Manage</button></td>':'')+'</tr>').join('')+
   '</tbody></table></div>';
 }
 function tenantsPage(){
@@ -2566,14 +2611,14 @@ function openTenantModal(){
 function saveTenant(e){e.preventDefault();toast('Customer accounts must be registered through the public signup flow.');}
 function openTenantEditModal(id){
  const t=(platformData.tenants||[]).find(x=>x.id===id);if(!t)return;
- const statuses=['Active','Trial','Past Due','Pending Verification','Suspended','Cancelled'];
+ const statuses=['Active','Trial','On Hold','Past Due','Pending Verification','Suspended','Cancelled'];
  const statusOptions=statuses.map(x=>'<option value="'+x+'" '+(t.status===x?'selected':'')+'>'+x+'</option>').join('');
  const planOptions=[['basic','Free · Forever'],['premium','Premium · ₱499 / 30 days']].map(x=>'<option value="'+x[0]+'" '+(normalizePlan(t.plan)===x[0]?'selected':'')+'>'+x[1]+'</option>').join('');
  openModal('<div class="modal-head"><h2>Manage '+esc(t.name)+'</h2><button class="close" onclick="closeModal()">×</button></div>'+
   '<div class="summary-line"><span>Owner contact</span><b>'+esc(t.email||'Not provided')+'</b></div><div class="summary-line"><span>Current status</span><b>'+esc(t.status)+'</b></div>'+
   '<form onsubmit="updateTenant(event,\''+esc(t.id)+'\')" style="margin-top:13px"><div class="field"><label>Subscription plan</label><select name="plan">'+planOptions+'</select></div>'+
   '<div class="field" style="margin-top:10px"><label>Account status</label><select name="status">'+statusOptions+'</select></div>'+
-  '<p class="subtle" style="margin-top:12px">Free never expires. Premium is ₱499 for 30 days and starts after payment approval.</p>'+
+  '<p class="subtle" style="margin-top:12px">Trial grants 7 days of full Premium access with no payment. The account freezes at expiry. On Hold locks the workspace and prompts the owner to choose Premium and pay.</p>'+
   '<div class="actions" style="justify-content:flex-end;margin-top:16px"><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn">Save live changes</button></div></form>');
 }
 async function updateTenant(e,id){
@@ -2590,7 +2635,7 @@ function platformBillingPage(){
  const ts=Array.isArray(platformData.tenants)?platformData.tenants:[];
  const active=ts.filter(t=>t.status==='Active');
  const mrr=active.reduce((a,t)=>a+Number(t.mrr||0),0);
- const pending=ts.filter(t=>t.status==='Past Due'||t.status==='Pending Verification').length;
+ const pending=ts.filter(t=>['Past Due','Pending Verification','On Hold'].includes(t.status)).length;
  return pageHead('Billing & Revenue','Live customer upgrade requests and subscription plan values.')+
   '<section class="panel"><div class="panel-head"><h3>Payment receiving options</h3><span class="subtle">Choose the options business owners can use to pay WashPilot</span></div>'+
   '<form id="wpBillingSettingsForm" onsubmit="savePlatformBillingSettings(event)"><div class="grid three">'+['GCash','Maya','BPI'].map(key=>'<section class="wp-payment-settings-card"><label style="display:flex;gap:8px;align-items:center;margin-bottom:14px"><input type="checkbox" name="'+key+'_enabled" style="width:auto" onchange="toggleBillingPaymentFields(\''+key+'\')"><b>'+key+'</b></label><fieldset id="wpBillingFields'+key+'" disabled style="border:0;padding:0;margin:0;min-width:0"><div class="field"><label for="wpBillingName'+key+'">Account name</label><input id="wpBillingName'+key+'" name="'+key+'_name" maxlength="100"></div><div class="field"><label for="wpBillingNumber'+key+'">'+(key==='BPI'?'Account number':'Mobile number')+'</label><input id="wpBillingNumber'+key+'" name="'+key+'_number" type="text" maxlength="40"></div><div class="field"><label for="wpBillingQr'+key+'">Upload payment QR image</label><input id="wpBillingQr'+key+'" name="'+key+'_qr" type="file" accept="image/jpeg,image/png,image/webp" onchange="previewBillingQr(this,\''+key+'\')"><small>JPG, PNG or WebP · Up to 5 MB</small></div><div id="wpBillingQrPreview'+key+'"></div><label><input type="checkbox" name="'+key+'_remove_qr" style="width:auto"> Remove saved QR image</label></fieldset></section>').join('')+'</div><div class="field" style="margin-top:16px"><label>Payment instructions</label><textarea name="payment_instructions" maxlength="1000" rows="3"></textarea></div><p id="wpBillingSettingsStatus" role="status">Loading payment settings…</p><div class="actions" style="justify-content:flex-end;margin-top:12px"><button class="btn" type="submit" id="wpBillingSettingsSave" disabled>Save payment details</button></div></form></section>'+
@@ -2931,10 +2976,10 @@ window.submitTrialSignup=async function(e){
     }
     const {data:business,error:businessError}=await sb.from('businesses').select('id,name,status,created_at').eq('id',businessId).single();
     if(businessError)throw new Error('Your business was found, but its workspace could not be loaded: '+businessError.message);
-    const {data:subscription,error:subscriptionError}=await sb.from('subscriptions').select('plan_code,status,trial_starts_at,trial_ends_at,current_period_ends_at').eq('business_id',businessId).single();
+    const {data:subscription,error:subscriptionError}=await sb.from('subscriptions').select('plan_code,status,trial_starts_at,trial_ends_at,current_period_ends_at,admin_trial_enabled').eq('business_id',businessId).single();
     if(subscriptionError)throw new Error('Your business is available, but its subscription could not be loaded: '+subscriptionError.message);
     openRealWorkspace(user,business,subscription);
-    if(window.washPilotBookingApi){try{const services=typeof window.wpReadWorkspaceServices==='function'?window.wpReadWorkspaceServices():[];await window.washPilotBookingApi.syncServices(businessId,services);}catch(syncError){console.warn('Facility service sync deferred:',syncError.message||syncError);}}
+    if(window.washPilotBookingApi&&!wpBusinessOnHold()){try{const services=typeof window.wpReadWorkspaceServices==='function'?window.wpReadWorkspaceServices():[];await window.washPilotBookingApi.syncServices(businessId,services);}catch(syncError){console.warn('Facility service sync deferred:',syncError.message||syncError);}}
   }
   function removeDemoFixturesFromWorkspace(workspace){
  const result=Object.assign({},workspace||{});
@@ -2973,7 +3018,7 @@ function openRealWorkspace(user,business,subscription){
     const landing=document.getElementById('publicLanding'),login=document.getElementById('loginScreen'),app=document.getElementById('washpilotApp');
     if(landing)landing.style.display='none';if(login){login.hidden=true;login.style.display='none';}if(app){app.hidden=false;app.classList.remove('auth-hidden');app.style.display='grid';}
     document.body.classList.add('washpilot-authenticated');document.body.classList.remove('platform-mode');document.body.dataset.washpilotLoginOpen='0';
-    startBookingNotificationMonitor();
+    startBookingNotificationMonitor();startWorkspaceAccessMonitor();
     window.scrollTo({top:0,behavior:'instant'});
   }
   function renderTrialAccount(user,business,subscription){
@@ -3069,7 +3114,7 @@ function openRealWorkspace(user,business,subscription){
       const sb=getClient();
       const [businessResult,subscriptionResult,facilityResult,planResult]=await Promise.all([
         sb.from('businesses').select('id,name,owner_user_id,contact_email,contact_phone,address,status,created_at').neq('owner_user_id',adminUserId).order('created_at',{ascending:false}),
-        sb.from('subscriptions').select('business_id,plan_code,status,trial_ends_at,current_period_ends_at,next_due_at'),
+        sb.from('subscriptions').select('business_id,plan_code,status,trial_ends_at,current_period_ends_at,next_due_at,admin_trial_enabled'),
         sb.from('business_facilities').select('business_id'),
         sb.from('subscription_plans').select('code,price_php')
       ]);
@@ -3085,28 +3130,33 @@ function openRealWorkspace(user,business,subscription){
         const subStatus=sub?.status||'pending_verification';
         const plan=sub?.plan_code||'basic';
         let status='Pending Verification';
-        if(b.status==='suspended'||b.status==='frozen'||subStatus==='suspended')status='Suspended';
+        if(b.status==='frozen'||(sub?.admin_trial_enabled&&subStatus==='trialing'&&Date.parse(sub.trial_ends_at)<=Date.now())||(sub?.admin_trial_enabled&&subStatus==='expired'))status='On Hold';
+        else if(b.status==='suspended'||subStatus==='suspended')status='Suspended';
         else if(b.status==='closed'||subStatus==='cancelled')status='Cancelled';
         else if(subStatus==='trialing')status='Trial';
         else if(subStatus==='expired')status='Past Due';
         else if(subStatus==='pending_verification')status='Pending Verification';
         else if(subStatus==='active'&&plan==='premium'&&sub?.current_period_ends_at&&Date.parse(sub.current_period_ends_at)<=Date.now())status='Past Due';
         else if(subStatus==='active')status='Active';
-        const due=sub?.next_due_at||sub?.current_period_ends_at||(subStatus==='trialing'?sub?.trial_ends_at:null);
+        const due=subStatus==='trialing'?sub?.trial_ends_at:(sub?.next_due_at||sub?.current_period_ends_at);
         return {
           id:b.id,reference:'WP-'+String(b.id).slice(0,8).toUpperCase(),name:b.name||'Unnamed business',
           owner:'Business owner',email:b.contact_email||'',phone:b.contact_phone||'',location:b.address||'',
-          plan,status,mrr:status==='Active'?(prices.get(plan)||0):0,branches:facilityCounts.get(b.id)||0,
+          plan,status,trialEndsAt:sub?.trial_ends_at||null,adminTrial:!!sub?.admin_trial_enabled,mrr:status==='Active'?(prices.get(plan)||0):0,branches:facilityCounts.get(b.id)||0,
           created:b.created_at?String(b.created_at).slice(0,10):'',renewal:due?String(due).slice(0,10):''
         };
       });
     },
+    async grantTrial(businessId){const {data,error}=await getClient().rpc('admin_grant_business_trial',{p_business_id:businessId});if(error)throw error;return data;},
+    async getWorkspaceAccess(businessId){const [b,s]=await Promise.all([getClient().from('businesses').select('id,name,status').eq('id',businessId).single(),getClient().from('subscriptions').select('plan_code,status,trial_starts_at,trial_ends_at,current_period_ends_at,admin_trial_enabled').eq('business_id',businessId).single()]);if(b.error)throw b.error;if(s.error)throw s.error;return {business:b.data,subscription:s.data};},
     async updateAdminTenant({businessId,planCode,status}){
+      if(status==='Trial')return this.grantTrial(businessId);
+      if(status==='On Hold'){const {error}=await getClient().rpc('admin_hold_business',{p_business_id:businessId});if(error)throw error;return true;}
       const statusMap={'Active':'active','Trial':'trialing','Past Due':'expired','Pending Verification':'pending_verification','Suspended':'suspended','Cancelled':'cancelled'};
       const dbStatus=statusMap[status];
       if(!businessId||!['basic','premium'].includes(planCode)||!dbStatus)throw new Error('Invalid business subscription update.');
       const sb=getClient();
-      const {data:updatedSubscription,error:subscriptionError}=await sb.from('subscriptions').update({plan_code:planCode,status:dbStatus,updated_at:new Date().toISOString()}).eq('business_id',businessId).select('business_id');
+      const {data:updatedSubscription,error:subscriptionError}=await sb.from('subscriptions').update({plan_code:planCode,status:dbStatus,admin_trial_enabled:false,updated_at:new Date().toISOString()}).eq('business_id',businessId).select('business_id');
       if(subscriptionError)throw subscriptionError;
       if(!updatedSubscription?.length)throw new Error('No subscription record was updated for this business.');
       const businessStatus=status==='Suspended'?'suspended':status==='Cancelled'?'closed':'active';
