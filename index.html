@@ -3,6 +3,18 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<script>
+/* Standalone public/auth pages. The original authenticated app remains in index.html. */
+(function () {
+  var path = window.location.pathname.replace(/\\/+$/, '') || '/';
+  var query = new URLSearchParams(window.location.search);
+  var target = null;
+  if (path === '/' && !query.has('wpRecovery')) target = '/home.html';
+  else if (path === '/login') target = '/signin.html';
+  else if (path === '/signup') target = '/signup.html';
+  if (target) window.location.replace(target + window.location.search + window.location.hash);
+})();
+</script>
 <meta name="theme-color" content="#071a33" />
 <meta name="description" content="Run a smarter carwash with WashPilot. Manage wash queues, payments, customers, staff, inventory, and branches with simple monthly plans." />
 <link rel="icon" type="image/png" href="/washpilot-brand.png" />
@@ -4122,10 +4134,7 @@ async function submitPublicBooking(e){
     if(path.startsWith('/book/')){const facilitySlug=path.slice(6);if(!/^[a-z0-9-]{3,60}$/.test(facilitySlug)){setPath('/businesses',true);applyRoute();return;}requestedAppPage=null;window.wpRouteIsWorkspace=false;window.wpRouteIsLogin=false;showPublicFacilityPage(facilitySlug);return;}
     const section=publicSections[path];
     if(path!=='/'&&!section){
-      setPath('/',true);
-      requestedAppPage=null;
-      window.wpRouteIsWorkspace=false;window.wpRouteIsLogin=false;
-      showPublicPage('home');
+      window.location.replace('/404.html');
       return;
     }
     requestedAppPage=null;
