@@ -1364,7 +1364,7 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
 .wp-calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
 .wp-calendar-weekday{text-align:center;color:#66758b;font-size:11px;padding:5px 0}
 .wp-calendar-day{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:60px;min-width:0;border:1px solid #dbe4ed;border-radius:9px;background:white;color:#142d4e;font:inherit;cursor:pointer}
-.wp-calendar-day small{font-size:9px;line-height:1.2}
+.wp-calendar-day small{font-size:9px;line-height:1.2;max-width:100%;overflow:hidden;text-overflow:ellipsis}
 .wp-calendar-day.available{border-color:#b8d6cb;color:#176447}
 .wp-calendar-day.booked{background:#143e33;border-color:#143e33;color:white}
 .wp-calendar-day.closed,.wp-calendar-day.past{background:#f1f4f8;color:#8692a3}
@@ -1382,6 +1382,17 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
 .wp-time-card:disabled{cursor:default}.wp-time-card.selected{background:#edf3ff;border:2px solid #3568f5;color:#214fba;padding:11px 9px}
 .wp-slot-message{font-size:12px;line-height:1.6;color:#52647e;margin:10px 0}.wp-slot-heading{margin-top:20px;margin-bottom:0}.wp-slot-heading strong{font-size:13px}
 @media(max-width:540px){.wp-availability{padding:12px}.wp-calendar-grid{gap:4px}.wp-calendar-day{min-height:54px}.wp-calendar-day small{font-size:8px}.wp-time-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.wp-booking-step[hidden]{display:none!important}
+.wp-wizard-progress{margin:0 0 20px}.wp-wizard-progress p{font-size:12px;color:#58708d;margin:0 0 9px}.wp-wizard-progress progress{width:100%;height:6px;accent-color:#3568f5}
+.wp-wizard-title{font-size:26px!important;margin:0 0 6px!important;letter-spacing:-.7px}.wp-wizard-help{font-size:13px;line-height:1.6;color:#62728a;margin:0 0 20px}
+.wp-service-choices{display:grid;gap:10px}.wp-service-option{display:flex;align-items:flex-start;gap:12px;text-align:left;width:100%;padding:17px;border:1px solid #dce4ef;border-radius:12px;background:#fff;color:#142d4e;cursor:pointer;font:inherit;min-height:64px}
+.wp-service-option.selected{border:2px solid #3568f5;padding:16px;background:#f2f6ff}.wp-service-option .wp-service-copy{flex:1;min-width:0}.wp-service-option strong{font-size:14px;display:block}.wp-service-option small{display:block;color:#63758d;font-size:12px;line-height:1.5;margin-top:5px;white-space:pre-line}.wp-service-option .wp-option-price{font-weight:800;white-space:nowrap;font-size:14px}.wp-option-marker{width:20px;height:20px;border:1px solid #bdcadb;border-radius:50%;flex-shrink:0}.selected .wp-option-marker{border:6px solid #3568f5}.wp-service-option.addon .wp-option-marker{border-radius:5px}.wp-service-option:focus-visible{outline:3px solid #3568f5;outline-offset:3px}
+.wp-wizard-footer{position:sticky;bottom:0;background:#fff;padding:16px 0 max(12px,env(safe-area-inset-bottom));border-top:1px solid #e1e8f2;margin-top:24px;z-index:5}.wp-wizard-total{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.wp-wizard-total small{display:block;color:#687c95;font-size:11px;margin-top:4px}.wp-wizard-total strong{font-size:22px;color:#142d4e}.wp-wizard-actions{display:flex;gap:10px}.wp-wizard-actions button{min-height:50px;border-radius:10px;font:inherit;font-weight:800;padding:12px 18px;cursor:pointer}.wp-wizard-actions .wp-back{border:1px solid #dce4ef;background:#fff;color:#243d5c}.wp-wizard-actions .wp-next{min-width:0;border:0;flex:1;justify-content:center;background:#3568f5;color:white}.wp-wizard-actions button:disabled{opacity:.45;cursor:default}
+.wp-review-summary{padding:18px;border:1px solid #dce4ef;border-radius:12px;margin-bottom:20px;background:#f7faff}.wp-review-line{display:flex;justify-content:space-between;gap:16px;font-size:13px;margin:10px 0;color:#526883}.wp-review-line strong{text-align:right;color:#173453;overflow-wrap:anywhere}.wp-review-total{border-top:1px solid #dce4ef;padding-top:12px;font-size:17px}.wp-wizard-error{padding:12px;background:#fff3f0;color:#a33020;border-radius:8px;font-size:13px;margin-bottom:16px}
+.wp-wizard-form{min-width:0}.wp-wizard-form .field input,.wp-wizard-form .field select,.wp-wizard-form .field textarea{font-size:16px;min-height:48px;width:100%;box-sizing:border-box}.wp-wizard-form .field label{display:block;margin-bottom:8px;font-size:12px;font-weight:750}.wp-wizard-form .field{margin:0 0 17px}.wp-wizard-form .wp-availability{margin:0;border:0;padding:0}.wp-wizard-form .wp-calendar-head button,.wp-wizard-form .wp-slot-heading button{min-height:44px;min-width:44px}.wp-booking-summary details>summary{cursor:pointer;font-weight:800;font-size:15px;min-height:44px;padding:8px 0}
+@media(max-width:700px){.wp-booking-layout{display:flex!important;flex-direction:column;gap:16px!important}.wp-booking-form{padding:20px 16px!important;border-radius:14px!important}.wp-booking-summary{padding:18px!important}.wp-public-route .wp-directory-head h1{font-size:28px!important}.wp-public-route .wp-public-intro{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.wp-public-route .wp-public-gallery{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:8px}.wp-public-route .wp-public-gallery img{flex:0 0 80%;height:150px;object-fit:cover;scroll-snap-align:start}.wp-wizard-title{font-size:24px!important}.wp-wizard-footer{position:fixed;bottom:0;left:20px;right:20px;margin:0;padding:12px 16px max(12px,env(safe-area-inset-bottom));border-radius:14px 14px 0 0;box-shadow:0 -6px 18px #18355418}.wp-wizard-form{padding-bottom:135px}.wp-wizard-form .wp-calendar-day{min-height:54px}.wp-wizard-form .wp-time-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.wp-wizard-form .wp-calendar-day small{font-size:8px}.wp-service-option{padding:14px 12px}.wp-service-option.selected{padding:13px 11px}.wp-public-route .wp-booking-layout{scroll-margin-top:85px}}
+@media(min-width:701px){.wp-wizard-form{max-width:720px}.wp-booking-summary details{display:block}.wp-booking-layout{align-items:start}}
 </style>
 </head>
 <body>
@@ -3188,7 +3199,7 @@ function openRealWorkspace(user,business,subscription){
 async syncServices(businessId,services){
       const sb=getClient(),{data:f,error:fe}=await sb.from('business_facilities').select('id').eq('business_id',businessId).eq('is_primary',true).maybeSingle();
       if(fe)throw fe;if(!f)throw new Error('Public facility not found.');
-      const rows=(services||[]).map((s,i)=>({facility_id:f.id,source_key:String(s.id),name:s.name,description:s.description||null,base_price_php:Number(s.price||0),price_by_size:s.type==='main'?(s.priceBySize||{}):{},duration_minutes:Math.max(5,Math.min(1440,Number(s.duration||30))),is_active:!!s.active,sort_order:i,updated_at:new Date().toISOString()}));
+      const rows=(services||[]).map((s,i)=>({facility_id:f.id,source_key:String(s.id),name:s.name,service_type:s.type==='addon'?'addon':'main',description:s.description||null,base_price_php:Number(s.price||0),price_by_size:s.type==='main'?(s.priceBySize||{}):{},duration_minutes:Math.max(5,Math.min(1440,Number(s.duration||30))),is_active:!!s.active,sort_order:i,updated_at:new Date().toISOString()}));
       if(rows.length){const {error}=await sb.from('facility_services').upsert(rows,{onConflict:'facility_id,source_key'});if(error)throw error;}return rows.length;
     },
     async getMyBookings(){
@@ -3212,12 +3223,12 @@ async syncServices(businessId,services){
     async setPaymentStatus(id,status){const {error}=await getClient().rpc('set_facility_booking_payment_status',{p_booking_id:id,p_status:status});if(error)throw error;return true;},
 async listPublicFacilities(){const {data,error}=await getClient().rpc('list_public_facilities');if(error)throw error;return data||[];},
     async getPublicFacility(slug){const {data,error}=await getClient().rpc('get_public_facility',{p_facility_slug:slug});if(error)throw error;return data?.[0]||null;},
-    async getPublicServices(slug){const {data,error}=await getClient().rpc('get_public_facility_services',{p_facility_slug:slug});if(error)throw error;return data||[];},
+    async getPublicServices(slug){const {data,error}=await getClient().rpc('get_public_facility_services_v2',{p_facility_slug:slug});if(error)throw error;return data||[];},
     async getBusySlots(slug,date){const {data,error}=await getClient().rpc('get_public_facility_busy_slots',{p_facility_slug:slug,p_booking_date:date});if(error)throw error;return data||[];},
     async createPublicBooking(v){
       const proofPath=await this.uploadBookingProof(v.proof_file,v.business_id);
-      const {data,error}=await getClient().rpc('create_public_facility_booking',{
-       p_facility_slug:v.slug,p_service_id:v.service_id,p_booking_date:v.booking_date,p_start_time:v.start_time,
+      const {data,error}=await getClient().rpc('create_public_facility_booking_v2',{
+       p_facility_slug:v.slug,p_service_id:v.service_id,p_addon_ids:v.addon_ids||[],p_booking_date:v.booking_date,p_start_time:v.start_time,
        p_customer_name:v.customer_name,p_customer_phone:v.customer_phone,p_customer_email:v.customer_email||null,
        p_vehicle_size:v.vehicle_size,p_vehicle_plate:v.vehicle_plate||null,p_notes:v.notes||null,
        p_payment_method:v.payment_method,p_payment_reference:v.payment_reference||null,p_payment_proof_path:proofPath
@@ -3493,11 +3504,11 @@ async function loadPublicFacility(slug){
  const el=document.getElementById('wpPublicFacilityContent');if(!el||!window.washPilotBookingApi)return;el.innerHTML='<div class="wp-directory-empty">Loading facility details…</div>';
  try{
   const f=await window.washPilotBookingApi.getPublicFacility(slug);if(!f){el.innerHTML='<div class="wp-directory-empty">This facility is not available in the public directory. <p><a href="/businesses">Browse all businesses</a></p></div>';return;}
-  wpCurrentPublicFacility=f;wpCurrentPublicServices=await window.washPilotBookingApi.getPublicServices(slug);const bookingOn=!!f.booking_enabled&&wpCurrentPublicServices.length>0;
+  wpCurrentPublicFacility=f;wpCurrentPublicServices=await window.washPilotBookingApi.getPublicServices(slug);wpPublicSelectedAddons=[];const bookingOn=!!f.booking_enabled&&wpCurrentPublicServices.some(s=>s.service_type!=='addon');
   el.innerHTML='<a href="/business" style="color:#3568f5;text-decoration:none;font-size:12px;font-weight:800">← All businesses</a><div class="wp-directory-head" style="margin-top:20px"><div class="wp-public-brand-heading">'+(f.logo_url?'<img class="wp-public-business-logo" src="'+esc(f.logo_url)+'" alt="'+esc(f.business_name)+' logo">':'')+'<div><span class="wp-eyebrow">WASHPILOT REGISTERED FACILITY</span><h1>'+esc(f.facility_name)+'</h1><p>'+esc(f.business_name)+' · '+esc(f.address||'')+'</p>'+(f.public_description?'<p class="wp-public-intro">'+esc(f.public_description)+'</p>':'')+'</div></div><div class="wp-booking-note">'+(bookingOn?'Online booking is available for this facility.':'This business is listed in the directory. Online bookings require an active Premium subscription (₱499 per 30 days), at least one active service, and configured GCash or bank-transfer details.')+'</div></div>'+
   ((f.gallery_images||[]).length?'<div class="wp-public-gallery">'+f.gallery_images.slice(0,5).map((src,i)=>'<img src="'+esc(src)+'" alt="'+esc(f.facility_name)+' facility photo '+(i+1)+'" loading="lazy">').join('')+'</div>':'')+
   '<div class="wp-booking-layout"><section class="wp-booking-form">'+(bookingOn?'<h2>Book a car wash</h2><form id="wpPublicBookingForm" onsubmit="submitPublicBooking(event)">'+
-  '<div class="field"><label>Choose a service</label><select name="service_id" id="wpPublicService" required onchange="refreshPublicBookingSlots()">'+wpCurrentPublicServices.map(s=>'<option value="'+s.service_id+'">'+esc(s.name)+' · '+money(s.base_price_php)+'</option>').join('')+'</select></div>'+
+  '<div class="field"><label>Choose a service</label><select name="service_id" id="wpPublicService" required onchange="refreshPublicBookingSlots()">'+wpCurrentPublicServices.filter(s=>s.service_type!=='addon').map(s=>'<option value="'+s.service_id+'">'+esc(s.name)+' · '+money(s.base_price_php)+'</option>').join('')+'</select></div>'+
   '<input type="hidden" name="booking_date" id="wpPublicBookingDate"><input type="hidden" name="start_time" id="wpPublicBookingTime"><section class="wp-availability" aria-label="Booking availability"><div class="wp-calendar-head"><button type="button" id="wpPreviousMonth" aria-label="Previous month" onclick="movePublicBookingMonth(-1)">←</button><strong id="wpCalendarMonth"></strong><button type="button" id="wpNextMonth" aria-label="Next month" onclick="movePublicBookingMonth(1)">→</button></div><div class="wp-calendar-grid" id="wpCalendarGrid" aria-label="Choose a booking date"></div><div class="wp-availability-legend"><span><i></i>Available</span><span class="booked"><i></i>Fully booked</span><span class="closed"><i></i>Closed / unavailable</span></div><p class="wp-slot-message" id="wpCalendarStatus" role="status"></p><div class="wp-slot-heading"><strong id="wpSlotDateHeading">Choose a date</strong><button type="button" onclick="refreshPublicBookingSlots()">Refresh</button></div><div id="wpPublicTimeSlots" aria-live="polite"></div><p class="wp-slot-message" id="wpSlotSelection" role="status">Select an available time to continue.</p></section>'+
   '<div class="field"><label>Vehicle size</label><select name="vehicle_size"><option>Small</option><option selected>Medium</option><option>Large</option><option>XL</option></select></div>'+
   '<div class="field"><label>Payment method</label><select name="payment_method" id="wpBookingPaymentMethod" required onchange="updatePublicPaymentInstructions()">'+
@@ -3510,9 +3521,74 @@ async function loadPublicFacility(slug){
   '<div class="field"><label>Notes (optional)</label><textarea name="notes" rows="2" maxlength="500"></textarea></div><div class="wp-booking-note" id="wpPublicBookingPrice">Select a service and date to view available slots.</div><button class="wp-btn-primary" style="width:100%;justify-content:center;border:0;cursor:pointer;margin-top:16px" type="submit" id="wpPublicBookingSubmit">Request booking <span>→</span></button></form>':
   '<h2>Online booking unavailable</h2><p class="wp-booking-note">This facility has a public WashPilot listing, but has not activated online booking yet. Contact the facility directly or browse another carwash.</p><a class="wp-btn-primary" href="/businesses" style="display:flex;justify-content:center;padding:14px;text-decoration:none;border-radius:10px">Browse businesses</a>')+
   '</section><aside class="wp-booking-summary"><h3>'+esc(f.facility_name)+'</h3><p>'+esc(f.address||'')+'</p><p>Opening hours<br><b>'+wpFormatClock(f.opening_time)+' – '+wpFormatClock(f.closing_time)+'</b></p><p>Timezone: '+esc(f.timezone||'Asia/Manila')+'</p><p>Pay by GCash or bank transfer only. Upload your proof so the facility can verify it before confirming. Cash is not accepted for online bookings.</p><div class="wp-summary-price">'+(bookingOn?'Available services':'Listed on WashPilot')+'</div>'+(bookingOn?renderPublicServiceBulletList():'')+'<p>Only available times within published operating hours can be requested.</p></aside></div>'+renderPublicLocationCta(f);
-  if(bookingOn){wpPublicAvailabilityCache.clear();wpPublicCalendarMonth=wpPublicDateParts().date.slice(0,7);document.getElementById('wpPublicBookingDate').value=wpPublicDateParts().date;refreshPublicBookingSlots();updatePublicPaymentInstructions();}
+  if(bookingOn){wpPublicAvailabilityCache.clear();wpPublicCalendarMonth=wpPublicDateParts().date.slice(0,7);document.getElementById('wpPublicBookingDate').value=wpPublicDateParts().date;wpMountBookingWizard();updatePublicPaymentInstructions();}
  }catch(err){el.innerHTML='<div class="wp-directory-empty">Could not load this facility: '+esc(err.message||err)+'</div>';}
 }
+
+let wpPublicBookingStep=1,wpPublicSelectedAddons=[];
+const wpBookingStepTitles=['Choose Your Service','Select Add-ons','Pick a Date & Time','Enter Your Details','Review & Pay','Booking Confirmation'];
+function wpPublicBookingSelection(){
+ const form=document.getElementById('wpPublicBookingForm');if(!form)return null;
+ const main=wpCurrentPublicServices.find(s=>s.service_id===form.elements.service_id.value&&s.service_type!=='addon');if(!main)return null;
+ const addons=wpCurrentPublicServices.filter(s=>wpPublicSelectedAddons.includes(s.service_id)&&s.service_type==='addon'),size=form.elements.vehicle_size.value;
+ const sized=main.price_by_size?.[size],base=sized!==undefined&&sized!==null&&sized!==''?Number(sized):Number(main.base_price_php);
+ return {...main,name:[main.name,...addons.map(s=>s.name)].join(' + '),base_price_php:base+addons.reduce((a,s)=>a+Number(s.base_price_php),0),duration_minutes:Number(main.duration_minutes||30)+addons.reduce((a,s)=>a+Number(s.duration_minutes||0),0),addons,main_name:main.name,main_price:base};
+}
+function wpMountBookingWizard(){
+ const form=document.getElementById('wpPublicBookingForm');wpPublicBookingStep=1;form.classList.add('wp-wizard-form');form.noValidate=true;
+ const headings=form.parentElement.querySelector(':scope > h2');if(headings)headings.remove();
+ const field=name=>form.elements[name].closest('.field'),serviceField=field('service_id'),availability=form.querySelector('.wp-availability'),paymentInfo=document.getElementById('wpPublicPaymentInstructions'),oldPrice=document.getElementById('wpPublicBookingPrice'),submit=document.getElementById('wpPublicBookingSubmit');
+ const parts=[[serviceField],[],[availability],[field('vehicle_size'),field('customer_name'),field('customer_phone'),field('customer_email'),field('vehicle_plate'),field('notes')],[field('payment_method'),paymentInfo,field('payment_reference'),field('payment_proof')]];
+ const steps=parts.map((nodes,i)=>{const step=document.createElement('section');step.className='wp-booking-step';step.dataset.step=i+1;step.id='wpBookingStep'+(i+1);step.setAttribute('aria-labelledby','wpBookingTitle'+(i+1));step.innerHTML='<h2 class="wp-wizard-title" id="wpBookingTitle'+(i+1)+'" tabindex="-1">'+wpBookingStepTitles[i]+'</h2><p class="wp-wizard-help">'+['Choose what your vehicle needs. Prices update with your vehicle size.','Add optional extras, or continue without any.','Choose a time with enough room for all your selected services.','Tell the facility who is coming and which vehicle to expect.','Check your services, schedule and total before sending payment.'][i]+'</p>';nodes.forEach(n=>step.append(n));return step;});
+ const select=serviceField.querySelector('select');select.hidden=true;select.removeAttribute('required');select.insertAdjacentHTML('afterbegin','<option value="">Choose a service</option>');select.value='';select.onchange=()=>wpSelectBookingService(select.value);serviceField.querySelector('label').remove();serviceField.insertAdjacentHTML('beforeend','<div id="wpPublicServiceChoices" class="wp-service-choices"></div>');
+ steps[1].insertAdjacentHTML('beforeend','<div id="wpPublicAddonChoices" class="wp-service-choices"></div>');
+ steps[4].querySelector('.wp-wizard-help').insertAdjacentHTML('afterend','<div id="wpBookingReview" class="wp-review-summary"></div>');
+ const progress=document.createElement('div');progress.className='wp-wizard-progress';progress.innerHTML='<p id="wpBookingProgressText" role="status">Step 1 of 6 · Choose Your Service</p><progress id="wpBookingProgress" value="1" max="6" aria-label="Booking progress"></progress><div id="wpBookingWizardError" class="wp-wizard-error" role="alert" hidden></div>';
+ const hiddenInputs=[form.elements.booking_date,form.elements.start_time];form.replaceChildren(progress,...hiddenInputs,...steps);
+ const footer=document.createElement('div');footer.className='wp-wizard-footer';footer.innerHTML='<div class="wp-wizard-total"><span>Total<small id="wpBookingDuration">Choose a service to begin</small></span><strong id="wpBookingTotal">—</strong></div><div class="wp-wizard-actions"><button type="button" class="wp-back" id="wpWizardBack" onclick="wpMoveBookingStep(-1)">Back</button><button type="button" class="wp-next" id="wpWizardContinue" onclick="wpMoveBookingStep(1)">Continue →</button></div>';footer.querySelector('.wp-wizard-actions').append(submit);submit.className='wp-next';submit.style='';submit.textContent='Submit booking request';submit.hidden=true;form.append(footer);oldPrice.hidden=true;form.append(oldPrice);
+ const size=form.elements.vehicle_size;size.onchange=()=>{wpRenderServiceChoices();wpUpdateBookingSummary();};form.elements.customer_name.autocomplete='name';form.elements.customer_phone.autocomplete='tel';form.elements.customer_phone.inputMode='tel';form.elements.customer_email.autocomplete='email';
+ for(const input of form.querySelectorAll('input,select,textarea')){if(!input.id)input.id='wpBookingField_'+input.name;const label=input.closest('.field')?.querySelector('label');if(label)label.htmlFor=input.id;}
+ const aside=document.querySelector('.wp-booking-summary');if(aside){const contents=aside.innerHTML;aside.innerHTML='<details><summary>Facility details & payment information</summary>'+contents+'</details>';if(window.matchMedia('(min-width:701px)').matches)aside.querySelector('details').open=true;}
+ wpRenderServiceChoices();wpShowBookingStep(1,false);
+}
+function wpRenderServiceChoices(){
+ const form=document.getElementById('wpPublicBookingForm'),size=form.elements.vehicle_size.value;
+ for(const [id,isAddon] of [['wpPublicServiceChoices',false],['wpPublicAddonChoices',true]]){
+  const box=document.getElementById(id),rows=wpCurrentPublicServices.filter(s=>(s.service_type==='addon')===isAddon);
+  box.innerHTML=rows.map(s=>{const selected=isAddon?wpPublicSelectedAddons.includes(s.service_id):form.elements.service_id.value===s.service_id,price=isAddon?s.base_price_php:(s.price_by_size?.[size]??s.base_price_php);return '<button type="button" class="wp-service-option '+(isAddon?'addon ':'')+(selected?'selected':'')+'" aria-pressed="'+selected+'" onclick="'+(isAddon?'wpToggleBookingAddon':'wpSelectBookingService')+'(\''+s.service_id+'\')"><span class="wp-option-marker" aria-hidden="true"></span><span class="wp-service-copy"><strong>'+esc(s.name)+'</strong><small>'+Number(s.duration_minutes||30)+' min'+(!isAddon?' · '+esc(size)+' vehicle':' extra')+'</small>'+(s.description?'<small>'+esc(s.description)+'</small>':'')+'</span><span class="wp-option-price">'+(isAddon?'+ ':'')+money(price)+'</span></button>';}).join('')||'<p class="wp-slot-message">No add-ons are offered for online booking yet. Continue to choose your schedule.</p>';
+ }
+}
+function wpSelectBookingService(id){const form=document.getElementById('wpPublicBookingForm');form.elements.service_id.value=id;form.elements.start_time.value='';wpRenderServiceChoices();wpUpdateBookingSummary();document.getElementById('wpWizardContinue').disabled=false;}
+function wpToggleBookingAddon(id){if(wpPublicSelectedAddons.includes(id))wpPublicSelectedAddons=wpPublicSelectedAddons.filter(x=>x!==id);else if(wpPublicSelectedAddons.length<12)wpPublicSelectedAddons.push(id);else{wpBookingError('Choose up to 12 add-ons.');return;}document.getElementById('wpPublicBookingTime').value='';wpRenderServiceChoices();wpUpdateBookingSummary();}
+function wpBookingError(message){const box=document.getElementById('wpBookingWizardError');box.hidden=!message;box.textContent=message||'';}
+function wpValidateBookingDetails(){
+ const form=document.getElementById('wpPublicBookingForm');for(const name of ['customer_name','customer_phone','customer_email','vehicle_size','vehicle_plate','notes']){const input=form.elements[name];if(!input.checkValidity()){wpBookingError('Please check your '+name.replaceAll('_',' ')+'.');input.reportValidity();return false;}}
+ if(form.elements.customer_phone.value.replace(/\D/g,'').length<10){wpBookingError('Enter a valid mobile number with at least 10 digits.');form.elements.customer_phone.focus();return false;}return true;
+}
+function wpMoveBookingStep(delta){
+ const form=document.getElementById('wpPublicBookingForm');wpBookingError('');
+ if(delta>0){if(!wpPublicBookingSelection()){wpBookingError('Choose a service first.');return;}if(wpPublicBookingStep===3&&!form.elements.start_time.value){wpBookingError('Choose an available date and time.');return;}if(wpPublicBookingStep===4&&!wpValidateBookingDetails())return;}
+ wpShowBookingStep(Math.max(1,Math.min(5,wpPublicBookingStep+delta)));
+}
+function wpShowBookingStep(step,focus=true){
+ wpPublicBookingStep=step;const form=document.getElementById('wpPublicBookingForm');if(!form)return;
+ form.querySelectorAll('.wp-booking-step').forEach(el=>el.hidden=Number(el.dataset.step)!==step);
+ document.getElementById('wpBookingProgressText').textContent='Step '+step+' of 6 · '+wpBookingStepTitles[step-1];document.getElementById('wpBookingProgress').value=step;
+ document.getElementById('wpWizardBack').hidden=step===1;document.getElementById('wpWizardContinue').hidden=step===5;document.getElementById('wpPublicBookingSubmit').hidden=step!==5;
+ document.getElementById('wpWizardContinue').disabled=step===1&&!wpPublicBookingSelection()||step===3&&!form.elements.start_time.value;
+ wpUpdateBookingSummary();
+ if(step===3)refreshPublicBookingSlots();
+ if(step===5){document.getElementById('wpPublicBookingSubmit').disabled=!form.elements.start_time.value;updatePublicPaymentInstructions();}
+ if(focus){document.getElementById('wpBookingTitle'+step).focus({preventScroll:true});form.scrollIntoView({behavior:'instant',block:'start'});}
+}
+function wpUpdateBookingSummary(){
+ const form=document.getElementById('wpPublicBookingForm'),s=wpPublicBookingSelection();if(!form||!document.getElementById('wpBookingTotal'))return;
+ document.getElementById('wpBookingTotal').textContent=s?money(s.base_price_php):'—';document.getElementById('wpBookingDuration').textContent=s?s.duration_minutes+' minutes · '+form.elements.vehicle_size.value+' vehicle':'Choose a service to begin';
+ const review=document.getElementById('wpBookingReview');if(!s){review.innerHTML='';return;}
+ const line=(label,value)=>'<div class="wp-review-line"><span>'+esc(label)+'</span><strong>'+esc(value)+'</strong></div>';
+ review.innerHTML='<h3 style="margin:0 0 14px">Your booking summary</h3>'+line(s.main_name,money(s.main_price))+s.addons.map(a=>line('+ '+a.name,money(a.base_price_php))).join('')+line('Vehicle size',form.elements.vehicle_size.value)+line('Date',form.elements.booking_date.value||'Not selected')+line('Time',form.elements.start_time.value?wpFormatClock(form.elements.start_time.value):'Not selected')+line('Duration',s.duration_minutes+' minutes')+line('Customer',form.elements.customer_name.value||'Not entered')+line('Mobile',form.elements.customer_phone.value||'Not entered')+'<div class="wp-review-line wp-review-total"><span>Total to pay</span><strong>'+money(s.base_price_php)+'</strong></div><p class="wp-slot-message">Payment will be verified by the facility before your booking is confirmed.</p>';
+}
+
 let wpPublicCalendarMonth='',wpPublicAvailabilityRequest=0;
 const wpPublicAvailabilityCache=new Map();
 function wpPublicDateParts(now=new Date()){
@@ -3557,12 +3633,12 @@ function movePublicBookingMonth(delta){
  wpPublicCalendarMonth=month;refreshPublicBookingSlots(false);
 }
 function choosePublicBookingTime(value){
- const form=document.getElementById('wpPublicBookingForm'),service=wpCurrentPublicServices.find(s=>s.service_id===form.elements.service_id.value),date=form.elements.booking_date.value,rows=wpPublicAvailabilityCache.get(date);
+ const form=document.getElementById('wpPublicBookingForm'),service=wpPublicBookingSelection(),date=form.elements.booking_date.value,rows=wpPublicAvailabilityCache.get(date);
  if(!rows||rows.error||!wpPublicSlotChoices(date,service,rows).some(x=>x.value===value&&x.status==='Available'))return;
  form.elements.start_time.value=value;
  document.querySelectorAll('.wp-time-card').forEach(b=>{const selected=b.dataset.time===value;b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',String(selected));});
  document.getElementById('wpSlotSelection').textContent='Selected: '+date+' at '+wpFormatClock(value)+' · '+service.duration_minutes+' minutes.';
- document.getElementById('wpPublicBookingSubmit').disabled=false;
+ document.getElementById('wpPublicBookingSubmit').disabled=false;if(document.getElementById('wpWizardContinue'))document.getElementById('wpWizardContinue').disabled=false;wpUpdateBookingSummary();
 }
 function renderPublicBookingTimes(service){
  const box=document.getElementById('wpPublicTimeSlots');if(!box)return;
@@ -3576,10 +3652,10 @@ function renderPublicBookingTimes(service){
 }
 async function refreshPublicBookingSlots(force=true){
  const f=wpCurrentPublicFacility,form=document.getElementById('wpPublicBookingForm');if(!f||!form)return;
- const request=++wpPublicAvailabilityRequest,service=wpCurrentPublicServices.find(s=>s.service_id===form.elements.service_id.value),date=form.elements.booking_date.value;
- form.elements.start_time.value='';document.getElementById('wpPublicBookingSubmit').disabled=true;
+ const request=++wpPublicAvailabilityRequest,service=wpPublicBookingSelection(),date=form.elements.booking_date.value;
+ form.elements.start_time.value='';document.getElementById('wpPublicBookingSubmit').disabled=true;if(wpPublicBookingStep===3)document.getElementById('wpWizardContinue').disabled=true;wpUpdateBookingSummary();
  document.getElementById('wpSlotSelection').textContent='Select an available time to continue.';
- const note=document.getElementById('wpPublicBookingPrice');if(note&&service)note.textContent='Starting at '+money(service.base_price_php)+' · '+service.duration_minutes+' minutes. Final price may vary by vehicle size.';
+ const note=document.getElementById('wpPublicBookingPrice');if(note&&service)note.textContent='Starting at '+money(service.base_price_php)+' · '+service.duration_minutes+' minutes. Price includes the selected vehicle size and add-ons.';
  if(force)wpPublicAvailabilityCache.clear();
  renderPublicBookingCalendar(service);renderPublicBookingTimes(service);
  document.getElementById('wpCalendarStatus').textContent='Checking availability for the selected service…';
@@ -3596,9 +3672,9 @@ function updatePublicPaymentInstructions(){
  else box.textContent='Select a configured online payment method.';
 }
 async function submitPublicBooking(e){
- e.preventDefault();const form=e.currentTarget,btn=document.getElementById('wpPublicBookingSubmit'),f=wpCurrentPublicFacility;if(!f)return;
+ e.preventDefault();const form=e.currentTarget,btn=document.getElementById('wpPublicBookingSubmit'),f=wpCurrentPublicFacility;if(!f)return;if(wpPublicBookingStep!==5){wpMoveBookingStep(1);return;}if(!wpValidateBookingDetails())return;
  const data=new FormData(form),proof=form.elements.payment_proof.files[0];
- const service=wpCurrentPublicServices.find(s=>s.service_id===data.get('service_id'));
+ const service=wpPublicBookingSelection();
  if(!data.get('booking_date')||!data.get('start_time')){alert('Choose an available date and time first.');return;}
  if(!proof){alert('Upload your GCash or bank transfer payment proof before submitting.');return;}
  if(proof.size>5*1024*1024||!['image/jpeg','image/png','image/webp','application/pdf'].includes(proof.type)){alert('Payment proof must be JPG, PNG, WEBP or PDF up to 5 MB.');return;}
@@ -3610,10 +3686,10 @@ async function submitPublicBooking(e){
    slug:f.facility_slug,business_id:f.business_id,service_id:data.get('service_id'),booking_date:data.get('booking_date'),
    start_time:data.get('start_time'),customer_name:data.get('customer_name'),customer_phone:data.get('customer_phone'),
    customer_email:data.get('customer_email'),vehicle_size:data.get('vehicle_size'),vehicle_plate:data.get('vehicle_plate'),
-   notes:data.get('notes'),payment_method:data.get('payment_method'),payment_reference:data.get('payment_reference'),proof_file:proof
+   notes:data.get('notes'),payment_method:data.get('payment_method'),payment_reference:data.get('payment_reference'),proof_file:proof,addon_ids:wpPublicSelectedAddons
   });
-  document.getElementById('wpPublicFacilityContent').innerHTML='<div class="wp-booking-success"><h2>Booking request submitted</h2><p>Your payment proof has been uploaded privately. The facility will verify it before confirming your reservation.</p><p><b>Booking reference: '+esc(result.booking_code)+'</b></p><p>Date: '+esc(result.booking_date)+' · '+esc(wpFormatClock(result.start_time))+'</p><p>Service amount: '+money(result.price_php)+'</p><p>Payment status: Awaiting verification</p><a href="/business" style="color:#176c49;font-weight:800">Browse more businesses →</a></div>';
- }catch(err){alert(err.message||'We could not submit your booking. Please choose another slot.');refreshPublicBookingSlots();if(btn){btn.disabled=true;btn.innerHTML='Request booking <span>→</span>';}}
+  document.getElementById('wpPublicFacilityContent').innerHTML='<div class="wp-booking-success"><span class="wp-eyebrow">STEP 6 OF 6</span><h2>Booking request received</h2><p>Your payment proof has been uploaded privately. The facility will verify it before confirming your reservation.</p><p><b>Booking reference: '+esc(result.booking_code)+'</b></p><p>Date: '+esc(result.booking_date)+' · '+esc(wpFormatClock(result.start_time))+'</p><p>Selected services: '+esc(service.name)+'</p><p>Ends at: '+esc(wpFormatClock(result.end_time))+'</p><p>Total amount: '+money(result.price_php)+'</p><p><b>Booking status: Pending facility approval</b></p><p>Payment status: Awaiting verification</p><a href="/business" style="color:#176c49;font-weight:800">Browse more businesses →</a></div>';
+ }catch(err){alert(err.message||'We could not submit your booking. Please choose another slot.');wpShowBookingStep(3);refreshPublicBookingSlots();if(btn){btn.disabled=true;btn.innerHTML='Request booking <span>→</span>';}}
 }
 
 (function(){
