@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>POS · WashPilot</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="washpilot-logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#0a0a0b;
+  --blue:#1f5eff; --blue-d:#1648d6; --blue-l:#6b9bff; --blue-soft:#eef3ff;
+  --surface:#f5f6f8; --line:#e4e6ea;
+  --text:#0a0a0b; --text-2:#454c5a; --muted:#6a7180;
+  --danger:#c62828; --danger-soft:#fdecec;
+  --font-d:"Sora",system-ui,sans-serif;
+  --font:"DM Sans",system-ui,sans-serif;
+  --r-ctl:12px; --r-card:20px;
+  --side:264px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--font);color:var(--text);background:var(--surface);line-height:1.55;min-height:100vh;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+img{display:block;max-width:100%}
+ul{list-style:none}
+button,input{font:inherit}
+[hidden]{display:none!important}
+:focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:6px}
+.skip{position:absolute;left:-999px;top:8px;background:var(--black);color:#fff;padding:10px 16px;border-radius:var(--r-ctl);z-index:300}
+.skip:focus{left:8px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+.app{display:grid;grid-template-columns:var(--side) 1fr;min-height:100vh}
+
+/* ---------- Sidebar (same as dashboard) ---------- */
+.sidebar{position:sticky;top:0;height:100vh;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;padding:22px 16px;z-index:150}
+.logo{display:inline-block;padding:2px 8px 22px}
+.logo img{height:34px;width:auto}
+.nav{display:grid;gap:4px;flex:1;align-content:start}
+.nav-item{display:flex;align-items:center;gap:12px;min-height:46px;padding:0 12px;border-radius:var(--r-ctl);font-weight:500;font-size:15.5px;color:var(--text-2);text-decoration:none;transition:background .15s,color .15s}
+.nav-item svg{flex:none;width:20px;height:20px}
+a.nav-item:hover{background:var(--surface);color:var(--text)}
+.nav-item[aria-current="page"]{background:var(--blue-soft);color:var(--blue-d);font-weight:600}
+.nav-item.disabled{color:#9aa1ae;cursor:not-allowed}
+.nav-item .soon{margin-left:auto;font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--surface);color:var(--muted)}
+.side-foot{border-top:1px solid var(--line);padding-top:16px;display:grid;gap:12px}
+.who{display:flex;align-items:center;gap:12px;padding:0 4px}
+.avatar{flex:none;width:38px;height:38px;border-radius:50%;background:var(--black);color:#fff;display:grid;place-items:center;font-family:var(--font-d);font-weight:700;font-size:15px}
+.who b{display:block;font-size:14.5px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:158px}
+.who span{display:block;font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:158px}
+.scrim{display:none}
+
+/* ---------- Main ---------- */
+.main{min-width:0;display:flex;flex-direction:column}
+.topbar{position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:14px;min-height:72px;padding:0 32px;background:rgba(245,246,248,.9);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.menu-btn{display:none;width:44px;height:44px;border:1.5px solid var(--line);background:#fff;border-radius:var(--r-ctl);cursor:pointer;place-items:center;color:var(--text)}
+.menu-btn svg{width:22px;height:22px}
+.topbar h1{font-family:var(--font-d);font-weight:700;font-size:20px;letter-spacing:-.02em}
+.biz{margin-left:auto;font-weight:600;font-size:15px;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.content{padding:32px;max-width:1240px;width:100%;margin:0 auto;display:grid;gap:24px}
+.notice{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:var(--r-ctl);background:var(--blue-soft);color:var(--blue-d);border:1px solid #cddcff;font-size:15px}
+.notice svg{flex:none;width:20px;height:20px;margin-top:2px}
+.notice.sample{background:#fff7e0;color:#7a5600;border-color:#f1dc9d}
+.notice.ok{background:#e9f7ee;color:#17653a;border-color:#b9e3c8}
+.notice.bad{background:var(--danger-soft);color:var(--danger);border-color:#f5c2c2}
+
+.head h2{font-family:var(--font-d);font-weight:800;letter-spacing:-.03em;line-height:1.1;font-size:clamp(26px,3.2vw,34px)}
+.head p{color:var(--text-2);margin-top:6px}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 24px;font-weight:600;font-size:16px;cursor:pointer;border:1.5px solid transparent;border-radius:var(--r-ctl);text-decoration:none;white-space:nowrap;transition:background .15s,transform .15s,border-color .15s,color .15s}
+.btn-primary{background:var(--blue);color:#fff;box-shadow:0 8px 20px -8px rgba(31,94,255,.6)}
+.btn-primary:hover{background:var(--blue-d);transform:translateY(-1px)}
+.btn-outline{background:#fff;color:var(--text);border-color:var(--line)}
+.btn-outline:hover{border-color:var(--blue);color:var(--blue)}
+.btn-sm{min-height:42px;padding:0 18px;font-size:15px}
+.btn[disabled]{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none}
+.spinner{display:none;width:18px;height:18px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+.btn.loading .spinner{display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- POS layout ---------- */
+.pos{display:grid;grid-template-columns:1fr 390px;gap:24px;align-items:start}
+.panel{background:#fff;border:1px solid var(--line);border-radius:var(--r-card);padding:24px;min-width:0}
+.panel h3{font-family:var(--font-d);font-weight:700;font-size:18px;letter-spacing:-.02em}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.panel-link{font-size:14.5px;font-weight:600;color:var(--blue);text-decoration:none}
+.panel-link:hover{color:var(--blue-d);text-decoration:underline}
+
+.search{width:100%;min-height:48px;padding:0 16px;margin-bottom:18px;font-size:16px;color:var(--text);background:#fff;border:1.5px solid var(--line);border-radius:var(--r-ctl);transition:border-color .15s,box-shadow .15s}
+.search:focus,.field input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px rgba(31,94,255,.14)}
+
+.svc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.svc{position:relative;text-align:left;cursor:pointer;background:#fff;border:1.5px solid var(--line);border-radius:var(--r-card);padding:18px;min-height:112px;display:flex;flex-direction:column;justify-content:space-between;gap:10px;color:var(--text);transition:border-color .15s,box-shadow .15s,transform .1s}
+.svc:hover{border-color:var(--blue);box-shadow:0 14px 28px -20px rgba(31,94,255,.6)}
+.svc:active{transform:scale(.98)}
+.svc b{font-family:var(--font-d);font-weight:700;font-size:16px;letter-spacing:-.01em;line-height:1.25}
+.svc .desc{display:block;font-size:13.5px;color:var(--muted);margin-top:4px}
+.svc .price{font-family:var(--font-d);font-weight:800;font-size:18px;color:var(--blue-d)}
+.svc .qty{position:absolute;top:12px;right:12px;min-width:26px;height:26px;padding:0 8px;border-radius:999px;background:var(--blue);color:#fff;font-size:13px;font-weight:700;display:grid;place-items:center}
+.svc.picked{border-color:var(--blue);background:var(--blue-soft)}
+.svc b{padding-right:30px}
+
+.empty{text-align:center;padding:36px 12px;color:var(--text-2)}
+.empty .ei{width:48px;height:48px;border-radius:14px;background:var(--blue-soft);color:var(--blue);display:grid;place-items:center;margin:0 auto 14px}
+.empty .ei svg{width:24px;height:24px}
+.empty b{display:block;font-family:var(--font-d);font-size:16px;color:var(--text);margin-bottom:4px}
+.empty p{font-size:15px;max-width:340px;margin:0 auto 14px}
+
+/* Ticket */
+.ticket{position:sticky;top:88px;max-height:calc(100vh - 108px);overflow:auto;display:flex;flex-direction:column;gap:18px}
+.lines li{display:grid;grid-template-columns:1fr auto;gap:6px 12px;padding:14px 0;border-bottom:1px solid var(--line)}
+.lines li:first-child{padding-top:0}
+.lines .n{font-weight:600;font-size:15.5px;min-width:0;overflow-wrap:anywhere}
+.lines .u{display:block;font-weight:400;font-size:13.5px;color:var(--muted)}
+.lines .t{font-family:var(--font-d);font-weight:700;font-size:15.5px;white-space:nowrap;text-align:right}
+.stepper{display:inline-flex;align-items:center;gap:6px}
+.step-btn{width:36px;height:36px;border-radius:10px;border:1.5px solid var(--line);background:#fff;color:var(--text);cursor:pointer;display:grid;place-items:center;transition:border-color .15s,color .15s}
+.step-btn:hover{border-color:var(--blue);color:var(--blue)}
+.step-btn svg{width:16px;height:16px}
+.stepper output{min-width:28px;text-align:center;font-weight:700}
+.rm{border:0;background:none;color:var(--muted);font-size:14px;font-weight:600;cursor:pointer;padding:6px 4px;text-decoration:underline;justify-self:end}
+.rm:hover{color:var(--danger)}
+.no-items{color:var(--text-2);font-size:15px;padding:6px 0}
+
+.total{display:flex;justify-content:space-between;align-items:baseline;background:var(--black);color:#fff;border-radius:var(--r-ctl);padding:16px 18px;position:relative;overflow:hidden}
+.total::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(240px 140px at 100% 0%,rgba(31,94,255,.55),transparent 70%)}
+.total > *{position:relative}
+.total span{font-size:15px;color:rgba(255,255,255,.75)}
+.total b{font-family:var(--font-d);font-weight:800;font-size:28px;letter-spacing:-.03em}
+
+fieldset{border:0;min-width:0}
+legend,.field label{display:block;font-weight:600;font-size:14.5px;margin-bottom:8px;padding:0}
+.pay{display:flex;flex-wrap:wrap;gap:8px}
+.pay label{position:relative}
+.pay input{position:absolute;opacity:0;inset:0;width:100%;height:100%;cursor:pointer;margin:0}
+.pay span{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border:1.5px solid var(--line);border-radius:999px;font-weight:600;font-size:15px;background:#fff;transition:border-color .15s,background .15s,color .15s}
+.pay input:hover + span{border-color:var(--blue)}
+.pay input:checked + span{background:var(--blue);border-color:var(--blue);color:#fff}
+.pay input:focus-visible + span{outline:3px solid var(--blue);outline-offset:3px}
+.field input{width:100%;min-height:48px;padding:0 14px;font-size:16px;color:var(--text);background:#fff;border:1.5px solid var(--line);border-radius:var(--r-ctl);transition:border-color .15s,box-shadow .15s}
+.field input[aria-invalid="true"]{border-color:var(--danger)}
+.extras{display:grid;gap:14px}
+.err{font-size:13.5px;color:var(--danger);font-weight:500;margin-top:6px}
+.t-actions{display:grid;gap:10px}
+.t-actions .btn{width:100%}
+.link-btn{border:0;background:none;color:var(--text-2);font-weight:600;font-size:14.5px;cursor:pointer;text-decoration:underline;padding:6px;justify-self:center}
+.link-btn:hover{color:var(--danger)}
+
+/* Mobile bar */
+.mbar{display:none}
+
+/* ---------- Responsive ---------- */
+@media (max-width:1100px){
+  .pos{grid-template-columns:1fr}
+  .ticket{position:static;max-height:none;overflow:visible}
+}
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .sidebar{position:fixed;left:0;top:0;bottom:0;width:min(86vw,300px);transform:translateX(-102%);transition:transform .25s;box-shadow:0 0 60px rgba(10,10,11,.3)}
+  .sidebar.open{transform:none}
+  .scrim{display:block;position:fixed;inset:0;background:rgba(10,10,11,.5);z-index:140;opacity:0;pointer-events:none;transition:opacity .25s}
+  .scrim.show{opacity:1;pointer-events:auto}
+  .menu-btn{display:grid}
+  .topbar{padding:0 16px}
+  .content{padding:20px 16px 110px}
+  .biz{display:none}
+  .mbar{position:fixed;left:0;right:0;bottom:0;z-index:90;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:rgba(255,255,255,.95);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-top:1px solid var(--line)}
+  .mbar .sum{font-size:14px;color:var(--text-2);line-height:1.3}
+  .mbar .sum b{display:block;font-family:var(--font-d);font-size:18px;color:var(--text)}
+}
+@media (max-width:560px){
+  .panel{padding:20px}
+  .svc-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .svc{padding:14px;min-height:104px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms!important;animation-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#services">Skip to services</a>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar" aria-label="Sidebar">
+    <a class="logo" id="logoLink" href="home.html" aria-label="WashPilot home"><img src="washpilot-logo.svg" alt="WashPilot" height="34"></a>
+    <nav class="nav" id="nav" aria-label="Main"></nav>
+    <div class="side-foot">
+      <div class="who">
+        <span class="avatar" id="avatar" aria-hidden="true">W</span>
+        <div><b id="whoName">Your account</b><span id="whoBiz"></span></div>
+      </div>
+      <button class="btn btn-outline btn-sm" id="signOut" type="button">Sign out</button>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <!-- Main -->
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="sidebar" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <h1>POS</h1>
+      <span class="biz" id="bizName"></span>
+    </header>
+
+    <main class="content" id="content">
+
+      <div class="notice" id="notice" role="status" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>
+        <span id="noticeText"></span>
+      </div>
+
+      <div class="head">
+        <h2>Record a sale</h2>
+        <p>Tap a service to add it to the current sale.</p>
+      </div>
+
+      <div class="pos">
+        <!-- Services -->
+        <section class="panel" id="services" tabindex="-1" aria-labelledby="svcTitle">
+          <div class="panel-head"><h3 id="svcTitle">Services</h3><a class="panel-link" id="servicesLink" hidden>Manage services</a></div>
+          <input class="search" id="search" type="search" placeholder="Search services" aria-label="Search services" hidden>
+          <div id="svcBody"></div>
+        </section>
+
+        <!-- Ticket -->
+        <section class="panel ticket" id="ticket" tabindex="-1" aria-labelledby="tTitle">
+          <h3 id="tTitle">Current sale</h3>
+
+          <div id="notice2" class="notice" role="status" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>
+            <span id="notice2Text"></span>
+          </div>
+
+          <div id="lines"></div>
+
+          <div class="total"><span>Total</span><b id="total">—</b></div>
+
+          <fieldset id="payWrap" hidden>
+            <legend id="payLegend">Payment method</legend>
+            <div class="pay" id="pay"></div>
+            <p class="err" id="payErr" hidden>Please choose a payment method.</p>
+          </fieldset>
+
+          <div class="extras" id="extras"></div>
+
+          <div class="t-actions">
+            <button class="btn btn-primary" id="complete" type="button" disabled>
+              <span class="spinner" aria-hidden="true"></span>
+              <span id="completeText">Complete sale</span>
+            </button>
+            <button class="link-btn" id="clear" type="button" hidden>Clear sale</button>
+          </div>
+        </section>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Mobile summary bar -->
+<div class="mbar" id="mbar" hidden>
+  <div class="sum"><span id="mCount"></span><b id="mTotal"></b></div>
+  <button class="btn btn-primary btn-sm" id="mReview" type="button">Review sale</button>
+</div>
+
+<div class="sr" id="live" aria-live="polite"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/washpilot-pages.js"></script>
+
+<script>
+/* ============ EDIT HERE ============ */
+const CONFIG = {
+  homeUrl: "/home.html",
+  signinUrl: "/signin.html",
+  currency: "₱",              // assumed. Change if wrong
+
+  /* Page addresses. Empty = shown as "Soon", so there are no dead links. */
+  dashboardUrl: "/dashboard.html",
+  salesUrl: "/transactions",
+  reportsUrl: "/reports",
+  servicesUrl: "/services-pricing",
+  profileUrl: "/facility-listing",
+  subscriptionUrl: "/subscription-billing",
+
+  /* Payment methods shown as choices. Leave empty [] to hide the question.
+     Only list what your business really accepts, e.g. ["Cash", "GCash"]. */
+  paymentMethods: ["Cash", "GCash", "Maya", "Bank Transfer"],
+  paymentRequired: true,      // only matters when paymentMethods is not empty
+
+  /* Extra details to collect per sale. Leave empty [] for none.
+     Example: [{ id:"plate", label:"Plate number", required:false }] */
+  extraFields: [
+    { id:"plate", label:"Plate number", required:false, placeholder:"e.g. ABC 123" },
+    { id:"customer", label:"Customer name", required:false, placeholder:"Walk-in customer" },
+    { id:"vehicle", label:"Vehicle / size", required:false, placeholder:"e.g. SUV / Sedan" }
+  ],
+
+  /* OPTIONAL. Resolves truthy when signed in; falsy sends the visitor to sign-in.
+     IMPORTANT: this only hides the page. Real protection must be enforced by
+     your server or database rules. */
+  getSession: () => window.WashPilotPages.getSession(),
+  signOut: () => window.WashPilotPages.signOut(),
+
+  /* OPTIONAL. Resolves { user:{name}, business:{name} } for the sidebar. */
+  loadAccount: () => window.WashPilotPages.loadAccount(),
+
+  /* REQUIRED for real use. Resolves an array:
+       [ { id: "1", name: "Basic wash", price: 150, description: "Optional" } ]
+     "id" and "description" are optional. */
+  loadServices: () => window.WashPilotPages.loadServices(),
+
+  /* REQUIRED for real use. Receives:
+     {
+       items: [ { id, name, price, qty } ],
+       total: 300,
+       paymentMethod: "Cash" or "",
+       details: { plate: "ABC 123" },
+       createdAt: "2025-01-31T14:05:00.000Z"
+     }
+     Resolves { ok:true } or { ok:false, message:"Text to show" }.
+     NOTE: the dashboard counts one service per sale. Save one record per item
+     (name -> service, price x qty -> amount) so the dashboard totals match. */
+  saveSale: sale => window.WashPilotPages.saveSale(sale)
+};
+/* =================================== */
+
+const $ = id => document.getElementById(id);
+const SAMPLE = new URLSearchParams(location.search).get("sample") === "1";
+
+/* ---------- Icons ---------- */
+const ICON = {
+  dashboard:'<path d="M3 12l9-8 9 8M5 10v10h14V10"/>',
+  pos:'<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
+  sales:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  reports:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  services:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+  profile:'<path d="M3 21h18M5 21V8l7-5 7 5v13M10 21v-6h4v6"/>',
+  subscription:'<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 11h18M7 15h3"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  minus:'<path d="M5 12h14"/>'
+};
+function svg(name){
+  const s = document.createElementNS("http://www.w3.org/2000/svg","svg");
+  s.setAttribute("viewBox","0 0 24 24"); s.setAttribute("fill","none"); s.setAttribute("stroke","currentColor");
+  s.setAttribute("stroke-width","2.4"); s.setAttribute("stroke-linecap","round"); s.setAttribute("stroke-linejoin","round");
+  s.setAttribute("aria-hidden","true"); s.innerHTML = ICON[name]; return s;
+}
+function el(tag, cls, text){ const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+const money = n => CONFIG.currency + Number(n || 0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+const round2 = n => Math.round(n * 100) / 100;
+function announce(msg){ $("live").textContent = ""; setTimeout(() => { $("live").textContent = msg; }, 30); }
+
+/* ---------- Static setup ---------- */
+$("logoLink").href = CONFIG.homeUrl;
+
+(function buildNav(){
+  const items = [
+    ["Dashboard","dashboard",CONFIG.dashboardUrl],
+    ["POS","pos",null,true],
+    ["Sales","sales",CONFIG.salesUrl],
+    ["Reports","reports",CONFIG.reportsUrl],
+    ["Services","services",CONFIG.servicesUrl],
+    ["Business profile","profile",CONFIG.profileUrl],
+    ["Subscription","subscription",CONFIG.subscriptionUrl]
+  ];
+  items.forEach(([label, icon, url, current]) => {
+    let n;
+    if (current){ n = el("a","nav-item"); n.href = "pos.html"; n.setAttribute("aria-current","page"); }
+    else if (url){ n = el("a","nav-item"); n.href = url; }
+    else { n = el("span","nav-item disabled"); n.setAttribute("aria-disabled","true"); }
+    n.appendChild(svg(icon));
+    n.appendChild(el("span",null,label));
+    if (!current && !url) n.appendChild(el("span","soon","Soon"));
+    $("nav").appendChild(n);
+  });
+})();
+
+/* Mobile drawer */
+const menuBtn = $("menuBtn"), sidebar = $("sidebar"), scrim = $("scrim");
+function setMenu(open){
+  sidebar.classList.toggle("open", open); scrim.classList.toggle("show", open);
+  menuBtn.setAttribute("aria-expanded", String(open));
+  menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+}
+menuBtn.addEventListener("click", () => setMenu(!sidebar.classList.contains("open")));
+scrim.addEventListener("click", () => setMenu(false));
+document.addEventListener("keydown", e => { if (e.key === "Escape" && sidebar.classList.contains("open")){ setMenu(false); menuBtn.focus(); } });
+
+$("signOut").addEventListener("click", async function(){
+  if (ticket.size && !confirm("You have a sale in progress. Sign out and discard it?")) return;
+  dirty = false;
+  try { if (typeof CONFIG.signOut === "function") await CONFIG.signOut(); }
+  catch (err){ console.error(err); }
+  location.href = CONFIG.signinUrl;
+});
+
+function showNotice(text, kind){
+  $("noticeText").textContent = text;
+  $("notice").className = "notice" + (kind ? " " + kind : "");
+  $("notice").hidden = false;
+}
+function showTicketNotice(text, kind){
+  $("notice2Text").textContent = text;
+  $("notice2").className = "notice" + (kind ? " " + kind : "");
+  $("notice2").hidden = !text;
+}
+
+/* ---------- State ---------- */
+let services = [];          // [{key,name,price,description}]
+const ticket = new Map();   // key -> {key,name,price,qty,id}
+let saving = false, dirty = false;
+let payChoice = "";
+const extraInputs = {};
+
+window.addEventListener("beforeunload", e => { if (dirty && ticket.size){ e.preventDefault(); e.returnValue = ""; } });
+
+/* ---------- Services grid ---------- */
+function normaliseServices(list){
+  return (Array.isArray(list) ? list : [])
+    .map((s, i) => ({
+      key: String(s.id != null ? s.id : s.name != null ? s.name : i),
+      id: s.id,
+      name: String(s.name || "").trim(),
+      price: Number(s.price),
+      description: s.description ? String(s.description) : ""
+    }))
+    .filter(s => s.name && isFinite(s.price) && s.price >= 0);
+}
+
+function renderServices(){
+  const body = $("svcBody"); body.replaceChildren();
+  $("servicesLink").hidden = !CONFIG.servicesUrl;
+  if (CONFIG.servicesUrl) $("servicesLink").href = CONFIG.servicesUrl;
+
+  if (!services.length){
+    const d = el("div","empty"), i = el("div","ei"); i.appendChild(svg("services"));
+    d.append(i, el("b",null,"No services to show"));
+    d.appendChild(el("p",null, typeof CONFIG.loadServices === "function"
+      ? "Add your services and prices first, then you can record sales here."
+      : "This page isn't connected to your services yet."));
+    if (CONFIG.servicesUrl){
+      const a = el("a","btn btn-primary btn-sm","Add services"); a.href = CONFIG.servicesUrl; d.appendChild(a);
+    }
+    body.appendChild(d);
+    $("search").hidden = true;
+    return;
+  }
+
+  $("search").hidden = services.length <= 8;
+  const q = $("search").value.trim().toLowerCase();
+  const shown = services.filter(s => !q || s.name.toLowerCase().includes(q));
+  if (!shown.length){ body.appendChild(el("p","no-items","No services match your search.")); return; }
+
+  const grid = el("div","svc-grid");
+  shown.forEach(s => {
+    const b = el("button","svc"); b.type = "button"; b.dataset.key = s.key;
+    const top = el("span"); top.appendChild(el("b",null,s.name));
+    if (s.description) top.appendChild(el("span","desc",s.description));
+    b.append(top, el("span","price",money(s.price)));
+    const inTicket = ticket.get(s.key);
+    if (inTicket){ b.classList.add("picked"); b.appendChild(el("span","qty",String(inTicket.qty))); }
+    b.setAttribute("aria-label","Add " + s.name + ", " + money(s.price) + (inTicket ? ". In sale: " + inTicket.qty : ""));
+    grid.appendChild(b);
+  });
+  body.appendChild(grid);
+}
+
+$("svcBody").addEventListener("click", e => {
+  const b = e.target.closest(".svc"); if (!b) return;
+  const s = services.find(x => x.key === b.dataset.key); if (!s) return;
+  const cur = ticket.get(s.key);
+  if (cur) cur.qty += 1; else ticket.set(s.key,{ key:s.key, id:s.id, name:s.name, price:s.price, qty:1 });
+  dirty = true; showTicketNotice("");
+  update({ focusSvc:s.key });
+  announce("Added " + s.name + ". Sale total " + money(totalNow()));
+});
+$("search").addEventListener("input", renderServices);
+
+/* ---------- Ticket ---------- */
+const totalNow = () => round2([...ticket.values()].reduce((a, l) => a + l.price * l.qty, 0));
+const countNow = () => [...ticket.values()].reduce((a, l) => a + l.qty, 0);
+
+function renderLines(){
+  const box = $("lines"); box.replaceChildren();
+  if (!ticket.size){ box.appendChild(el("p","no-items","No services added yet. Tap a service to start a sale.")); return; }
+  const ul = el("ul","lines");
+  ticket.forEach(l => {
+    const li = el("li");
+    const n = el("div","n",l.name); n.appendChild(el("span","u",money(l.price) + " each"));
+    li.appendChild(n);
+    li.appendChild(el("span","t",money(l.price * l.qty)));
+
+    const st = el("div","stepper");
+    const minus = el("button","step-btn"); minus.type = "button"; minus.dataset.act = "dec"; minus.dataset.key = l.key;
+    minus.setAttribute("aria-label","Decrease quantity of " + l.name); minus.appendChild(svg("minus"));
+    const q = el("output",null,String(l.qty));
+    const plus = el("button","step-btn"); plus.type = "button"; plus.dataset.act = "inc"; plus.dataset.key = l.key;
+    plus.setAttribute("aria-label","Increase quantity of " + l.name); plus.appendChild(svg("plus"));
+    st.append(minus, q, plus);
+    const rm = el("button","rm","Remove"); rm.type = "button"; rm.dataset.act = "rm"; rm.dataset.key = l.key;
+    rm.setAttribute("aria-label","Remove " + l.name);
+    li.append(st, rm);
+    ul.appendChild(li);
+  });
+  box.appendChild(ul);
+}
+
+$("lines").addEventListener("click", e => {
+  const b = e.target.closest("button[data-act]"); if (!b) return;
+  const l = ticket.get(b.dataset.key); if (!l) return;
+  const act = b.dataset.act;
+  if (act === "inc") l.qty += 1;
+  if (act === "dec") l.qty -= 1;
+  if (act === "rm" || l.qty <= 0) ticket.delete(l.key);
+  dirty = ticket.size > 0;
+  update({ focusLine:{ key:l.key, act } });
+  announce(ticket.has(l.key) ? l.name + " quantity " + l.qty : l.name + " removed") ;
+});
+
+function update(opts){
+  opts = opts || {};
+  renderServices();
+  renderLines();
+  const n = countNow(), t = totalNow();
+  $("total").textContent = n ? money(t) : "—";
+  $("complete").disabled = !n || saving;
+  $("clear").hidden = !n;
+  $("mbar").hidden = !n;
+  $("mCount").textContent = n + (n === 1 ? " item" : " items");
+  $("mTotal").textContent = money(t);
+
+  if (opts.focusSvc){
+    const b = $("svcBody").querySelector('.svc[data-key="' + CSS.escape(opts.focusSvc) + '"]'); if (b) b.focus();
+  }
+  if (opts.focusLine){
+    const { key, act } = opts.focusLine;
+    let b = $("lines").querySelector('button[data-key="' + CSS.escape(key) + '"][data-act="' + act + '"]');
+    if (!b) b = $("lines").querySelector("button[data-act]") || $("services");
+    if (b) b.focus();
+  }
+}
+
+$("clear").addEventListener("click", () => {
+  if (!confirm("Clear the current sale?")) return;
+  ticket.clear(); dirty = false; resetDetails(); showTicketNotice(""); update();
+  announce("Sale cleared");
+});
+$("mReview").addEventListener("click", () => { $("ticket").scrollIntoView({ behavior:"smooth", block:"start" }); $("ticket").focus({ preventScroll:true }); });
+
+/* ---------- Payment + extra fields ---------- */
+(function buildPayment(){
+  const list = (CONFIG.paymentMethods || []).filter(Boolean);
+  if (!list.length) return;
+  $("payWrap").hidden = false;
+  if (CONFIG.paymentRequired === false) $("payLegend").textContent = "Payment method (optional)";
+  list.forEach((m, i) => {
+    const lab = el("label"), inp = el("input"); inp.type = "radio"; inp.name = "pay"; inp.value = m;
+    inp.addEventListener("change", () => { payChoice = m; $("payErr").hidden = true; });
+    lab.append(inp, el("span",null,m)); $("pay").appendChild(lab);
+  });
+})();
+(function buildExtras(){
+  (CONFIG.extraFields || []).forEach(f => {
+    const w = el("div","field"), label = el("label",null,f.label + (f.required ? "" : " (optional)"));
+    label.htmlFor = "x_" + f.id;
+    const inp = el("input"); inp.type = "text"; inp.id = "x_" + f.id; inp.name = f.id; inp.autocomplete = "off";
+    if (f.placeholder) inp.placeholder = f.placeholder;
+    if (f.required) inp.setAttribute("aria-required","true");
+    const err = el("p","err","Please fill in " + f.label.toLowerCase() + "."); err.id = "xe_" + f.id; err.hidden = true;
+    inp.setAttribute("aria-describedby", err.id);
+    inp.addEventListener("input", () => { if (inp.value.trim()){ inp.setAttribute("aria-invalid","false"); err.hidden = true; } });
+    w.append(label, inp, err); $("extras").appendChild(w);
+    extraInputs[f.id] = inp;
+  });
+})();
+function resetDetails(){
+  payChoice = "";
+  document.querySelectorAll('input[name="pay"]').forEach(i => { i.checked = false; });
+  Object.values(extraInputs).forEach(i => { i.value = ""; i.setAttribute("aria-invalid","false"); });
+  $("payErr").hidden = true;
+  (CONFIG.extraFields || []).forEach(f => { $("xe_" + f.id).hidden = true; });
+}
+
+/* ---------- Complete sale ---------- */
+function setSaving(on){
+  saving = on;
+  $("complete").disabled = on || !ticket.size;
+  $("complete").classList.toggle("loading", on);
+  $("completeText").textContent = on ? "Saving…" : "Complete sale";
+}
+
+$("complete").addEventListener("click", async function(){
+  if (saving || !ticket.size) return;
+  showTicketNotice("");
+
+  /* Validate */
+  let firstBad = null;
+  if ((CONFIG.paymentMethods || []).length && CONFIG.paymentRequired !== false && !payChoice){
+    $("payErr").hidden = false; firstBad = document.querySelector('input[name="pay"]');
+  }
+  (CONFIG.extraFields || []).forEach(f => {
+    const inp = extraInputs[f.id], bad = f.required && !inp.value.trim();
+    inp.setAttribute("aria-invalid", bad ? "true" : "false");
+    $("xe_" + f.id).hidden = !bad;
+    if (bad && !firstBad) firstBad = inp;
+  });
+  if (firstBad){ firstBad.focus(); return; }
+
+  const sale = {
+    items: [...ticket.values()].map(l => ({ id:l.id, name:l.name, price:l.price, qty:l.qty })),
+    total: totalNow(),
+    paymentMethod: payChoice,
+    details: Object.fromEntries(Object.entries(extraInputs).map(([k, i]) => [k, i.value.trim()])),
+    createdAt: new Date().toISOString()
+  };
+
+  if (SAMPLE){
+    showTicketNotice("Sample mode: this sale was not saved anywhere.", "sample");
+    return;
+  }
+  if (typeof CONFIG.saveSale !== "function"){
+    console.warn("WashPilot POS: CONFIG.saveSale is not connected yet.");
+    showTicketNotice("Saving isn't connected on this page yet, so this sale was not recorded.");
+    return;
+  }
+
+  setSaving(true);
+  try {
+    const res = await CONFIG.saveSale(sale);
+    if (res && res.ok){
+      const t = money(sale.total);
+      ticket.clear(); dirty = false; resetDetails();
+      setSaving(false); update();
+      showTicketNotice("Sale recorded: " + t, "ok");
+      announce("Sale recorded. Total " + t);
+      return;
+    }
+    showTicketNotice((res && res.message) || "We couldn't save this sale. Please try again.", "bad");
+  } catch (err){
+    console.error(err);
+    showTicketNotice("Something went wrong and the sale may not have been saved. Check your connection and try again.", "bad");
+  }
+  setSaving(false);
+});
+
+/* ---------- Sample data (only with ?sample=1, for checking the layout) ---------- */
+function sampleServices(){
+  return [
+    { id:"a", name:"Sample service 1", price:120, description:"Sample description" },
+    { id:"b", name:"Sample service 2", price:200 },
+    { id:"c", name:"Sample service 3", price:300 },
+    { id:"d", name:"Sample service 4", price:150 },
+    { id:"e", name:"Sample service 5", price:90 },
+    { id:"f", name:"Sample service 6", price:450 }
+  ];
+}
+
+/* ---------- Start ---------- */
+(async function init(){
+  if (typeof CONFIG.getSession === "function"){
+    try { if (!(await CONFIG.getSession())){ location.replace(CONFIG.signinUrl); return; } }
+    catch (err){ console.error(err); location.replace(CONFIG.signinUrl); return; }
+  }
+
+  if (typeof CONFIG.loadAccount === "function" && !SAMPLE){
+    try {
+      const a = (await CONFIG.loadAccount()) || {};
+      const user = (a.user && a.user.name) || "", biz = (a.business && a.business.name) || "";
+      $("whoName").textContent = user || "Your account"; $("whoBiz").textContent = biz;
+      $("bizName").textContent = biz; $("avatar").textContent = (user || biz || "W").trim().charAt(0).toUpperCase();
+    } catch (err){ console.error(err); }
+  }
+
+  if (SAMPLE){
+    showNotice("Sample data. These are not your real services, and nothing is saved. Remove ?sample=1 from the address to hide this.", "sample");
+    services = normaliseServices(sampleServices());
+  } else if (typeof CONFIG.loadServices !== "function"){
+    console.warn("WashPilot POS: CONFIG.loadServices is not connected yet.");
+    showNotice("This POS isn't connected to your services yet, so there is nothing to sell.");
+  } else {
+    try { services = normaliseServices(await CONFIG.loadServices()); }
+    catch (err){ console.error(err); showNotice("We couldn't load your services. Please refresh the page and try again.", "bad"); }
+  }
+  update();
+})();
+</script>
+</body>
+</html>
