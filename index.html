@@ -6,7 +6,7 @@
 <script>
 /* Standalone public/auth pages. The original authenticated app remains in index.html. */
 (function () {
-  var path = window.location.pathname.replace(/\\/+$/, '') || '/';
+  var path = window.location.pathname.replace(/\/+$/, '') || '/';
   var query = new URLSearchParams(window.location.search);
   var target = null;
   if (path === '/' && !query.has('wpRecovery')) target = '/home.html';
