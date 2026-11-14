@@ -1244,6 +1244,36 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
 @media(max-width:760px){.wp-facility-brand-editor{align-items:flex-start;flex-wrap:wrap}.wp-public-brand-heading{gap:12px}.wp-public-business-logo{width:64px;height:64px;flex-basis:64px}.wp-public-service-grid{grid-template-columns:1fr}.wp-public-location-cta{grid-template-columns:1fr;padding:14px}.wp-location-map,.wp-location-map iframe{min-height:220px}.wp-location-copy{padding:5px}}
 
 
+/* Final mobile-safe pricing layout: four columns always fit, no horizontal scrolling */
+#wpPublicServiceList .wp-summary-compact-pricing,
+#wpPublicServiceList .wp-summary-compact-pricing *{
+ box-sizing:border-box!important;max-width:100%!important;
+}
+#wpPublicServiceList .wp-summary-compact-pricing [role="row"]{
+ display:grid!important;grid-template-columns:minmax(0,2.15fr) repeat(3,minmax(0,1fr))!important;
+ width:100%!important;min-width:0!important;overflow:hidden!important;
+}
+#wpPublicServiceList .wp-summary-compact-pricing [role="columnheader"],
+#wpPublicServiceList .wp-summary-compact-pricing [role="rowheader"],
+#wpPublicServiceList .wp-summary-compact-pricing [role="cell"]{
+ min-width:0!important;overflow:hidden!important;text-overflow:clip!important;
+ white-space:normal!important;color:#fff!important;background-color:transparent!important;
+}
+#wpPublicServiceList .wp-summary-compact-pricing [role="columnheader"]{
+ font-size:9px!important;letter-spacing:0!important;
+}
+#wpPublicServiceList .wp-summary-compact-pricing [role="rowheader"]{
+ font-size:9px!important;line-height:1.2!important;
+}
+#wpPublicServiceList .wp-summary-compact-pricing [role="cell"]{
+ font-size:9px!important;white-space:nowrap!important;font-variant-numeric:tabular-nums;
+}
+@media(max-width:420px){
+ #wpPublicServiceList .wp-summary-compact-pricing [role="columnheader"]{font-size:8px!important;padding:6px 2px!important}
+ #wpPublicServiceList .wp-summary-compact-pricing [role="rowheader"]{font-size:8px!important;padding:6px 2px!important}
+ #wpPublicServiceList .wp-summary-compact-pricing [role="cell"]{font-size:8px!important;padding:6px 1px!important}
+ #wpPublicServiceList .wp-summary-compact-pricing [role="rowheader"] div{font-size:7px!important;line-height:1.2!important}
+}
 /* Compact, fully visible public facility pricing table */
 .wp-booking-summary .wp-summary-price-table-wrap{
  width:100%;max-width:100%;overflow:visible;margin:12px 0 18px;border-radius:8px
@@ -3677,9 +3707,23 @@ function renderPublicServiceBulletList(){
   const hasSizePrice=prices[size]!==undefined&&prices[size]!==null&&prices[size]!=='';
   return money(hasSizePrice?Number(prices[size]):Number(service?.base_price_php??service?.price??0));
  };
- return '<div class="wp-summary-price-table-wrap"><table class="wp-summary-price-table"><thead><tr><th scope="col">Service</th><th scope="col">Small</th><th scope="col">Medium</th><th scope="col">Large</th></tr></thead><tbody>'+
-  wpCurrentPublicServices.map(service=>'<tr><th scope="row">'+esc(service.name)+'</th>'+sizes.map(size=>'<td>'+priceCell(service,size)+'</td>').join('')+'</tr>').join('')+
-  '</tbody></table></div>';
+ const columns='minmax(0,2.15fr) repeat(3,minmax(0,1fr))';
+ const headerCell='min-width:0;padding:7px 3px;text-align:center;font-size:9px;font-weight:800;line-height:1.15;color:#fff!important;background:rgba(255,255,255,.07)!important;overflow-wrap:anywhere;';
+ const rowCell='min-width:0;padding:7px 3px;text-align:center;font-size:9px;font-weight:700;line-height:1.2;color:#fff!important;background:transparent!important;border-bottom:1px solid rgba(255,255,255,.15);font-variant-numeric:tabular-nums;overflow-wrap:anywhere;';
+ return '<div class="wp-summary-compact-pricing" role="table" aria-label="Service prices by vehicle size" style="display:block;width:100%;max-width:100%;min-width:0;overflow:hidden!important;margin:12px 0 18px;color:#fff!important;background:transparent!important;">'+
+  '<div role="row" style="display:grid;grid-template-columns:'+columns+';width:100%;min-width:0;border-bottom:1px solid rgba(255,255,255,.25);">'+
+   '<div role="columnheader" style="'+headerCell+'text-align:left;">SERVICE</div>'+
+   sizes.map(size=>'<div role="columnheader" style="'+headerCell+'">'+size.toUpperCase()+'</div>').join('')+
+  '</div>'+
+  wpCurrentPublicServices.map(service=>{
+   const inclusions=String(service.description||'').split(/\r?\n/).map(line=>line.replace(/^\s*[-•*]\s*/,'').trim()).filter(line=>line&&line.toLowerCase()!==String(service.name||'').trim().toLowerCase());
+   const details=inclusions.length?'<div style="margin-top:3px;font-size:8px!important;font-weight:400;line-height:1.25;color:#cbd8e8!important;white-space:normal;overflow-wrap:anywhere;">Includes: '+inclusions.map(esc).join(' · ')+'</div>':'';
+   return '<div role="row" style="display:grid;grid-template-columns:'+columns+';width:100%;min-width:0;border-bottom:1px solid rgba(255,255,255,.15);">'+
+    '<div role="rowheader" style="'+rowCell+'text-align:left;font-size:9px;font-weight:800;">'+esc(service.name)+details+'</div>'+
+    sizes.map(size=>'<div role="cell" style="'+rowCell+'">'+priceCell(service,size)+'</div>').join('')+
+   '</div>';
+  }).join('')+
+ '</div>';
 }
 function updatePublicServicePricing(){
  const form=document.getElementById('wpPublicBookingForm');if(!form)return;
