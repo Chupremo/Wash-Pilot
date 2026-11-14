@@ -1854,9 +1854,9 @@ function setPlan(p){
  renderNav();render();
 }
 function renderNav(){document.querySelectorAll('.nav button').forEach(b=>{let p=b.dataset.page;b.classList.toggle('active',p===currentPage);let tag=b.querySelector('.badge');if(tag){tag.style.opacity=allowed(p)?'.45':'1'}});document.querySelectorAll('[data-mobile-page]').forEach(b=>b.classList.toggle('active',b.dataset.mobilePage===currentPage));document.getElementById('sidePlan').textContent=effectivePlan()==='premium'?'PREMIUM PLAN':'FREE PLAN';document.getElementById('sidePlanText').textContent=effectivePlan()==='premium'?'Full WashPilot access · ₱499 per 30 days.':'Free forever · Core carwash operations.'}
-function go(page){currentPage=page;renderNav();render();document.getElementById('sidebar').classList.remove('open');document.body.classList.remove('sidebar-visible')}
+function go(page){currentPage=page;renderNav();render();toggleSidebar(false)}
 function toggleSidebar(force){const sidebar=document.getElementById('sidebar');const open=typeof force==='boolean'?force:!sidebar.classList.contains('open');sidebar.classList.toggle('open',open);document.body.classList.toggle('sidebar-visible',open);const button=document.querySelector('.mobile-menu');if(button){button.setAttribute('aria-expanded',String(open));button.setAttribute('aria-label',open?'Close navigation':'Open navigation');button.textContent=open?'×':'☰';}}
-document.addEventListener('click',function(e){if(document.body.classList.contains('sidebar-visible') && e.target===document.body){document.getElementById('sidebar').classList.remove('open');document.body.classList.remove('sidebar-visible')}});
+document.addEventListener('click',function(e){if(!document.body.classList.contains('sidebar-visible'))return;const sidebar=document.getElementById('sidebar');const menu=document.querySelector('.mobile-menu');if(sidebar&&!sidebar.contains(e.target)&&!(menu&&menu.contains(e.target)))toggleSidebar(false)});
 function dailyKpiStrip(){
  const rows=state.transactions.filter(t=>ticketDateOf(t)===today()&&t.status!=='Cancelled');
  const sales=totalCollectedBetween(today(),today()),vehicles=rows.length,active=rows.filter(t=>!['Completed','Cancelled'].includes(t.status)).length,completed=rows.filter(t=>t.status==='Completed').length;
