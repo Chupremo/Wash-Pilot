@@ -1549,34 +1549,39 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
 </style>
 <link rel="stylesheet" href="/washpilot-design.css?v=20261115-sandbox-sync2">
 <script src="/washpilot-accessibility.js?v=20261117" defer></script>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/washpilot-home.css?v=20261115-1">
+<script src="/washpilot-home-features.js?v=20261115-1" defer></script>
 </head>
 <body class="wp-page-app">
 
 <section class="wp-public" id="publicLanding" aria-label="WashPilot subscription landing page">
-  <header class="wp-site-nav">
+  <header class="wp-site-nav wp-home-nav">
     <a class="wp-site-brand" href="/" aria-label="WashPilot home"><img src="washpilot-logo.svg" alt=""><span>WashPilot<small>CARWASH MANAGEMENT</small></span></a>
     <nav class="wp-site-links" id="publicNavigation" aria-label="Main navigation">
-      <a href="/features">Features</a><a href="/businesses">Businesses</a><a href="/how-it-works">How it works</a><a href="/pricing">Pricing</a><a href="/about">About</a><a href="/faq">FAQ</a><a href="/contact">Contact</a>
+      <a href="#wp-features">Features</a><a href="/businesses">Businesses</a><a href="#wp-home-demo">How it works</a><a href="#wp-pricing">Pricing</a><a href="#wp-about">About</a><a href="#wp-faq">FAQ</a><a href="#wp-contact">Contact</a>
     </nav>
-    <div class="wp-nav-actions"><button class="wp-nav-cta" type="button" onclick="showLoginScreen()">Sign in <span>↗</span></button><button class="wp-menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="publicNavigation" onclick="togglePublicMenu()">☰</button></div>
+    <div class="wp-nav-actions"><button class="wp-home-signin" type="button" onclick="showLoginScreen()">Sign in</button><a class="wp-nav-cta" href="/signup">Start free</a><button class="wp-menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="publicNavigation" onclick="togglePublicMenu()">☰</button></div>
   </header>
 
   <main id="top">
-    <section class="wp-hero">
-      <div class="wp-hero-grid">
-        <div class="wp-hero-copy">
-          <div class="wp-kicker"><span class="wp-kicker-dot"></span> CARWASH MANAGEMENT, REIMAGINED</div>
-          <h1>Run your carwash business smarter with WashPilot.</h1>
-          <p class="wp-hero-lede">Manage sales, services, bookings, staff, and daily operations in one place. Spend less time on paperwork and more time looking after your business.</p>
-          <div class="wp-hero-actions"><a class="wp-btn-primary" href="/signup">Get started free</a><a class="wp-btn-secondary" href="/features">Explore features</a></div>
-          <div class="wp-hero-proof"><div class="wp-proof-avatars"><span>W</span><span>P</span><span>+</span></div><div><b>Made for the people behind every wash.</b><small>Owners · Cashiers · Wash teams</small></div></div>
-        </div>
-        <div class="wp-hero-visual" aria-label="Illustration of the WashPilot operations dashboard">
-          <img class="wp-hero-3d-image" src="/washpilot-hero-3d.svg" alt="3D WashPilot carwash scene with a vehicle, mobile business dashboard and digital receipt" width="1100" height="760" fetchpriority="high" decoding="async">
-        </div>
-      </div>
-      <div class="wp-hero-foot"><span>ONE WORKSPACE. A BETTER-RUN CARWASH.</span><span>BUILT FOR DAILY OPERATIONS <b>✦</b></span></div>
-    </section>
+    <section class="wp-hero wp-home-hero" id="wp-home-hero">
+  <div class="wp-hero-grid wp-home-hero-grid">
+    <div class="wp-hero-copy">
+      <div class="wp-kicker"><span class="wp-kicker-dot"></span> SIMPLE CARWASH MANAGEMENT</div>
+      <h1><span>More shine.</span><span>Less stress.</span><span>Total control.</span></h1>
+      <p class="wp-hero-lede">The all-in-one workspace for running a smarter carwash. Keep every wash moving, every payment visible, and every day organized.</p>
+      <div class="wp-hero-actions"><a class="wp-btn-primary" href="/signup">Create a free account</a><a class="wp-btn-secondary" href="#wp-pricing">Compare plans</a></div>
+      <p class="wp-home-hero-note">Free forever for one location. No credit card needed.</p>
+    </div>
+    <div class="wp-hero-visual wp-home-stage">
+      <img id="wp-home-3d-fallback" class="wp-hero-3d-image wp-home-3d-fallback" src="/washpilot-hero-3d.svg" alt="3D WashPilot carwash scene with a vehicle, mobile dashboard and digital receipt" width="1100" height="760" fetchpriority="high" decoding="async">
+      <canvas id="wp-home-scene" aria-label="Interactive 3D illustration of a car on a wash platform surrounded by bubbles" role="img"></canvas>
+      <p class="wp-home-stage-hint">Move your cursor or drag a finger across the scene to turn the car.</p>
+    </div>
+  </div>
+  <div class="wp-home-hero-foot"><span>ONE WORKSPACE. A BETTER-RUN CARWASH.</span><span>BUILT FOR DAILY OPERATIONS <b>✦</b></span></div>
+</section>
 
     <section class="wp-value-strip" aria-label="Platform highlights">
       <div><span class="wp-value-icon">01</span><b>Know what’s happening</b><small>Daily sales and operational visibility</small></div>
@@ -1584,53 +1589,62 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
       <div><span class="wp-value-icon">03</span><b>Grow with confidence</b><small>Tools that scale with your operation</small></div>
     </section>
 
-    <section class="wp-section wp-features" id="wp-features">
-      <div class="wp-section-head"><div><span class="wp-eyebrow">THE WORKSPACE</span><h2>Everything your carwash needs.<br><em>Nothing you don’t.</em></h2></div><p>Less time juggling notebooks, chats, and spreadsheets. More time delivering a great customer experience.</p></div>
-      <div class="wp-feature-grid">
-        <article class="wp-feature-card wp-feature-large"><div class="wp-feature-icon wp-ico-blue">↗</div><span class="wp-feature-label">01 / DAILY OPERATIONS</span><h3>Your wash queue,<br>under control.</h3><p>Track each vehicle from arrival to washing, quality check, ready for pickup, and completed.</p><div class="wp-flow-mini"><span>Arrived</span><i></i><span>Washing</span><i></i><span>Ready</span><i></i><span>Done</span></div></article>
-        <article class="wp-feature-card"><div class="wp-feature-icon wp-ico-cyan">₱</div><span class="wp-feature-label">02 / SALES & PAYMENTS</span><h3>See the money clearly.</h3><p>Record payments, review transactions, and keep daily sales within reach.</p><div class="wp-feature-stat"><small>TODAY'S SALES</small><b>₱12,850</b><span>One clear daily view</span></div></article>
-        <article class="wp-feature-card"><div class="wp-feature-icon wp-ico-violet">♙</div><span class="wp-feature-label">03 / CUSTOMER RECORDS</span><h3>Remember every vehicle.</h3><p>Keep customer and vehicle history organized for a more consistent service experience.</p><div class="wp-customer-lines"><span><i></i><b></b><small></small></span><span><i></i><b></b><small></small></span><span><i></i><b></b><small></small></span></div></article>
-        <article class="wp-feature-card"><div class="wp-feature-icon wp-ico-green">✳</div><span class="wp-feature-label">04 / SERVICES & ADD-ONS</span><h3>Make every service count.</h3><p>Set up your wash menu, pricing, and add-ons to make checkout clear and consistent.</p><div class="wp-service-pills"><span>Basic Wash</span><span>Interior</span><span>Wax</span><span>Detailing</span></div></article>
-        <article class="wp-feature-card"><div class="wp-feature-icon wp-ico-amber">▤</div><span class="wp-feature-label">05 / TEAM & EXPENSES</span><h3>Bring the team together.</h3><p>Give your team the right tools with Premium.</p><div class="wp-team-mini"><span>OW</span><span>CA</span><span>WS</span><b>Team workspace</b></div></article>
-        <article class="wp-feature-card"><div class="wp-feature-icon wp-ico-navy">▦</div><span class="wp-feature-label">06 / INVENTORY & BRANCHES</span><h3>Ready for the next stage.</h3><p>Manage inventory, service recipes, multiple branches and centralized reporting with Premium.</p><div class="wp-branch-mini"><span>MAIN LOCATION</span><b>● Active</b><span>2 MORE LOCATIONS</span><b>● Active</b></div></article>
-        <article class="wp-feature-card"><h3>Smart Vendo</h3><span class="badge">Coming soon</span><p>Planned tools for machine usage, coin transactions and maintenance. Hardware integration and manufacturer-specific adapters are still required.</p></article>
-      </div>
-    </section>
+<section class="wp-home-queue" id="wp-home-demo"><div class="wp-home-wrap wp-home-queue-grid">
+  <div class="wp-home-section-head"><span class="wp-home-eyebrow">SEE THE WORKFLOW</span><h2>Every wash, from arrival to pickup.</h2><p>Track each vehicle through arrived, washing, ready for pickup, and done. Try the sample queue and tap a ticket to move it along.</p><a class="wp-home-outline-link" href="#wp-how">See how it works <span>→</span></a></div>
+  <div class="wp-home-queue-preview"><div class="wp-home-board" role="region" aria-label="Sample wash queue">
+    <div class="wp-home-board-head"><h3>Today's wash queue</h3><small>Sample data</small></div>
+    <div class="wp-home-lanes" id="wp-home-lanes"></div>
+    <div class="wp-home-board-foot"><span id="wp-home-board-status" aria-live="polite">0 of 5 vehicles done</span><button type="button" id="wp-home-board-reset">Reset</button></div>
+  </div><p class="wp-home-board-tip">Tap a ticket to move it to the next stage.</p></div>
+</div></section>
 
-    <section class="wp-how" id="wp-how"><div class="wp-how-inner"><div class="wp-how-intro"><h2>From setting up to your first wash.</h2><p>Start with your business details and service menu. Your team can then follow the same process for every vehicle.</p><a class="wp-how-cta" href="/signup">Create your free account</a></div><div class="wp-steps">
-<article><span>1</span><div><h3>Register your business</h3><p>Create your owner account and enter your business details.</p></div></article>
-<article><span>2</span><div><h3>Set up your services</h3><p>Add your wash services, vehicle sizes, prices and optional extras.</p></div></article>
-<article><span>3</span><div><h3>Organize your team</h3><p>Premium includes staff management. Free accounts can start with the owner workspace.</p></div></article>
-<article><span>4</span><div><h3>Record a wash</h3><p>Create a ticket, update the service queue and collect payment at pickup.</p></div></article>
-<article><span>5</span><div><h3>Review your day</h3><p>Check recorded payments and transactions to understand your daily activity.</p></div></article>
-</div></div></section>
+    <section class="wp-home-features" id="wp-features"><div class="wp-home-wrap">
+  <div class="wp-home-section-head wp-home-feature-heading"><span class="wp-home-eyebrow">THE WASHPILOT WORKSPACE</span><h2>Everything your carwash needs.<br><em>Nothing you don't.</em></h2><p>Less time juggling notebooks, chats, and spreadsheets. More time delivering a great customer experience.</p></div>
+  <div class="wp-home-feature-grid">
+    <article class="wp-home-feature-card wp-home-feature-large" data-home-tilt><span class="wp-home-tag">Free</span><span class="wp-home-feature-number">01 / DAILY OPERATIONS</span><h3>Your wash queue,<br>under control.</h3><p>Track each vehicle from arrival to washing, quality check, ready for pickup, and completed.</p><div class="wp-home-flow-mini"><span>Arrived</span><i></i><span>Washing</span><i></i><span>Ready</span><i></i><span>Done</span></div></article>
+    <article class="wp-home-feature-card" data-home-tilt><span class="wp-home-tag">Free</span><span class="wp-home-feature-number">02 / SALES & PAYMENTS</span><h3>See the money clearly.</h3><p>Record payments, review transactions, and keep daily sales within reach.</p><div class="wp-home-feature-stat"><small>TODAY'S SALES</small><b>₱12,850</b><span>One clear daily view</span></div></article>
+    <article class="wp-home-feature-card" data-home-tilt><span class="wp-home-tag">Free</span><span class="wp-home-feature-number">03 / CUSTOMER RECORDS</span><h3>Remember every vehicle.</h3><p>Keep customer and vehicle history organized for a more consistent service experience.</p><div class="wp-home-customer-lines"><span><i></i><b></b><small></small></span><span><i></i><b></b><small></small></span><span><i></i><b></b><small></small></span></div></article>
+    <article class="wp-home-feature-card" data-home-tilt><span class="wp-home-tag">Free</span><span class="wp-home-feature-number">04 / SERVICES & ADD-ONS</span><h3>Make every service count.</h3><p>Set up your wash menu, pricing, and add-ons so checkout stays clear and consistent.</p><div class="wp-home-service-pills"><span>Basic Wash</span><span>Interior</span><span>Wax</span><span>Detailing</span></div></article>
+    <article class="wp-home-feature-card wp-home-feature-premium" data-home-tilt><span class="wp-home-tag wp-home-tag-premium">Premium</span><span class="wp-home-feature-number">05 / TEAM & EXPENSES</span><h3>Bring the team together.</h3><p>Give owners, cashiers, washers, and supervisors the tools for their part of the day, along with expense tracking.</p><div class="wp-home-team-mini"><span>OW</span><span>CA</span><span>WS</span><b>Team workspace</b></div></article>
+    <article class="wp-home-feature-card wp-home-feature-premium" data-home-tilt><span class="wp-home-tag wp-home-tag-premium">Premium</span><span class="wp-home-feature-number">06 / INVENTORY & BRANCHES</span><h3>Ready for the next stage.</h3><p>Manage inventory, service recipes, multiple branches, and centralized reporting as you grow.</p><div class="wp-home-branch-mini"><span>MAIN LOCATION</span><b>● Active</b><span>MORE LOCATIONS</span><b>● Active</b></div></article>
+    <article class="wp-home-feature-card wp-home-vendo-card"><span class="wp-home-feature-number">COMING NEXT</span><h3>Smart Vendo</h3><span class="wp-home-tag">Coming soon</span><p>Planned tools for machine usage, coin transactions and maintenance. Hardware integration and manufacturer-specific adapters are still required.</p></article>
+  </div>
+  <p class="wp-home-feature-link"><a href="#wp-pricing">Compare Free and Premium <span>→</span></a></p>
+</div></section>
 
-    <section class="wp-pricing" id="wp-pricing">
-      <div class="wp-section-head wp-pricing-head"><div><span class="wp-eyebrow">CLEAR, STRAIGHTFORWARD PRICING</span><h2>Start free.<br><em>Upgrade when you're ready.</em></h2></div><p>Two plans. No monthly commitment. Premium access lasts 30 days from the date your payment is approved.</p></div>
-      <div class="wp-trial-banner"><span class="wp-trial-icon">✓</span><div><b>Free forever, or Premium for 30 days.</b><small>Pay ₱499 for each 30-day Premium period. Renew whenever you need to keep Premium features.</small></div><span class="wp-trial-tag">NO HIDDEN FEES</span></div>
-      <div class="wp-price-grid">
-        <article class="wp-price-card"><div class="wp-plan-head"><span>01 / START FREE</span><span class="wp-plan-spark">✳</span></div><h3>Free</h3><p class="wp-plan-desc">The essentials to run a single carwash location.</p><div class="wp-price"><b>₱0</b><span>forever</span></div><div class="wp-price-rule"></div><div class="wp-includes">WHAT'S INCLUDED</div><ul><li>One carwash location</li><li>Core POS and wash queue</li><li>Services and add-ons</li><li>Transactions, receipts and customer history</li><li>Daily sales summary</li></ul><button class="wp-plan-button" type="button" onclick="openTrialSignup('basic')">Get started free <span>→</span></button></article>
-        <article class="wp-price-card wp-price-featured"><div class="wp-popular">FULL ACCESS</div><div class="wp-plan-head"><span>02 / GO PREMIUM</span><span class="wp-plan-spark">✳</span></div><h3>Premium</h3><p class="wp-plan-desc">Unlock the complete WashPilot management workspace.</p><div class="wp-price"><b>₱499</b><span>/ 30 days</span></div><div class="wp-price-rule"></div><div class="wp-includes">EVERYTHING IN FREE, PLUS</div><ul><li>Bookings and online reservations</li><li>Employees and staff management</li><li>Expenses, inventory and reports</li><li>Add-on analytics, loyalty and packages</li><li>Multiple branches and service recipes</li><li>Advanced management and reconciliation</li></ul><button class="wp-plan-button wp-plan-button-light" type="button" onclick="openTrialSignup('basic')">Create account to get Premium <span>→</span></button></article>
-      </div>
-      <div class="wp-price-note"><span>✓</span> Free forever <span>✓</span> Premium ₱499 per 30 days <span>✓</span> Renew after payment review</div>
-    </section>
+    <section class="wp-home-how" id="wp-how"><div class="wp-home-wrap">
+  <div class="wp-home-section-head"><span class="wp-home-eyebrow">A SIMPLE DAILY FLOW</span><h2>From the first rinse to the final receipt.</h2><p>Bring every wash into one clear process your whole team can follow.</p></div>
+  <ol class="wp-home-steps">
+    <li><span>01</span><div><h3>Register the wash</h3><p>Enter the vehicle, choose the service, and record the customer details.</p></div></li>
+    <li><span>02</span><div><h3>Move through the queue</h3><p>Keep the team updated as each vehicle moves from washing to ready for pickup.</p></div></li>
+    <li><span>03</span><div><h3>Complete and collect</h3><p>Record payment, provide the receipt, and keep the day's sales organized.</p></div></li>
+  </ol><a class="wp-home-outline-link" href="/signup">Create a free account <span>→</span></a>
+</div></section>
+
+    <section class="wp-home-pricing" id="wp-pricing"><div class="wp-home-wrap">
+  <div class="wp-home-section-head"><span class="wp-home-eyebrow">CLEAR, STRAIGHTFORWARD PRICING</span><h2>Start free.<br><em>Upgrade when you're ready.</em></h2><p>Two plans and no monthly commitment. Premium access lasts 30 days from the date your payment is approved.</p></div>
+  <div class="wp-home-plans">
+    <article class="wp-home-plan wp-home-plan-free" data-home-tilt><span class="wp-home-plan-index">01 / START FREE</span><h3>Free</h3><p class="wp-home-plan-desc">The essentials to run a single carwash location.</p><div class="wp-home-price">₱0<small>forever</small></div><ul><li>One carwash location</li><li>Core POS and wash queue</li><li>Services and add-ons</li><li>Transactions, receipts, and customer history</li><li>Daily sales summary</li></ul><a class="wp-home-plan-button wp-home-plan-button-outline" href="/signup">Create a free account <span>→</span></a></article>
+    <article class="wp-home-plan wp-home-plan-premium" data-home-tilt><span class="wp-home-plan-popular">FULL ACCESS</span><span class="wp-home-plan-index">02 / GO PREMIUM</span><h3>Premium</h3><p class="wp-home-plan-desc">The complete WashPilot management workspace.</p><div class="wp-home-price">₱499<small>per 30 days</small></div><ul><li>Everything in Free</li><li>Bookings and online reservations</li><li>Employees and staff management</li><li>Expenses, inventory, and reports</li><li>Add-on analytics, loyalty, and packages</li><li>Multiple branches and service recipes</li><li>Advanced management and reconciliation</li></ul><a class="wp-home-plan-button" href="/signup">Create an account for Premium <span>→</span></a></article>
+  </div><p class="wp-home-price-note">Renew whenever you need to keep Premium. Access starts or renews after your payment is verified.</p>
+</div></section>
 
 
-<section class="wp-about" id="wp-about">
-      <div class="wp-about-art"><div class="wp-about-orbit"></div><div class="wp-about-card"><span>WASHPILOT</span><b>POWER YOUR<br>CARWASH<br>BUSINESS.</b><small>OPERATIONS · PEOPLE · PERFORMANCE</small><i>✳</i></div></div>
-      <div class="wp-about-copy"><span class="wp-eyebrow wp-eyebrow-light">ABOUT WASHPILOT</span><h2>Built around the<br>real work of a carwash.</h2><p>Running a carwash takes coordination. Vehicles arrive, teams move, services change, and payments need to be recorded. WashPilot brings those everyday moving parts into one practical management workspace.</p><p>Our goal is simple: help carwash owners spend less time chasing updates and more time improving the business.</p><a class="wp-about-link" href="/pricing">Explore plans <span>→</span></a></div>
-    </section>
+<section class="wp-home-about" id="wp-about"><div class="wp-home-wrap wp-home-about-grid">
+  <article class="wp-home-about-card wp-home-about-story"><span class="wp-home-eyebrow">ABOUT WASHPILOT</span><div class="wp-home-about-art"><b>WASHPILOT</b><strong>POWER YOUR<br>CARWASH<br>BUSINESS.</strong><small>OPERATIONS · PEOPLE · PERFORMANCE</small><span>✳</span></div><h2>Built around the real work of a carwash.</h2><p>Vehicles arrive, teams move, services change, and payments need to be recorded. WashPilot brings those everyday moving parts into one practical workspace.</p><p>The goal is simple: less time chasing updates, more time improving the business.</p><a href="#wp-pricing" class="wp-home-text-link">Explore plans <span>→</span></a></article>
+  <article class="wp-home-about-card wp-home-directory-card" id="wp-home-businesses"><span class="wp-home-eyebrow">WASHPILOT BUSINESS DIRECTORY</span><h2>Find a car wash near you.</h2><p>Browse registered carwash facilities, check their hours, and book your next wash.</p><p>Run a carwash? Add your business to the directory when you sign up. Public listings are available to eligible Premium facilities.</p><div class="wp-home-directory-actions"><a class="wp-home-plan-button" href="/businesses">Browse businesses <span>→</span></a><a class="wp-home-text-link" href="/signup">List your business <span>→</span></a></div><div class="wp-home-directory-decoration"><span>01</span><span>DISCOVER LOCAL CARWASHES</span><b>W</b></div></article>
+</div></section>
 
-    <section class="wp-faq" id="wp-faq">
-      <div class="wp-faq-head"><span class="wp-eyebrow">GOOD TO KNOW</span><h2>Questions, <em>answered.</em></h2><p>A few things to know before choosing your WashPilot plan.</p></div>
-      <div class="wp-faq-list">
-        <details><summary>What is WashPilot? <span>＋</span></summary><p>WashPilot is a carwash management workspace for handling wash tickets, service queues, payments, customer and vehicle records, and business operations.</p></details>
-        <details><summary>Is the Free plan really free? <span>＋</span></summary><p>Yes. Free is available forever. Premium costs ₱499 for 30 days and can be renewed after payment approval.</p></details>
-        <details><summary>Can I upgrade later? <span>＋</span></summary><p>Start on Free and request Premium whenever you need the full feature set. Premium access starts or renews after the Super Admin verifies your payment.</p></details>
-        <details><summary>What is included in each plan? <span>＋</span></summary><p>Free includes the essential POS, wash queue, services, add-ons, receipts, customer records and daily sales. Premium unlocks bookings, staff management, inventory, expenses, reports, loyalty, analytics, multiple branches and advanced controls.</p></details>
-        <details><summary>Can my staff use WashPilot? <span>＋</span></summary><p>Yes. The workspace includes focused roles for owners, cashiers, washers, and supervisors.</p></details>
-      </div>
-    </section>
+    <section class="wp-home-faq" id="wp-faq"><div class="wp-home-wrap wp-home-faq-grid">
+  <div class="wp-home-section-head"><span class="wp-home-eyebrow">GOOD TO KNOW</span><h2>Questions,<br><em>answered.</em></h2><p>A few things to know before choosing your WashPilot plan.</p><a class="wp-home-outline-link" href="/faq">More questions <span>→</span></a></div>
+  <div class="wp-home-faq-list">
+    <details><summary>What is WashPilot?</summary><p>WashPilot is a carwash management workspace for handling wash tickets, service queues, payments, customer and vehicle records, and day-to-day operations.</p></details>
+    <details><summary>Is the Free plan really free?</summary><p>Yes. Free is available forever, with no credit card or trial period. Premium costs ₱499 for 30 days and can be renewed after payment approval.</p></details>
+    <details><summary>Can I upgrade later?</summary><p>Start on Free and request Premium whenever you need the full feature set. Premium starts or renews after your payment is verified.</p></details>
+    <details><summary>What is included in each plan?</summary><p>Free covers the POS, wash queue, services, add-ons, receipts, customer records, and daily sales. Premium adds bookings, staff management, inventory, expenses, reports, loyalty, analytics, multiple branches, and advanced controls.</p></details>
+    <details><summary>Can my staff use WashPilot?</summary><p>Yes. The workspace includes focused roles for owners, cashiers, washers, and supervisors.</p></details>
+  </div>
+</div></section>
 
     <section class="wp-contact-page" id="wp-contact">
   <div class="wp-contact-shell">
@@ -1673,8 +1687,9 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
   </div>
 </section>
 
-<section class="wp-final-cta"><div><span class="wp-eyebrow wp-eyebrow-light">READY FOR A BETTER-RUN WASH?</span><h2>Make every wash<br><em>count.</em></h2><p>See how WashPilot brings your daily operation together.</p></div><div class="wp-final-actions"><a class="wp-btn-primary wp-btn-white" href="/pricing">Compare plans <span>→</span></a><a href="https://www.facebook.com/share/1A7fsQu9Wt/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer">Need support? Contact us on Facebook ↗</a></div><div class="wp-final-glow"></div></section>
-    <section class="wp-directory-view" id="wp-business-directory" style="display:none"><div class="wp-directory-head"><div><span class="wp-eyebrow">WASHPILOT BUSINESS DIRECTORY</span><h1>Find a car wash near you.</h1><p>Explore registered carwash facilities, check their hours, and book your next wash.</p></div><a class="wp-btn-primary" href="/signup">List your business <span>→</span></a></div><div class="wp-directory-search"><input id="wpDirectorySearch" type="search" placeholder="Search by business or location…" oninput="filterPublicFacilities(this.value)"><span id="wpDirectoryCount">Loading facilities…</span></div><div class="wp-directory-grid" id="wpDirectoryGrid"><div class="wp-directory-empty">Loading registered carwash facilities…</div></div></section>
+<section class="wp-final-cta wp-home-final"><div><span class="wp-home-eyebrow">READY FOR A BETTER-RUN WASH?</span><h2>Make every wash<br><em>count.</em></h2><p>See how WashPilot brings your daily operation together.</p></div><div class="wp-final-actions"><a class="wp-home-final-button" href="/signup">Start free <span>→</span></a><button class="wp-home-final-secondary" type="button" onclick="showLoginScreen()">Sign in</button><a href="https://www.facebook.com/share/1A7fsQu9Wt/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer">Need support? Contact us on Facebook ↗</a></div></section>
+    <div class="wp-home-dock" id="wp-home-dock" aria-label="Quick actions"><a href="/signup">Start free</a><a href="https://www.facebook.com/share/1A7fsQu9Wt/?mibextid=wwXIfr" target="_blank" rel="noopener">Message us</a></div>
+<section class="wp-directory-view" id="wp-business-directory" style="display:none"><div class="wp-directory-head"><div><span class="wp-eyebrow">WASHPILOT BUSINESS DIRECTORY</span><h1>Find a car wash near you.</h1><p>Explore registered carwash facilities, check their hours, and book your next wash.</p></div><a class="wp-btn-primary" href="/signup">List your business <span>→</span></a></div><div class="wp-directory-search"><input id="wpDirectorySearch" type="search" placeholder="Search by business or location…" oninput="filterPublicFacilities(this.value)"><span id="wpDirectoryCount">Loading facilities…</span></div><div class="wp-directory-grid" id="wpDirectoryGrid"><div class="wp-directory-empty">Loading registered carwash facilities…</div></div></section>
     <section class="wp-directory-view" id="wp-booking-public-view" style="display:none"><div id="wpPublicFacilityContent"><div class="wp-directory-empty">Loading facility details…</div></div></section>
   </main>
   <footer class="wp-footer"><div class="wp-footer-brand"><img src="washpilot-logo.svg" alt="WashPilot"><p>More shine. Less stress. Total control.</p></div><div class="wp-footer-links"><a href="/features">Features</a><a href="/businesses">Businesses</a><a href="/pricing">Pricing</a><a href="/about">About</a><a href="/faq">FAQ</a><a href="/contact">Contact Us</a><a href="https://www.facebook.com/share/1A7fsQu9Wt/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer">Support ↗</a></div><small>© 2026 WashPilot Management Solutions. All rights reserved.</small></footer>
