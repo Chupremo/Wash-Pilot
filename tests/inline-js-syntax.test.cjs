@@ -4,7 +4,7 @@ const inputs=['index.html','home.html','app.html'];
 let scriptCount=0;
 for(const name of inputs){
   const html=fs.readFileSync(name,'utf8');
-  const scripts=[...html.matchAll(/<script\\b(?![^>]*\\bsrc=)[^>]*>([\\s\\S]*?)<\\/script>/gi)];
+  const scripts=[...html.matchAll(/<script\b(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi)];
   if(!scripts.length)throw new Error('No inline scripts found in '+name);
   scripts.forEach((match,index)=>{
     new vm.Script(match[1],{filename:name+':inline-'+(index+1)});
