@@ -4117,9 +4117,13 @@ async function submitPublicBooking(e){
     document.body.classList.remove('wp-login-route');
     const main=document.getElementById('top');
     if(main){
+      // Home now uses the sandbox's dedicated wp-home-* section classes.
+      // Show every homepage section by default; keep only the two data-backed
+      // public views hidden until the visitor opens their dedicated route.
+      const homeExcludedViews=new Set(['wp-business-directory','wp-booking-public-view']);
       Array.from(main.children).forEach(el=>{
         if(slug==='home'){
-          el.style.display=(el.classList.contains('wp-hero')||el.classList.contains('wp-value-strip')||el.classList.contains('wp-features')||el.classList.contains('wp-how')||el.classList.contains('wp-pricing')||el.classList.contains('wp-faq')||el.classList.contains('wp-final-cta'))?'':'none';
+          el.style.display=homeExcludedViews.has(el.id)?'none':'';
         }else{
           const section=Object.values(publicSections).find(item=>item.slug===slug)||null;
           el.style.display=section&&el.id===section.id?'':'none';
@@ -4131,7 +4135,8 @@ async function submitPublicBooking(e){
     setTitle(label,slug==='home'
       ?'WashPilot helps carwash owners manage daily operations, teams, payments and business performance.'
       :'Explore '+label+' from WashPilot Carwash Management Solutions.');
-    document.querySelector('.wp-site-links')?.classList.remove('open','wp-menu-open');document.querySelector('.wp-menu-toggle')?.setAttribute('aria-expanded','false');
+    document.querySelector('.wp-site-links')?.classList.remove('open','wp-menu-open');
+    document.querySelector('.wp-menu-toggle')?.setAttribute('aria-expanded','false');
   }
   function showLoginRoute(){
     const landing=document.getElementById('publicLanding');
