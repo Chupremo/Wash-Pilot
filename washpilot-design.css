@@ -1,0 +1,242 @@
+/* WashPilot visual system. Presentation only; existing application owns all state. */
+:root {
+  --navy:#10233f;--navy2:#17365e;--black:#10233f;--black-2:#17365e;
+  --blue:#2563eb;--blue-d:#1d4ed8;--blue-l:#93b7ff;--blue-soft:#edf3ff;
+  --ink:#17243a;--text:#17243a;--text-2:#46566c;--muted:#596a80;
+  --bg:#f3f5f9;--surface:#f3f5f9;--card:#fff;--line:#dce3ec;
+  --green:#087a50;--red:#bc3434;--amber:#92600f;
+  --font:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-d:var(--font);--r-ctl:10px;--r-card:18px;
+  --shadow:0 4px 20px rgba(16,35,63,.045);
+}
+body{font-family:var(--font);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--font-d);text-wrap:balance;letter-spacing:-.035em}
+button,input,select,textarea{font:inherit}
+button,a,input,select,textarea{touch-action:manipulation}
+:focus-visible{outline:3px solid #2563eb!important;outline-offset:4px!important}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2563eb18}
+button:disabled,input:disabled,select:disabled,[aria-disabled="true"]{cursor:not-allowed;opacity:.58}
+[aria-invalid="true"]{border-color:var(--red)!important}
+[aria-busy="true"]{cursor:progress}
+img{max-width:100%}
+.btn,.wp-btn-primary,.wp-btn-secondary,.wp-btn-white,.wp-plan-button,.login-submit,.wp-signup-submit{min-height:46px;border-radius:10px;font-weight:650;letter-spacing:-.015em;box-shadow:none;transition:background .15s,border-color .15s,color .15s}
+.btn:hover,.wp-btn-primary:hover{transform:none}
+.btn-primary,.wp-btn-primary,.login-submit,.wp-signup-submit{background:var(--blue);color:white}
+.btn-primary:hover,.wp-btn-primary:hover,.login-submit:hover{background:var(--blue-d)}
+.btn.small,.btn-sm{min-height:44px}
+.btn.ghost,.btn-outline,.wp-btn-secondary{background:#fff;border:1px solid var(--line);color:var(--navy)}
+.btn.ghost:hover,.btn-outline:hover,.wp-btn-secondary:hover{background:var(--blue-soft);border-color:#a8c0ef}
+.btn.danger{color:#a52424;background:#fff1f1;border:1px solid #edcaca}
+.field label,.login-field label{font-size:13px;font-weight:650;color:var(--ink)}
+.field input,.field select,.field textarea,.search,.login-input{min-height:48px;border:1px solid #cbd5e2;border-radius:10px;background:#fff;color:var(--ink);font-size:16px;padding:12px 14px}
+.field textarea{min-height:110px;resize:vertical}
+.subtle,.stat-note,.wp-form-hint{color:var(--muted);font-size:13px;line-height:1.65}
+/* Public website: editorial spacing, restrained surfaces, brand blue accents. */
+.wp-page-home .wrap{max-width:1240px;padding-inline:32px}
+.wp-page-home .header{background:#fff;backdrop-filter:none}
+.wp-page-home .header .wrap{min-height:84px}
+.wp-page-home .hero{background:#f3f6fb;padding:88px 0 96px;border-bottom:1px solid var(--line)}
+.wp-page-home .hero-grid{gap:72px;grid-template-columns:1.1fr 1fr}
+.wp-page-home h1{font-size:clamp(40px,4.8vw,68px);line-height:1.07;font-weight:750;letter-spacing:-.055em}
+.wp-page-home h1 .grad{background:none;color:var(--blue);-webkit-text-fill-color:var(--blue)}
+.wp-page-home .lede{line-height:1.75}
+.wp-page-home .pill{border:1px solid #ccdafa;background:#fff;font-size:12px;letter-spacing:.04em}
+.wp-page-home .frame{border:1px solid #263d5d;border-radius:18px;box-shadow:0 24px 60px -30px #10233f55;background:var(--navy)}
+.wp-page-home .sec{padding-block:88px}
+.wp-page-home .sec-head h2{letter-spacing:-.045em}
+.wp-page-home .tile{border-radius:18px;border:1px solid var(--line);box-shadow:none;padding:30px}
+.wp-page-home .tile.blue{background:var(--blue);color:#fff}
+.wp-page-home .tile.dark,.wp-page-home .final-card{background:var(--navy);color:#fff}
+.wp-page-home .steps{gap:24px}
+.wp-page-home .step{border-top:2px solid #cbd8ee;padding-top:24px}
+.wp-page-home .plan{border-radius:18px;box-shadow:none}
+.wp-page-home .faq details{border:1px solid var(--line);border-radius:12px;margin-bottom:12px;background:white}
+.wp-page-home .faq summary{min-height:60px;padding:18px 22px}
+.wp-page-home .foot{background:var(--navy)}
+/* Sign in, registration, recovery and error pages. */
+.wp-page-auth .shell{background:#f5f7fb;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.wp-page-auth .shell>.panel{background:var(--navy);padding:56px clamp(30px,5vw,80px)}
+.wp-page-auth .shell>.panel::before,.wp-page-auth .shell>.panel::after{display:none}
+.wp-page-auth .panel h2{font-weight:700;line-height:1.16;letter-spacing:-.04em}
+.wp-page-auth .side{padding:32px clamp(24px,4vw,64px)}
+.wp-page-auth .card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:36px;box-shadow:var(--shadow)}
+.wp-page-auth .card h1{font-size:32px;letter-spacing:-.04em}
+.wp-page-auth .card input{min-height:48px;border-radius:10px}
+.wp-page-auth .panel-foot{color:#bbc8da}
+.wp-page-error .card{border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}
+/* All management screens use the same navigation, panels and data hierarchy. */
+.wp-page-workspace .sidebar,.wp-page-app .sidebar{background:var(--navy);border-right:1px solid #243953;color:#fff;gap:24px}
+.wp-page-workspace .sidebar .nav-item{color:#c9d5e5}
+.wp-page-workspace .sidebar .nav-item[aria-current="page"]{background:#25456e;color:#fff}
+.wp-page-workspace .sidebar .who span{color:#b7c7dc}
+.wp-page-workspace .sidebar .side-foot{color:#c9d5e5;border-color:#344863}
+.wp-page-app .nav button{min-height:46px;font-size:14px;padding:11px 14px;border-radius:9px}
+.wp-page-app .nav button.active{background:#25456e;box-shadow:inset 3px 0 #73a4ff;color:white}
+.wp-page-app .nav button:hover{background:#203c61}
+.wp-page-app .nav-label{font-size:11px;color:#a9bad0;letter-spacing:.11em;margin-bottom:10px}
+.wp-page-app .topbar,.wp-page-workspace .topbar{background:white;border-bottom:1px solid var(--line);box-shadow:none;min-height:78px}
+.wp-page-app .crumb{font-size:18px;font-weight:700}
+.wp-page-app .crumb small{font-size:12px;line-height:1.5;color:var(--muted)}
+.wp-page-app .content,.wp-page-workspace .content{max-width:1480px;padding:32px clamp(20px,3vw,44px) 56px;margin-inline:auto}
+.wp-page-app .page-head{margin-bottom:28px;gap:20px}
+.wp-page-app .page-head h1{font-size:30px;line-height:1.2;font-weight:750;letter-spacing:-.045em}
+.wp-page-app .page-head p{font-size:14px;line-height:1.65;color:var(--muted);max-width:680px}
+.wp-page-app .grid{gap:20px}
+.wp-page-app .panel,.wp-page-app .stat,.wp-page-app .mini-card,.wp-page-app .hub-tile,.wp-page-workspace .panel,.wp-page-workspace .stat{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:24px;min-width:0}
+.wp-page-app .panel-head{margin-bottom:20px;gap:14px;flex-wrap:wrap}
+.wp-page-app .panel-head h3{font-size:16px;letter-spacing:-.025em}
+.wp-page-app .stat-top{font-size:13px;color:var(--muted)}
+.wp-page-app .stat-value{font-size:32px;font-weight:750;letter-spacing:-.05em;line-height:1.2;margin:16px 0 8px;font-variant-numeric:tabular-nums}
+.wp-page-app .stat-icon{border-radius:10px}
+.wp-page-app .form-section,.wp-page-app .summary{padding:22px;border:1px solid var(--line);border-radius:14px;background:#f8faff}
+.wp-page-app .form-grid{gap:20px}
+.wp-page-app .choice{min-height:64px;border-radius:12px;padding:16px}
+.wp-page-app .choice-main b,.wp-page-app .choice-price{font-size:14px}
+.wp-page-app .queue-item{padding:16px;border-radius:12px;gap:12px;flex-wrap:wrap}
+.wp-page-app .queue-info{min-width:100px;flex:1}
+.wp-page-app .queue-info b{font-size:14px}
+.wp-page-app .queue-info small{font-size:12px;color:var(--muted)}
+.wp-page-app .plate{font-size:12px;border-radius:7px}
+.wp-page-app .status{font-size:11px;font-weight:650;padding:5px 9px;white-space:normal}
+.wp-page-app .tabs button,.wp-page-app .home-range-tabs button{min-height:44px;font-size:13px}
+.wp-page-app .table-wrap,.wp-page-workspace .table-wrap{max-width:100%;overflow:auto;border:1px solid var(--line);border-radius:12px;overscroll-behavior-inline:contain}
+.wp-page-app th,.wp-page-workspace th{padding:14px 16px;background:#f5f7fb;color:#53637a;font-size:11px;font-weight:700;letter-spacing:.045em}
+.wp-page-app td,.wp-page-workspace td{padding:16px;font-size:13px;line-height:1.5;border-bottom:1px solid #e9edf3}
+.wp-page-app tr:hover td{background:#fafcff}
+.wp-page-app .amount{font-variant-numeric:tabular-nums;font-weight:700}
+.wp-page-app .empty,.wp-directory-empty{padding:40px 24px;color:var(--muted);font-size:14px;line-height:1.7}
+/* Directory, facility, calendar and every booking step. */
+.wp-site-header{background:#fff;border-bottom:1px solid var(--line);box-shadow:none}
+.wp-directory-view{max-width:1240px;margin-inline:auto;padding-inline:24px}
+.wp-directory-head h1{font-size:clamp(30px,4vw,48px);letter-spacing:-.045em}
+.wp-facility-card,.wp-public-service-card,.wp-booking-summary,.wp-booking-form,.wp-contact-panel,.wp-contact-side,.wp-price-card,.wp-trial-card,.wp-payment-settings-card{border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.wp-facility-cover img,.wp-public-gallery img,.wp-owner-photo img{object-fit:contain;background:#edf1f6}
+.wp-booking-form{padding:28px;background:#fff}
+.wp-booking-summary{padding:24px;background:#f8faff}
+.wp-public-service-card{padding:22px;background:#fff}
+.wp-calendar-day,.wp-time-card,.wp-service-option{min-height:46px;border-radius:9px}
+.wp-calendar-day.selected,.wp-time-card.selected,.wp-service-option.selected{outline:2px solid var(--blue);outline-offset:1px}
+.wp-wizard-title{letter-spacing:-.035em;line-height:1.3}
+.wp-wizard-help,.wp-booking-note,.wp-form-hint{font-size:13px;line-height:1.7}
+.wp-payment-instructions,.wp-review-summary{border-radius:12px;line-height:1.7}
+.wp-wizard-actions button{min-height:48px}
+.wp-final-cta,.wp-contact-bottom{background:var(--navy)}
+/* Dialogs, alerts and the guided walkthrough retain their existing visibility rules. */
+.modal,.wp-signup-card,.forgot-card,.wp-tour-panel{border:1px solid var(--line);border-radius:20px;box-shadow:0 24px 80px #10233f30}
+.modal{padding:28px}
+.modal-head h2{font-size:21px;line-height:1.3}
+.close,.wp-signup-close,.wp-tour-close{min-width:44px;min-height:44px;border-radius:10px}
+.modal-backdrop,.wp-signup-backdrop,.forgot-backdrop{backdrop-filter:blur(4px)}
+.toast{font-size:14px;line-height:1.5;border-radius:12px;max-width:min(440px,calc(100vw - 32px))}
+.wp-tour-panel p,.wp-tour-purpose span,.wp-tour-try span{font-size:15px;line-height:1.7}
+.wp-tour-choice{border-radius:12px;min-height:72px}
+@media(min-width:1101px){
+ .wp-page-app .app{grid-template-columns:264px minmax(0,1fr)}
+ .wp-page-app .sidebar{width:264px;position:sticky;top:0;max-height:100dvh;overflow-y:auto;align-self:start;padding:26px 16px}
+}
+@media(max-width:1024px){
+ .wp-page-home .hero-grid{gap:32px}
+ .wp-page-home .wrap{padding-inline:24px}
+ .wp-page-auth .shell>.panel{padding:32px}
+ .wp-page-app .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:760px){
+ .wp-page-home .hero-grid{grid-template-columns:minmax(0,1fr);gap:36px}
+ .wp-page-home .hero{padding:40px 0 48px}
+ .wp-page-home .sec{padding-block:48px}
+ .wp-page-home .wrap{padding-inline:20px}
+ .wp-page-home .header .wrap{min-height:68px}
+ .wp-page-home .tile{padding:24px}
+ .wp-page-home .hero-cta .btn{flex:1;white-space:normal}
+ .wp-page-auth .shell{grid-template-columns:minmax(0,1fr)}
+ .wp-page-auth .side{padding:24px 20px}
+ .wp-page-auth .card{padding:24px;width:100%}
+ .wp-page-app .content,.wp-page-workspace .content{padding:24px 16px 100px;overflow:visible}
+ .wp-page-app .topbar{min-height:68px;padding:10px 14px}
+ .wp-page-app .topbar-left{min-width:0}
+ .wp-page-app .crumb{font-size:15px}
+ .wp-page-app .page-head h1{font-size:25px}
+ .wp-page-app .page-head p{font-size:14px}
+ .wp-page-app .page-head{margin-bottom:22px}
+ .wp-page-app .panel,.wp-page-app .stat,.wp-page-app .mini-card{padding:18px;border-radius:14px}
+ .wp-page-app .grid{gap:14px}
+ .wp-page-app .stat-value{font-size:26px;overflow-wrap:anywhere}
+ .wp-page-app .stat-top{font-size:12px;flex-wrap:wrap}
+ .wp-page-app .stat-note{font-size:12px}
+ .wp-page-app .form-section,.wp-page-app .summary{padding:18px}
+ .wp-page-app .actions{flex-wrap:wrap}
+ .wp-page-app .actions .btn{white-space:normal;flex:1 1 140px}
+ .wp-page-app .sidebar{width:min(300px,88vw)}
+ .wp-page-app .mobile-bottom-nav{padding:8px 12px calc(8px + env(safe-area-inset-bottom));box-shadow:0 -4px 20px #10233f08}
+ .wp-page-app .mobile-bottom-nav button{min-height:54px;font-size:11px;border-radius:10px}
+ .wp-page-app .mobile-bottom-nav button.active{color:#1d4ed8;background:#edf3ff}
+ .wp-page-app .table-wrap th,.wp-page-app .table-wrap td{padding:12px;font-size:12px}
+ .wp-page-app .modal{padding:24px 20px calc(24px + env(safe-area-inset-bottom));border-radius:20px 20px 0 0;max-height:90dvh}
+ .wp-directory-view{padding-inline:16px}
+ .wp-booking-form,.wp-booking-summary{padding:20px}
+ .wp-booking-layout,.wp-public-service-grid{grid-template-columns:minmax(0,1fr)}
+ .wp-calendar-day{min-width:0;padding-inline:2px}
+ .wp-wizard-actions{gap:10px;flex-wrap:wrap}
+ .wp-share-url{overflow-wrap:anywhere;min-width:0}
+ .wp-tour-panel{max-width:calc(100vw - 24px)}
+}
+@media(max-width:380px){
+ .wp-page-app .stats{grid-template-columns:minmax(0,1fr)}
+ .wp-page-auth .card{padding:20px}
+}
+@media(prefers-reduced-motion:reduce){
+ html{scroll-behavior:auto!important}
+ *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+ .rv{opacity:1!important;transform:none!important}
+}
+@media print{
+ body{background:white!important}
+ .wp-page-app .content{padding:0}
+ .modal{box-shadow:none;border:0;max-height:none}
+}
+/* Keep inverse surfaces readable, including the existing logo assets. */
+.wp-page-home .foot{color:#fff;--text-2:#c0ccdd;--muted:#aebed3;--line:#304762}
+.wp-page-home .tile.dark::before,.wp-page-home .plan.featured::before,.wp-page-home .final-card::before{display:none}
+.wp-page-home .tile:hover{transform:none;box-shadow:var(--shadow)}
+.wp-page-app .sidebar :focus-visible,.wp-page-workspace .sidebar :focus-visible{outline-color:#a8c7ff!important}
+.wp-page-workspace .sidebar .logo{background:#fff;border-radius:10px;padding:12px;margin-bottom:10px}
+.wp-page-workspace .sidebar .who b{color:#fff}
+.wp-page-home .foot .logo{display:inline-block;background:#fff;padding:10px 14px;border-radius:10px}
+.wp-page-home .foot li a:hover{color:#fff}
+/* Remaining generated management and public routes share the same scale. */
+.wp-page-app .recipe-row{padding:16px;border-radius:12px;gap:16px}
+.wp-page-app .recipe-row b,.wp-page-app .hub-tile b,.wp-page-app .kanban-card b{font-size:14px}
+.wp-page-app .recipe-row small,.wp-page-app .hub-tile small,.wp-page-app .kanban-card small,.wp-page-app .tenant-cell small{font-size:12px;line-height:1.6}
+.wp-page-app .inline-note{font-size:13px;line-height:1.7;padding:16px}
+.wp-page-app .hub-tile{min-height:110px}
+.wp-page-app .hub-tile:hover{transform:none;border-color:#9bb8e8}
+.wp-page-app .kanban-card{padding:16px;border:1px solid var(--line);border-radius:12px;box-shadow:none}
+.wp-page-app .kanban-col{border-radius:14px;background:#eaf0f7}
+.wp-page-app .kanban{max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain}
+.wp-page-app .admin-banner{background:var(--navy);border-radius:16px;padding:24px}
+.wp-page-app .wp-section{padding-block:72px}
+.wp-page-app .wp-feature-card,.wp-page-app .wp-about-card{border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.wp-page-app .wp-feature-card h3,.wp-page-app .wp-plan-head h3{letter-spacing:-.025em}
+.wp-page-app .wp-how,.wp-page-app .wp-about-art{background:var(--navy)}
+.wp-page-app .wp-price-featured{background:var(--navy);color:#fff}
+.wp-page-app .wp-section-head h2,.wp-page-app .wp-pricing-head h2,.wp-page-app .wp-faq-head h2{letter-spacing:-.045em}
+.wp-page-app .wp-faq-list details{border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin-bottom:12px}
+.wp-page-app .wp-contact-panel{padding:32px}
+.wp-page-app .wp-contact-heading h1{letter-spacing:-.045em}
+.wp-page-app .wp-facility-cover{object-fit:contain;background:#edf1f6}
+.wp-page-app .login-visual{background:var(--navy)}
+.wp-page-app .login-panel{background:#f5f7fb}
+.wp-page-app .login-form-wrap{padding:32px;border:1px solid var(--line);border-radius:20px;background:#fff;box-shadow:var(--shadow)}
+.wp-page-app .login-heading h1{letter-spacing:-.045em}
+.wp-page-app .wp-trial-card{background:#fff}
+@media(max-width:960px){.wp-page-home .header .nav{top:100%}.wp-page-home .hero-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:760px){
+ .wp-page-app .content{padding:24px 16px calc(100px + env(safe-area-inset-bottom))!important}
+ .wp-page-app .mobile-menu{min-width:44px;min-height:44px}
+ .wp-page-app .avatar{min-width:44px;min-height:44px}
+ .wp-page-app .wp-section{padding-block:44px}
+ .wp-page-app .wp-contact-panel{padding:22px}
+ .wp-page-app .login-form-wrap{padding:24px}
+ .wp-page-app .wp-public-gallery{grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible}
+ .wp-page-app .wp-public-gallery img{height:auto;aspect-ratio:4/3;object-fit:contain;border-radius:10px}
+}
