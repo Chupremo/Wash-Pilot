@@ -4084,7 +4084,7 @@ async function submitPublicBooking(e){
       setTitle('Create Account','Create your WashPilot account and set up your carwash workspace.');
       return;
     }
-    if(path.startsWith('/facility/')){const facilitySlug=path.slice(9);if(!/^[a-z0-9-]{3,60}$/.test(facilitySlug)){setPath('/businesses',true);applyRoute();return;}requestedAppPage=null;window.wpRouteIsWorkspace=false;window.wpRouteIsLogin=false;showPublicFacilityPage(facilitySlug,'details');return;}
+    if(path.startsWith('/facility/')){const facilitySlug=path.slice(10);if(!/^[a-z0-9-]{3,60}$/.test(facilitySlug)){setPath('/businesses',true);applyRoute();return;}requestedAppPage=null;window.wpRouteIsWorkspace=false;window.wpRouteIsLogin=false;showPublicFacilityPage(facilitySlug,'details');return;}
     if(path.startsWith('/book/')){const facilitySlug=path.slice(6);if(!/^[a-z0-9-]{3,60}$/.test(facilitySlug)){setPath('/businesses',true);applyRoute();return;}requestedAppPage=null;window.wpRouteIsWorkspace=false;window.wpRouteIsLogin=false;showPublicFacilityPage(facilitySlug,'booking');return;}
     const section=publicSections[path];
     if(path!=='/'&&!section){
