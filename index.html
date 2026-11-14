@@ -1244,21 +1244,38 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
 @media(max-width:760px){.wp-facility-brand-editor{align-items:flex-start;flex-wrap:wrap}.wp-public-brand-heading{gap:12px}.wp-public-business-logo{width:64px;height:64px;flex-basis:64px}.wp-public-service-grid{grid-template-columns:1fr}.wp-public-location-cta{grid-template-columns:1fr;padding:14px}.wp-location-map,.wp-location-map iframe{min-height:220px}.wp-location-copy{padding:5px}}
 
 
-/* Public facility service list in the dark booking summary */
-.wp-booking-summary .wp-summary-service-list{
- list-style:disc;padding-left:19px;margin:12px 0 18px;color:#fff;
- display:grid;gap:12px
+/* Public facility service pricing comparison table */
+.wp-booking-summary .wp-summary-price-table-wrap{
+ width:100%;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;
+ margin:14px 0 18px;border-radius:8px
 }
-.wp-booking-summary .wp-summary-service-item{padding-left:2px;color:#fff}
-.wp-booking-summary .wp-summary-service-line{
- display:flex;align-items:flex-start;justify-content:space-between;gap:14px;
- font-size:14px;line-height:1.45;color:#fff
+.wp-booking-summary .wp-summary-price-table{
+ width:100%;min-width:520px;border-collapse:collapse;table-layout:auto;color:#fff;
+ background:transparent;font-size:13px
 }
-.wp-booking-summary .wp-summary-service-line span{font-weight:750;min-width:0}
-.wp-booking-summary .wp-summary-service-line strong{color:#fff;font-weight:900;white-space:nowrap;font-size:14px}
-.wp-booking-summary .wp-summary-service-inclusions{list-style:circle;padding-left:18px;margin:6px 0 0;color:#d2deed;display:grid;gap:3px}
-.wp-booking-summary .wp-summary-service-inclusions li{font-size:11px;line-height:1.5;color:#d2deed}
+.wp-booking-summary .wp-summary-price-table th,
+.wp-booking-summary .wp-summary-price-table td{
+ padding:13px 10px;border-bottom:1px solid rgba(255,255,255,.16);
+ color:#fff;text-align:center;white-space:nowrap;line-height:1.4
+}
+.wp-booking-summary .wp-summary-price-table thead th{
+ font-size:13px;font-weight:800;color:#fff;background:rgba(255,255,255,.055)
+}
+.wp-booking-summary .wp-summary-price-table thead th:first-child,
+.wp-booking-summary .wp-summary-price-table tbody th{
+ text-align:left;min-width:155px
+}
+.wp-booking-summary .wp-summary-price-table tbody th{font-weight:700}
+.wp-booking-summary .wp-summary-price-table tbody td{font-weight:650;font-variant-numeric:tabular-nums}
+.wp-booking-summary .wp-summary-price-table tbody tr:last-child th,
+.wp-booking-summary .wp-summary-price-table tbody tr:last-child td{border-bottom:0}
+.wp-booking-summary .wp-summary-price-table tbody tr:hover{background:rgba(255,255,255,.045)}
 .wp-booking-summary .wp-summary-no-services{font-size:12px;color:#d2deed}
+@media(max-width:600px){
+ .wp-booking-summary .wp-summary-price-table{min-width:490px;font-size:12px}
+ .wp-booking-summary .wp-summary-price-table th,
+ .wp-booking-summary .wp-summary-price-table td{padding:12px 9px}
+}
 
 /* Free / Premium pricing and subscription portal visual finish */
 .wp-price-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;max-width:960px!important;gap:22px!important;align-items:stretch}
@@ -3639,15 +3656,17 @@ function wpPublicServicePriceForSize(service,size){
  const raw=size?prices[size]:null;
  return Number(raw!==undefined&&raw!==null&&raw!==''?raw:(service?.base_price_php??service?.price??0));
 }
-function renderPublicServiceBulletList(size){
+function renderPublicServiceBulletList(){
  if(!wpCurrentPublicServices.length)return '<p class="wp-summary-no-services">No online services are currently listed.</p>';
- return '<ul class="wp-summary-service-list">'+wpCurrentPublicServices.map(s=>{
-  const amount=wpPublicServicePriceForSize(s,size);
-  const price=money(amount)+(size?'':' <small class="wp-service-price-hint">starting price</small>');
-  const inclusions=String(s.description||'').split(/\r?\n/).map(line=>line.replace(/^\s*[-•*]\s*/,'').trim()).filter(Boolean);
-  const nested=inclusions.length?'<ul class="wp-summary-service-inclusions">'+inclusions.map(line=>'<li>'+esc(line)+'</li>').join('')+'</ul>':'';
-  return '<li class="wp-summary-service-item"><div class="wp-summary-service-line"><span>'+esc(s.name)+'</span><strong>'+price+'</strong></div>'+nested+'</li>';
- }).join('')+'</ul>';
+ const sizes=['Small','Medium','Large'];
+ const priceCell=(service,size)=>{
+  const prices=service?.price_by_size||service?.priceBySize||{};
+  const hasSizePrice=prices[size]!==undefined&&prices[size]!==null&&prices[size]!=='';
+  return money(hasSizePrice?Number(prices[size]):Number(service?.base_price_php??service?.price??0));
+ };
+ return '<div class="wp-summary-price-table-wrap"><table class="wp-summary-price-table"><thead><tr><th scope="col">Service</th><th scope="col">Small</th><th scope="col">Medium</th><th scope="col">Large</th></tr></thead><tbody>'+
+  wpCurrentPublicServices.map(service=>'<tr><th scope="row">'+esc(service.name)+'</th>'+sizes.map(size=>'<td>'+priceCell(service,size)+'</td>').join('')+'</tr>').join('')+
+  '</tbody></table></div>';
 }
 function updatePublicServicePricing(){
  const form=document.getElementById('wpPublicBookingForm');if(!form)return;
