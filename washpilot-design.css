@@ -1,13 +1,14 @@
 /* WashPilot visual system. Presentation only; existing application owns all state. */
 :root {
-  --navy:#10233f;--navy2:#17365e;--black:#10233f;--black-2:#17365e;
-  --blue:#2563eb;--blue-d:#1d4ed8;--blue-l:#93b7ff;--blue-soft:#edf3ff;
-  --ink:#17243a;--text:#17243a;--text-2:#46566c;--muted:#596a80;
-  --bg:#f3f5f9;--surface:#f3f5f9;--card:#fff;--line:#dce3ec;
-  --green:#087a50;--red:#bc3434;--amber:#92600f;
+  --navy:#081d37;--navy2:#263a53;--black:#081d37;--black-2:#263a53;
+  --blue:#ffbd2e;--blue-d:#f5ad13;--blue-l:#ffd879;--blue-soft:#fff4d6;
+  --ink:#102845;--text:#102845;--text-2:#657d99;--muted:#657d99;
+  --bg:#edf3f7;--surface:#edf3f7;--card:#fff;--line:#dce6ef;
+  --green:#167a56;--red:#b84646;--amber:#92600f;
   --font:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
-  --font-d:var(--font);--r-ctl:10px;--r-card:18px;
-  --shadow:0 4px 20px rgba(16,35,63,.045);
+  --font-d:var(--font);--r-ctl:10px;--r-card:16px;
+  --shadow:0 1px 2px rgba(8,29,55,.04);
+  --sidebar-width:273px;
 }
 body{font-family:var(--font);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
 h1,h2,h3{font-family:var(--font-d);text-wrap:balance;letter-spacing:-.035em}
@@ -890,4 +891,249 @@ body.wp-page-app{position:relative;width:100%;min-width:0}
 @media(max-width:420px){
  .wp-page-app #publicLanding .wp-hero-visual{min-height:285px}
  .wp-page-app #publicLanding .wp-hero-3d-image{max-height:325px}
+}
+
+
+/* ==========================================================================
+   WASHPILOT UNIFIED COMPACT DESIGN SYSTEM
+   Synced from the WashPilot sandbox reference. Presentation only.
+   ========================================================================== */
+:root {
+  color-scheme: light;
+  --wp-page:#edf3f7; --wp-ink:#102845; --wp-muted:#657d99;
+  --wp-navy:#081d37; --wp-navy-soft:#263a53; --wp-yellow:#ffbd2e;
+  --wp-yellow-hover:#f5ad13; --wp-border:#dce6ef; --wp-white:#fff;
+  --wp-card-radius:16px;
+}
+html { font-size:14px; }
+body {
+  margin:0; background:var(--wp-page)!important; color:var(--wp-ink);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif!important;
+  font-size:14px!important; line-height:1.55; -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+body :is(button,input,select,textarea) { font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; font-size:14px; }
+body :is(h1,h2,h3,h4,h5,h6) {
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif!important;
+  letter-spacing:-.025em; text-wrap:balance;
+}
+body :is(p,li,label,.hint,.subtle,.muted,.stat-note) { line-height:1.6; }
+::selection { background:#ffe4a1; color:#081d37; }
+:focus-visible { outline:3px solid #ffbd2e!important; outline-offset:3px!important; }
+input:focus,select:focus,textarea:focus { border-color:#e4a91d!important; box-shadow:0 0 0 3px rgba(255,189,46,.2)!important; }
+.btn,.wp-btn-primary,.wp-btn-secondary,.wp-btn-white,.wp-plan-button,.login-submit,.wp-signup-submit {
+  min-height:44px; border-radius:12px; font-size:14px; font-weight:650;
+  letter-spacing:-.01em; box-shadow:none!important;
+  transition:background .15s,border-color .15s,color .15s,transform .15s;
+}
+.btn-primary,.wp-btn-primary,.wp-plan-button,.login-submit,.wp-signup-submit {
+  background:#ffbd2e!important; border:1px solid #ffbd2e!important; color:#081d37!important;
+}
+.btn-primary:hover,.wp-btn-primary:hover,.wp-plan-button:hover,.login-submit:hover,.wp-signup-submit:hover {
+  background:#f5ad13!important; border-color:#f5ad13!important; color:#081d37!important; transform:translateY(-1px);
+}
+.btn-outline,.btn-ghost,.btn-ghost-d,.btn.ghost,.wp-btn-secondary {
+  background:#fff!important; border:1px solid #dce6ef!important; color:#102845!important; box-shadow:none!important;
+}
+.btn-outline:hover,.btn-ghost:hover,.btn-ghost-d:hover,.btn.ghost:hover,.wp-btn-secondary:hover {
+  background:#f8fafc!important; border-color:#bfcddd!important; color:#081d37!important;
+}
+.field input,.field select,.field textarea,.search,.login-input,
+.wp-page-app input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.wp-page-app select,.wp-page-app textarea,
+.wp-page-workspace input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.wp-page-workspace select,.wp-page-workspace textarea {
+  min-height:44px; border:1px solid #dce6ef; border-radius:10px; background:#fff;
+  color:#102845; font-size:14px; padding:10px 12px;
+}
+.field label,.login-field label,.wp-page-app label,.wp-page-workspace label { color:#263f5c; font-size:12px; font-weight:650; }
+.subtle,.stat-note,.wp-form-hint,.wp-wizard-help,.wp-booking-note { color:#657d99!important; font-size:12px; line-height:1.6; }
+
+/* Marketing and public home */
+.wp-page-home { background:#edf3f7!important; color:#102845; }
+.wp-page-home .header,.wp-page-home .header .wrap { background:#fff; }
+.wp-page-home .header .wrap { min-height:72px; }
+.wp-page-home .hero { background:#edf3f7!important; padding:64px 0 72px; border-bottom:1px solid #dce6ef; }
+.wp-page-home h1 { font-size:clamp(34px,4.4vw,54px); line-height:1.1; font-weight:780; letter-spacing:-.045em; }
+.wp-page-home h1 .grad { background:none!important; color:#d18a00!important; -webkit-text-fill-color:#d18a00!important; }
+.wp-page-home .lede { color:#526b87; font-size:16px; line-height:1.65; }
+.wp-page-home .sec { padding-block:64px; }
+.wp-page-home .sec-head h2 { font-size:clamp(24px,3vw,32px); line-height:1.18; }
+.wp-page-home .sec-head>p:not(.eyebrow) { color:#657d99; font-size:14px; }
+.wp-page-home .tile,.wp-page-home .plan,.wp-page-home .faq details {
+  border:1px solid #dce6ef; border-radius:16px; box-shadow:none;
+}
+.wp-page-home .tile { background:#fff; padding:24px; }
+.wp-page-home .tile.blue { background:#ffbd2e!important; color:#081d37!important; }
+.wp-page-home .tile.blue :is(h3,p,.ic) { color:#081d37!important; }
+.wp-page-home .tile.dark,.wp-page-home .final-card { background:#081d37!important; color:#fff; }
+.wp-page-home .faq details { background:#fff; }
+.wp-page-home .faq summary { min-height:54px; padding:16px 18px; font-size:14px; }
+.wp-page-home .frame { background:#081d37; border:1px solid #263a53; border-radius:16px; box-shadow:0 12px 32px rgba(8,29,55,.12); }
+.wp-page-home .foot { background:#081d37!important; }
+.wp-page-home .banner { background:#fff; border-block:1px solid #dce6ef; }
+
+/* App shell, workspace navigation, dashboard, POS and management routes */
+.wp-page-app,.wp-page-workspace { background:#edf3f7!important; color:#102845; }
+.wp-page-app .app,.wp-page-workspace .app { grid-template-columns:273px minmax(0,1fr); }
+.wp-page-app .sidebar,.wp-page-workspace .sidebar {
+  background:#081d37!important; border-right:1px solid #1d344e!important;
+  color:#fff; padding:22px 14px; gap:20px;
+}
+.wp-page-app .sidebar .nav button,.wp-page-workspace .sidebar .nav :is(a,button) {
+  min-height:44px; padding:10px 13px; border-radius:10px; color:#d4deeb; font-size:14px; font-weight:600;
+}
+.wp-page-app .nav button.active,.wp-page-app .nav button[aria-current="page"],
+.wp-page-workspace .sidebar .nav :is(a,button).active,
+.wp-page-workspace .sidebar .nav :is(a,button)[aria-current="page"] {
+  background:#263a53!important; color:#fff!important; box-shadow:inset 3px 0 #ffbd2e!important;
+}
+.wp-page-app .nav button:hover,.wp-page-workspace .sidebar .nav :is(a,button):hover { background:#1c3450; color:#fff; }
+.wp-page-app .nav-label,.wp-page-workspace .nav-label { color:#9eb1c8; font-size:10px; font-weight:800; letter-spacing:.12em; }
+.wp-page-app .sidebar .side-foot,.wp-page-workspace .sidebar .side-foot { color:#c9d5e5; border-color:#344863; font-size:12px; }
+.wp-page-app .topbar,.wp-page-workspace .topbar {
+  min-height:78px; background:#fff!important; border-bottom:1px solid #dce6ef!important; box-shadow:none!important;
+}
+.wp-page-app .crumb { font-size:22px; font-weight:750; color:#102845; }
+.wp-page-app .crumb small { color:#657d99; font-size:12px; }
+.wp-page-app .content,.wp-page-workspace .content {
+  max-width:1500px; margin-inline:auto; padding:24px 24px 48px!important; background:#edf3f7;
+}
+.wp-page-workspace .main { min-width:0; background:#edf3f7; }
+.wp-page-app .page-head { margin-bottom:20px; gap:16px; }
+.wp-page-app .page-head h1,.wp-page-workspace .head h1 {
+  color:#102845; font-size:26px; line-height:1.2; font-weight:760; letter-spacing:-.035em;
+}
+.wp-page-app .page-head p,.wp-page-workspace .head p { color:#657d99; font-size:14px; line-height:1.6; }
+.wp-page-app .panel,.wp-page-app .stat,.wp-page-app .mini-card,.wp-page-app .hub-tile,
+.wp-page-workspace .panel,.wp-page-workspace .stat {
+  min-width:0; background:#fff!important; border:1px solid #dce6ef!important;
+  border-radius:16px!important; box-shadow:0 1px 2px rgba(8,29,55,.035)!important; padding:20px;
+}
+.wp-page-app .panel-head { margin-bottom:16px; gap:12px; }
+.wp-page-app .panel-head h3 { font-size:16px; font-weight:700; }
+.wp-page-app .stat-top { color:#657d99; font-size:12px; }
+.wp-page-app .stat-value { color:#102845; font-size:26px; font-weight:760; line-height:1.2; margin:12px 0 6px; }
+.wp-page-app .stat-note { color:#657d99; font-size:12px; }
+.wp-page-app .stat-icon { border-radius:10px; background:#fff4d6; color:#8b5b00; }
+.wp-page-app .form-section,.wp-page-app .summary { padding:18px; background:#f8fafc!important; border:1px solid #dce6ef; border-radius:12px; }
+.wp-page-app .form-grid { gap:16px; }
+.wp-page-app .choice { min-height:58px; border:1px solid #dce6ef; border-radius:12px; padding:13px 14px; }
+.wp-page-app .choice-main b,.wp-page-app .choice-price { color:#102845; font-size:14px; }
+.wp-page-app .queue-item { padding:14px; border:1px solid #dce6ef; border-radius:12px; gap:10px; }
+.wp-page-app .queue-info b { color:#102845; font-size:14px; }
+.wp-page-app .queue-info small { color:#657d99; font-size:12px; }
+.wp-page-app .plate { font-size:11px; border-radius:6px; }
+.wp-page-app .status { border-radius:20px; font-size:11px; font-weight:650; padding:5px 9px; }
+.wp-page-app .tabs button,.wp-page-app .home-range-tabs button { min-height:40px; border-radius:10px; font-size:13px; }
+.wp-page-app .table-wrap,.wp-page-workspace .table-wrap {
+  max-width:100%; overflow:auto; border:1px solid #dce6ef; border-radius:12px; background:#fff;
+}
+.wp-page-app th,.wp-page-workspace th { padding:12px 14px; background:#f7f9fb!important; color:#657d99; font-size:11px; font-weight:750; letter-spacing:.04em; }
+.wp-page-app td,.wp-page-workspace td { padding:13px 14px; color:#29425d; font-size:13px; line-height:1.45; border-bottom:1px solid #edf1f5; }
+.wp-page-app tr:hover td { background:#fbfcfd; }
+.wp-page-app .amount { font-variant-numeric:tabular-nums; font-weight:700; }
+.wp-page-app .empty,.wp-directory-empty { padding:32px 20px; color:#657d99; font-size:13px; line-height:1.6; }
+.wp-page-app .mobile-bottom-nav { background:#fff; border-top:1px solid #dce6ef; }
+.wp-page-app .mobile-bottom-nav button { min-height:50px; font-size:11px; border-radius:10px; }
+.wp-page-app .mobile-bottom-nav button.active { color:#081d37!important; background:#fff4d6!important; }
+.wp-page-workspace .notice {
+  background:#081d37!important; color:#dce8f5!important; border:0;
+  border-radius:16px; padding:16px 18px; font-size:13px;
+}
+.wp-page-workspace .stats { gap:12px; }
+.wp-page-workspace .stat { padding:18px; }
+.wp-page-workspace .stat .k,.wp-page-workspace .stat small { color:#657d99; font-size:12px; }
+.wp-page-workspace .stat .v,.wp-page-workspace .stat strong { color:#102845; font-size:25px; font-weight:750; }
+
+/* Sign-in, signup, recovery and errors */
+.wp-page-auth,.wp-page-error { background:#edf3f7!important; color:#102845; }
+.wp-page-auth .shell { background:#edf3f7!important; }
+.wp-page-auth .shell>.panel { background:#081d37!important; padding:44px clamp(26px,4vw,64px); }
+.wp-page-auth .shell>.panel h1,.wp-page-auth .shell>.panel h2 { color:#fff; font-size:26px; line-height:1.18; font-weight:740; }
+.wp-page-auth .side { background:#edf3f7; padding:26px clamp(20px,3vw,48px); }
+.wp-page-auth .card,.wp-page-error .card {
+  background:#fff!important; border:1px solid #dce6ef!important; border-radius:16px!important;
+  padding:28px; box-shadow:0 1px 2px rgba(8,29,55,.04)!important;
+}
+.wp-page-auth .card h1 { color:#102845; font-size:28px; line-height:1.2; }
+.wp-page-auth .card .sub,.wp-page-auth .card p { color:#657d99; font-size:14px; line-height:1.6; }
+.wp-page-auth .card input { min-height:44px; border-radius:10px; font-size:14px; }
+.wp-page-auth .panel-foot { color:#c2d0e0; font-size:12px; }
+
+/* Facility directory, business profile and online booking flow */
+.wp-site-header,.wp-public .wp-site-nav { background:#fff!important; border-bottom:1px solid #dce6ef!important; box-shadow:none!important; }
+.wp-public .wp-site-nav { min-height:72px; }
+.wp-directory-view { max-width:1240px; padding-inline:24px; }
+.wp-directory-head h1 { color:#102845; font-size:clamp(26px,3.4vw,38px); letter-spacing:-.035em; }
+.wp-facility-card,.wp-public-service-card,.wp-booking-summary,.wp-booking-form,
+.wp-contact-panel,.wp-contact-side,.wp-price-card,.wp-trial-card,.wp-payment-settings-card {
+  background:#fff!important; border:1px solid #dce6ef!important; border-radius:16px!important;
+  box-shadow:0 1px 2px rgba(8,29,55,.04)!important;
+}
+.wp-booking-form { padding:22px; }
+.wp-booking-summary { padding:20px; background:#fff!important; }
+.wp-public-service-card { padding:18px; }
+.wp-calendar-day,.wp-time-card,.wp-service-option { min-height:42px; border-radius:10px; }
+.wp-calendar-day.selected,.wp-time-card.selected,.wp-service-option.selected {
+  background:#fff4d6!important; border-color:#ffbd2e!important; color:#081d37!important; outline:1px solid #ffbd2e!important;
+}
+.wp-wizard-title { color:#102845; font-size:20px; letter-spacing:-.025em; line-height:1.25; }
+.wp-wizard-help,.wp-booking-note { color:#657d99; font-size:13px; line-height:1.6; }
+.wp-payment-instructions { background:#fff8e8!important; border:1px solid #f1d58e!important; border-radius:12px; color:#34445a!important; }
+.wp-review-summary { background:#f8fafc!important; border:1px solid #dce6ef!important; border-radius:12px; }
+.wp-wizard-actions button { min-height:46px; }
+.wp-final-cta,.wp-contact-bottom { background:#081d37!important; }
+.wp-public .wp-facility-info-strip {
+  background:#fff!important; border:1px solid #dce6ef!important; border-radius:16px!important;
+  box-shadow:0 1px 2px rgba(8,29,55,.04)!important;
+}
+.wp-public .wp-facility-info-label { color:#946200!important; }
+.wp-public .wp-facility-info-main h1 { color:#102845!important; font-size:24px; }
+.wp-public .wp-facility-info-main p,.wp-public .wp-facility-hours { color:#657d99!important; }
+
+/* Dialogs and messages */
+.modal,.wp-signup-card,.forgot-card,.wp-tour-panel {
+  background:#fff!important; border:1px solid #dce6ef!important; border-radius:16px!important;
+  box-shadow:0 12px 32px rgba(8,29,55,.12)!important;
+}
+.modal { padding:24px; }
+.modal-head h2 { color:#102845; font-size:20px; }
+.close,.wp-signup-close,.wp-tour-close { min-width:44px; min-height:44px; border-radius:10px; }
+.toast { font-size:13px; line-height:1.5; border-radius:12px; max-width:min(440px,calc(100vw - 32px)); }
+.wp-tour-panel p,.wp-tour-purpose span,.wp-tour-try span { font-size:14px; line-height:1.6; }
+
+@media(min-width:1101px) {
+  .wp-page-app .app,.wp-page-workspace .app { grid-template-columns:273px minmax(0,1fr); }
+  .wp-page-app .sidebar,.wp-page-workspace .sidebar { width:273px; }
+}
+@media(max-width:1024px) {
+  .wp-page-app .content,.wp-page-workspace .content { padding:22px 18px 42px!important; }
+  .wp-page-home .wrap { padding-inline:24px; }
+}
+@media(max-width:760px) {
+  body { font-size:14px!important; }
+  .wp-page-app .content,.wp-page-workspace .content { padding:17px 14px 90px!important; }
+  .wp-page-app .topbar,.wp-page-workspace .topbar { min-height:66px; padding:10px 14px; }
+  .wp-page-app .crumb { font-size:16px; }
+  .wp-page-app .page-head h1,.wp-page-workspace .head h1 { font-size:23px; }
+  .wp-page-app .page-head p,.wp-page-workspace .head p { font-size:13px; }
+  .wp-page-app .panel,.wp-page-app .stat,.wp-page-app .mini-card,.wp-page-workspace .panel,.wp-page-workspace .stat { padding:16px; border-radius:14px!important; }
+  .wp-page-app .stat-value,.wp-page-workspace .stat .v,.wp-page-workspace .stat strong { font-size:22px; overflow-wrap:anywhere; }
+  .wp-page-app .grid { gap:12px; }
+  .wp-page-app .form-section,.wp-page-app .summary { padding:15px; }
+  .wp-page-app .actions { gap:8px; flex-wrap:wrap; }
+  .wp-page-app .actions .btn { flex:1 1 130px; white-space:normal; }
+  .wp-page-home .hero { padding:38px 0 44px; }
+  .wp-page-home .sec { padding-block:44px; }
+  .wp-page-home .wrap { padding-inline:16px; }
+  .wp-page-home .tile { padding:18px; }
+  .wp-page-auth .card { width:100%; padding:22px; }
+  .wp-page-auth .side { padding:18px 14px; }
+  .wp-booking-form,.wp-booking-summary { padding:17px!important; }
+  .wp-directory-view { padding-inline:14px; }
+  .wp-public .wp-facility-info-strip { padding:16px!important; border-radius:14px!important; }
+}
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after { transition-duration:.01ms!important; animation-duration:.01ms!important; scroll-behavior:auto!important; }
 }
