@@ -1137,3 +1137,123 @@ input:focus,select:focus,textarea:focus { border-color:#e4a91d!important; box-sh
 @media(prefers-reduced-motion:reduce) {
   *,*::before,*::after { transition-duration:.01ms!important; animation-duration:.01ms!important; scroll-behavior:auto!important; }
 }
+
+
+/* Final cascade guard: beat legacy inline page themes and !important tokens. */
+:root {
+  --navy:#081d37!important; --navy2:#263a53!important;
+  --black:#081d37!important; --black-2:#263a53!important;
+  --blue:#ffbd2e!important; --blue-d:#f5ad13!important; --blue-l:#ffd879!important;
+  --blue-soft:#fff4d6!important; --ink:#102845!important; --text:#102845!important;
+  --text-2:#657d99!important; --muted:#657d99!important;
+  --bg:#edf3f7!important; --surface:#edf3f7!important; --card:#fff!important;
+  --line:#dce6ef!important; --font:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif!important;
+  --font-d:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif!important;
+  --r-card:16px!important; --shadow:0 1px 2px rgba(8,29,55,.04)!important;
+}
+body.wp-page-app,body.wp-page-workspace,body.wp-page-home,body.wp-page-auth,body.wp-page-error {
+  background-color:#edf3f7!important;
+  background-image:none!important;
+  color:#102845!important;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif!important;
+  font-size:14px!important;
+  line-height:1.55!important;
+}
+body.wp-page-app :is(h1,h2,h3,h4,h5,h6,button,input,select,textarea),
+body.wp-page-workspace :is(h1,h2,h3,h4,h5,h6,button,input,select,textarea),
+body.wp-page-home :is(h1,h2,h3,h4,h5,h6,button,input,select,textarea),
+body.wp-page-auth :is(h1,h2,h3,h4,h5,h6,button,input,select,textarea),
+body.wp-page-error :is(h1,h2,h3,h4,h5,h6,button,input,select,textarea) {
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif!important;
+}
+body.wp-page-app .sidebar,body.wp-page-workspace .sidebar {
+  background:#081d37!important;
+  background-image:none!important;
+  color:#fff!important;
+}
+body.wp-page-app .nav button.active,body.wp-page-app .nav button[aria-current="page"],
+body.wp-page-workspace .sidebar .nav :is(a,button).active,
+body.wp-page-workspace .sidebar .nav :is(a,button)[aria-current="page"] {
+  background:#263a53!important;
+  background-image:none!important;
+  color:#fff!important;
+  box-shadow:inset 3px 0 #ffbd2e!important;
+}
+body.wp-page-app .btn:not(.secondary):not(.ghost):not(.danger):not(.success),
+body.wp-page-workspace .btn:not(.secondary):not(.ghost):not(.danger):not(.success),
+body.wp-page-home .btn-primary,body.wp-page-auth .btn-primary,
+body.wp-page-auth .login-submit,body.wp-page-auth .wp-signup-submit,
+body.wp-page-error .btn-primary,
+body.wp-page-app .wp-btn-primary,body.wp-page-app .wp-plan-button,body.wp-page-app .wp-nav-cta {
+  background:#ffbd2e!important;
+  background-image:none!important;
+  border-color:#ffbd2e!important;
+  color:#081d37!important;
+  box-shadow:none!important;
+}
+body.wp-page-app .btn:not(.secondary):not(.ghost):not(.danger):not(.success):hover,
+body.wp-page-workspace .btn:not(.secondary):not(.ghost):not(.danger):not(.success):hover,
+body.wp-page-home .btn-primary:hover,body.wp-page-auth .btn-primary:hover,
+body.wp-page-auth .login-submit:hover,body.wp-page-auth .wp-signup-submit:hover,
+body.wp-page-error .btn-primary:hover,body.wp-page-app .wp-btn-primary:hover {
+  background:#f5ad13!important;
+  border-color:#f5ad13!important;
+  color:#081d37!important;
+}
+body.wp-page-app .topbar,body.wp-page-workspace .topbar,
+body.wp-page-home .header,body.wp-page-auth .card {
+  background:#fff!important;
+  background-image:none!important;
+  border-color:#dce6ef!important;
+  box-shadow:none;
+}
+body.wp-page-app .content,body.wp-page-workspace .content,
+body.wp-page-auth .side,body.wp-page-home .hero {
+  background:#edf3f7!important;
+  background-image:none!important;
+}
+body.wp-page-app .panel,body.wp-page-app .stat,body.wp-page-app .mini-card,
+body.wp-page-app .hub-tile,body.wp-page-workspace .panel,body.wp-page-workspace .stat,
+body.wp-page-home .tile,body.wp-page-home .plan,body.wp-page-auth .card,
+body.wp-public .wp-facility-card,body.wp-public .wp-facility-info-strip,
+body.wp-public .wp-booking-form,body.wp-public .wp-booking-summary,
+body.wp-public .wp-public-service-card {
+  background:#fff!important;
+  background-image:none!important;
+  border:1px solid #dce6ef!important;
+  border-radius:16px!important;
+  box-shadow:0 1px 2px rgba(8,29,55,.04)!important;
+}
+body.wp-public,body.wp-page-app .wp-public,body.wp-page-app .wp-public-facility-page {
+  background:#edf3f7!important;
+  background-image:none!important;
+  color:#102845!important;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif!important;
+}
+body.wp-page-home .tile.blue,body.wp-page-home .tile.blue :is(h3,p,.ic) {
+  background:#ffbd2e!important;
+  color:#081d37!important;
+}
+body.wp-page-auth .shell>.panel {
+  background:#081d37!important;
+  background-image:none!important;
+}
+body.wp-page-auth .shell>.panel :is(h1,h2,p,small,li) { color:#fff; }
+body.wp-page-auth .card :is(h1,h2,p,label) { font-family:Inter,ui-sans-serif,system-ui,sans-serif!important; }
+body.wp-page-app .wp-public .wp-site-nav,body.wp-page-app .wp-site-header {
+  background:#fff!important;
+  background-image:none!important;
+  border-bottom:1px solid #dce6ef!important;
+}
+body.wp-page-app .wp-public .wp-facility-info-strip {
+  background:#fff!important;
+  background-image:none!important;
+  border:1px solid #dce6ef!important;
+  border-radius:16px!important;
+  box-shadow:0 1px 2px rgba(8,29,55,.04)!important;
+}
+body.wp-page-app .wp-public .wp-payment-instructions {
+  background:#fff8e8!important;
+  border:1px solid #f1d58e!important;
+  color:#34445a!important;
+}
