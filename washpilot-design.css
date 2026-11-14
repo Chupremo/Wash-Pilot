@@ -680,3 +680,52 @@ h1,h2,h3,h4{font-family:Poppins,system-ui,sans-serif!important;font-weight:600!i
 @media(prefers-reduced-motion:reduce){
  #wpPublicFacilityContent .wp-booking-group input,#wpPublicFacilityContent .wp-booking-group select,#wpPublicFacilityContent .wp-booking-group textarea,#wpPublicFacilityContent .wp-booking-submit,#wpPublicFacilityContent .wp-public-gallery img{transition:none}
 }
+
+
+/* Public booking: focused three-step flow and strict mobile viewport fit */
+#wpPublicFacilityContent,
+#wpPublicFacilityContent *{box-sizing:border-box}
+#wpPublicFacilityContent{width:100%;max-width:100%;overflow-x:clip}
+#wpPublicFacilityContent .wp-public-facility-page{width:min(100%,1120px);max-width:100%;margin-inline:auto}
+#wpPublicFacilityContent .wp-booking-layout{grid-template-columns:minmax(0,1fr) minmax(280px,.72fr);min-width:0}
+#wpPublicFacilityContent .wp-booking-form{width:100%;min-width:0;max-width:100%}
+#wpPublicFacilityContent #wpPublicBookingForm{width:100%;max-width:100%;min-width:0}
+#wpPublicFacilityContent .wp-booking-group[hidden],
+#wpPublicFacilityContent .wp-booking-navigation [hidden]{display:none!important}
+#wpPublicFacilityContent .wp-booking-stepper>div.is-complete{color:#176c49}
+#wpPublicFacilityContent .wp-booking-stepper>div.is-complete span{background:#dff5e9;color:#176c49}
+#wpPublicFacilityContent .wp-booking-navigation{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px}
+#wpPublicFacilityContent .wp-booking-step-count{color:#71819a;font-size:12px;font-weight:750;white-space:nowrap}
+#wpPublicFacilityContent .wp-booking-back{min-height:52px;padding:0 18px;border:1px solid #dbe4f1;border-radius:13px;background:#fff;color:#304563;font:700 14px inherit}
+#wpPublicFacilityContent .wp-booking-next,
+#wpPublicFacilityContent .wp-booking-submit{min-height:54px;min-width:150px;margin:0;padding:13px 20px;border:0;border-radius:14px;font-size:15px;font-weight:800}
+#wpPublicFacilityContent .wp-booking-submit{position:static;bottom:auto;z-index:auto}
+#wpPublicFacilityContent .wp-booking-terms{margin-top:12px}
+@media(max-width:700px){
+ html,body{max-width:100%;overflow-x:hidden}
+ #wpPublicFacilityContent{padding-inline:0}
+ #wpPublicFacilityContent .wp-public-facility-page{width:100%;max-width:100%;padding-inline:14px;margin:0 auto}
+ #wpPublicFacilityContent .wp-booking-layout{display:flex;flex-direction:column;width:100%;max-width:100%;min-width:0;margin-top:14px;gap:14px}
+ #wpPublicFacilityContent .wp-booking-form{width:100%;max-width:100%;min-width:0;padding:18px 15px;border-radius:20px}
+ #wpPublicFacilityContent .wp-booking-form-heading h2{font-size:23px}
+ #wpPublicFacilityContent .wp-booking-form-heading p{font-size:13px}
+ #wpPublicFacilityContent .wp-booking-stepper{width:100%;max-width:100%;gap:7px;padding:10px 9px}
+ #wpPublicFacilityContent .wp-booking-stepper>div{gap:5px;font-size:11px}
+ #wpPublicFacilityContent .wp-booking-stepper>div span{width:27px;height:27px;flex:0 0 27px}
+ #wpPublicFacilityContent .wp-booking-stepper>i{min-width:8px}
+ #wpPublicFacilityContent .wp-booking-group{width:100%;min-width:0;padding:8px 0 4px;border:0}
+ #wpPublicFacilityContent .wp-booking-group .grid.two{grid-template-columns:minmax(0,1fr);gap:0}
+ #wpPublicFacilityContent .wp-booking-group input:not([type=file]),
+ #wpPublicFacilityContent .wp-booking-group select,
+ #wpPublicFacilityContent .wp-booking-group textarea{width:100%;max-width:100%;min-width:0;min-height:54px;font-size:16px}
+ #wpPublicFacilityContent .wp-booking-group input[type=date]{width:100%;max-width:100%;min-width:0;display:block}
+ #wpPublicFacilityContent .wp-booking-group input[type=file]{width:100%;max-width:100%;min-width:0;font-size:12px}
+ #wpPublicFacilityContent .wp-payment-instructions{width:100%;max-width:100%;overflow-wrap:anywhere}
+ #wpPublicFacilityContent .wp-booking-total{width:100%;max-width:100%}
+ #wpPublicFacilityContent .wp-booking-navigation{position:sticky;bottom:calc(env(safe-area-inset-bottom) + 8px);z-index:8;width:100%;padding:10px;margin:16px 0 0;border:1px solid #e2e9f4;border-radius:16px;background:rgba(255,255,255,.96);box-shadow:0 10px 28px rgba(22,42,76,.12);backdrop-filter:blur(14px)}
+ #wpPublicFacilityContent .wp-booking-back{min-height:50px;padding:0 14px;font-size:13px}
+ #wpPublicFacilityContent .wp-booking-step-count{font-size:11px}
+ #wpPublicFacilityContent .wp-booking-next,
+ #wpPublicFacilityContent .wp-booking-submit{flex:1;min-width:0;min-height:50px;padding:12px 14px;font-size:14px}
+ #wpPublicFacilityContent .wp-booking-summary{width:100%;max-width:100%;min-width:0}
+}
