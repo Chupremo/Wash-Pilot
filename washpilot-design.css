@@ -729,3 +729,50 @@ h1,h2,h3,h4{font-family:Poppins,system-ui,sans-serif!important;font-weight:600!i
  #wpPublicFacilityContent .wp-booking-submit{flex:1;min-width:0;min-height:50px;padding:12px 14px;font-size:14px}
  #wpPublicFacilityContent .wp-booking-summary{width:100%;max-width:100%;min-width:0}
 }
+
+
+/* Mobile public facility + booking polish: prevent clipped viewport and give the wizard a clean full-width layout. */
+*,*::before,*::after{box-sizing:border-box}
+html,body{width:100%;max-width:100%;min-width:0;overflow-x:clip}
+body{margin:0}
+img,svg,video,canvas{max-width:100%}
+.wp-site-header,.wp-site-header .wrap,.wp-directory-view,.wp-directory-head,
+.wp-facility-card,.wp-booking-form,.wp-booking-layout,.wp-booking-summary,
+.wp-public-service-grid,.wp-contact-panel,.wp-contact-side{min-width:0;max-width:100%}
+.wp-directory-view{width:100%;margin-inline:auto}
+.wp-facility-card,.wp-booking-form{width:100%;overflow:hidden}
+.wp-booking-form{background:#fff;border:1px solid #e0e7f1;border-radius:22px;box-shadow:0 14px 36px rgba(16,35,63,.07)}
+.wp-booking-form :is(input,select,textarea,button){max-width:100%;min-width:0}
+.wp-booking-form :is(input,select,textarea){width:100%;font-size:16px}
+.wp-booking-form .wp-wizard-actions{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.wp-booking-form .wp-wizard-actions button{flex:1 1 0;min-width:0}
+.wp-booking-form .wp-payment-instructions{background:#f1f5ff;border:1px solid #dce6fb;padding:18px;color:#29436d}
+.wp-booking-form .wp-review-summary{background:#f7f9fd;border:1px solid #e3e9f2;padding:18px}
+@media(max-width:760px){
+  html,body{overflow-x:clip!important}
+  .wp-site-header{width:100%;max-width:100%;overflow:clip}
+  .wp-site-header .wrap{width:100%;max-width:100%;padding-inline:16px;gap:10px}
+  .wp-site-header .brand,.wp-site-header .logo{min-width:0;max-width:55%;overflow:hidden}
+  .wp-directory-view{width:100%;max-width:100%;padding:22px 16px calc(44px + env(safe-area-inset-bottom));margin:0}
+  .wp-directory-head{margin-bottom:18px}
+  .wp-facility-card{display:flex;flex-wrap:wrap;gap:14px;padding:18px;border-radius:20px;margin:0 0 18px}
+  .wp-facility-card :is(h1,h2,h3,p){min-width:0;overflow-wrap:anywhere}
+  .wp-facility-card h1{font-size:clamp(25px,7vw,34px);line-height:1.12;letter-spacing:-.04em}
+  .wp-booking-form{padding:18px 16px!important;margin:0;border-radius:20px}
+  .wp-booking-form h1,.wp-booking-form h2{font-size:clamp(24px,6.5vw,30px);line-height:1.15}
+  .wp-booking-form .wp-wizard-title{font-size:20px;line-height:1.25}
+  .wp-booking-form .wp-wizard-help{font-size:14px}
+  .wp-booking-form .wp-wizard-progress,.wp-booking-form .wp-stepper{width:100%;max-width:100%;overflow:hidden}
+  .wp-booking-form .wp-wizard-actions{position:sticky;bottom:0;z-index:5;margin:18px -16px -18px;padding:14px 16px calc(14px + env(safe-area-inset-bottom));background:rgba(255,255,255,.97);border-top:1px solid #e6ebf3;backdrop-filter:blur(12px)}
+  .wp-booking-form .wp-wizard-actions button{min-height:50px;border-radius:12px}
+  .wp-booking-form .wp-payment-instructions{padding:16px;font-size:14px;overflow-wrap:anywhere}
+  .wp-booking-form .wp-review-summary{padding:16px}
+  .wp-booking-summary,.wp-contact-panel,.wp-contact-side{padding:18px!important;border-radius:18px}
+  .wp-directory-view :is(.wp-booking-form,.wp-facility-card,.wp-booking-summary,.wp-contact-panel,.wp-contact-side){margin-inline:0}
+}
+@media(max-width:390px){
+  .wp-directory-view{padding-inline:12px}
+  .wp-booking-form{padding:16px 12px!important}
+  .wp-booking-form .wp-wizard-actions{margin-inline:-12px;padding-inline:12px}
+  .wp-site-header .wrap{padding-inline:12px}
+}
