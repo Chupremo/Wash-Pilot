@@ -1244,37 +1244,50 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
 @media(max-width:760px){.wp-facility-brand-editor{align-items:flex-start;flex-wrap:wrap}.wp-public-brand-heading{gap:12px}.wp-public-business-logo{width:64px;height:64px;flex-basis:64px}.wp-public-service-grid{grid-template-columns:1fr}.wp-public-location-cta{grid-template-columns:1fr;padding:14px}.wp-location-map,.wp-location-map iframe{min-height:220px}.wp-location-copy{padding:5px}}
 
 
-/* Public facility service pricing comparison table */
+/* Compact, fully visible public facility pricing table */
 .wp-booking-summary .wp-summary-price-table-wrap{
- width:100%;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;
- margin:14px 0 18px;border-radius:8px
+ width:100%;max-width:100%;overflow:visible;margin:12px 0 18px;border-radius:8px
 }
 .wp-booking-summary .wp-summary-price-table{
- width:100%;min-width:520px;border-collapse:collapse;table-layout:auto;color:#fff;
- background:transparent;font-size:13px
+ width:100%!important;min-width:0!important;max-width:100%;table-layout:fixed;
+ border-collapse:collapse;color:#fff;background:transparent;font-size:12px;white-space:normal
 }
 .wp-booking-summary .wp-summary-price-table th,
 .wp-booking-summary .wp-summary-price-table td{
- padding:13px 10px;border-bottom:1px solid rgba(255,255,255,.16);
- color:#fff;text-align:center;white-space:nowrap;line-height:1.4
+ box-sizing:border-box;padding:10px 6px!important;
+ border-bottom:1px solid rgba(255,255,255,.17)!important;
+ color:#fff!important;background:transparent!important;
+ text-align:center;white-space:normal!important;line-height:1.3;
+ overflow-wrap:anywhere
 }
 .wp-booking-summary .wp-summary-price-table thead th{
- font-size:13px;font-weight:800;color:#fff;background:rgba(255,255,255,.055)
+ font-size:11px!important;font-weight:800;color:#fff!important;
+ background:rgba(255,255,255,.07)!important;letter-spacing:.2px
 }
 .wp-booking-summary .wp-summary-price-table thead th:first-child,
 .wp-booking-summary .wp-summary-price-table tbody th{
- text-align:left;min-width:155px
+ width:37%;text-align:left;min-width:0!important
 }
-.wp-booking-summary .wp-summary-price-table tbody th{font-weight:700}
-.wp-booking-summary .wp-summary-price-table tbody td{font-weight:650;font-variant-numeric:tabular-nums}
+.wp-booking-summary .wp-summary-price-table thead th:not(:first-child),
+.wp-booking-summary .wp-summary-price-table tbody td{width:21%}
+.wp-booking-summary .wp-summary-price-table tbody th{
+ font-size:10px!important;font-weight:700;color:#fff!important
+}
+.wp-booking-summary .wp-summary-price-table tbody td{
+ font-size:10px!important;font-weight:700;font-variant-numeric:tabular-nums;
+ white-space:nowrap!important
+}
 .wp-booking-summary .wp-summary-price-table tbody tr:last-child th,
-.wp-booking-summary .wp-summary-price-table tbody tr:last-child td{border-bottom:0}
-.wp-booking-summary .wp-summary-price-table tbody tr:hover{background:rgba(255,255,255,.045)}
+.wp-booking-summary .wp-summary-price-table tbody tr:last-child td{border-bottom:0!important}
+.wp-booking-summary .wp-summary-price-table tbody tr:hover{background:rgba(255,255,255,.035)!important}
 .wp-booking-summary .wp-summary-no-services{font-size:12px;color:#d2deed}
 @media(max-width:600px){
- .wp-booking-summary .wp-summary-price-table{min-width:490px;font-size:12px}
+ .wp-booking-summary .wp-summary-price-table{font-size:10px}
  .wp-booking-summary .wp-summary-price-table th,
- .wp-booking-summary .wp-summary-price-table td{padding:12px 9px}
+ .wp-booking-summary .wp-summary-price-table td{padding:9px 4px!important}
+ .wp-booking-summary .wp-summary-price-table thead th{font-size:9px!important}
+ .wp-booking-summary .wp-summary-price-table tbody th{font-size:9px!important;line-height:1.25}
+ .wp-booking-summary .wp-summary-price-table tbody td{font-size:9px!important}
 }
 
 /* Free / Premium pricing and subscription portal visual finish */
