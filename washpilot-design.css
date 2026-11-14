@@ -240,3 +240,238 @@ img{max-width:100%}
  .wp-page-app .wp-public-gallery{grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible}
  .wp-page-app .wp-public-gallery img{height:auto;aspect-ratio:4/3;object-fit:contain;border-radius:10px}
 }
+
+/* A consistent, spacious presentation for the primary site and workspace. */
+.wp-page-app .wp-site-nav{height:80px;max-width:1280px;gap:24px}
+.wp-page-app .wp-site-brand{display:flex;align-items:center;gap:9px;width:auto;flex:0 0 auto;color:#102a50}
+.wp-page-app .wp-site-brand img{width:59px;height:42px;object-fit:contain}
+.wp-page-app .wp-site-brand span{font-size:18px;font-weight:800;letter-spacing:-.05em;line-height:1.1}
+.wp-page-app .wp-site-brand small{display:block;font-size:8px;font-weight:700;letter-spacing:.09em;margin-top:4px;color:#64748b}
+.wp-page-app .wp-site-links{gap:24px}
+.wp-page-app .wp-site-links a{font-size:13px;color:#465970}
+.wp-page-app .wp-nav-cta{min-height:44px;padding:12px 18px;font-size:13px;background:#173b78!important;border-radius:10px}
+.wp-page-app .wp-hero{padding-top:74px!important}
+.wp-page-app .wp-hero-grid{min-height:500px;gap:54px}
+.wp-page-app .wp-hero h1{font-size:clamp(50px,5.4vw,72px);line-height:1.04;letter-spacing:-.055em}
+.wp-page-app .wp-hero-lede{font-size:17px;line-height:1.7;color:#c2d2e7}
+.wp-page-app .wp-hero-actions{gap:12px}
+.wp-page-app .wp-hero-actions .wp-btn-primary,.wp-page-app .wp-hero-actions .wp-btn-secondary{min-height:52px;padding:14px 20px;font-size:14px;border-radius:10px;justify-content:center}
+.wp-page-app .wp-hero-actions .wp-btn-secondary{background:transparent;color:#fff;border:1px solid #617491}
+.wp-page-app .wp-hero-actions .wp-btn-secondary:hover{background:#233b5d;border-color:#a9c5e8}
+.wp-page-app .wp-hero-proof b,.wp-page-app .wp-hero-proof small{font-size:12px}
+.wp-page-app .wp-dashboard-window{padding:22px;border-radius:20px;background:#f5f8fc;box-shadow:0 30px 80px #0005;transform:none}
+.wp-page-app .wp-dash-welcome small,.wp-page-app .wp-chart-head span{font-size:9px}
+.wp-page-app .wp-dash-stats span,.wp-page-app .wp-queue-row b,.wp-page-app .wp-chart-head b{font-size:11px}
+.wp-page-app .wp-dash-stats small,.wp-page-app .wp-queue-row small,.wp-page-app .wp-queue-row em,.wp-page-app .wp-chart-days{font-size:9px}
+.wp-page-app .wp-dash-stats b{font-size:24px}
+.wp-page-app .wp-mini-chart{height:110px}
+.wp-page-app .wp-value-strip{padding-block:30px;gap:32px}
+.wp-page-app .wp-value-strip>div{display:grid;grid-template-columns:42px 1fr;column-gap:14px;row-gap:2px}
+.wp-page-app .wp-value-icon{grid-row:span 2;width:42px;height:42px}
+.wp-page-app .wp-value-strip b{font-size:14px}
+.wp-page-app .wp-value-strip small{font-size:12px;margin:0;color:#64748b}
+.wp-page-app .wp-section-head>p,.wp-page-app .wp-how-intro>p,.wp-page-app .wp-feature-card p,.wp-page-app .wp-steps p,.wp-page-app .wp-about-copy>p,.wp-page-app .wp-faq-head p,.wp-page-app .wp-faq-list details p{font-size:14px;line-height:1.7}
+.wp-page-app .wp-feature-card{padding:28px;min-height:255px}
+.wp-page-app .wp-feature-card h3{font-size:21px}
+.wp-page-app .wp-feature-label,.wp-page-app .wp-eyebrow{font-size:10px;letter-spacing:.12em}
+.wp-page-app .wp-steps h3{font-size:16px}
+.wp-page-app .wp-faq-list summary{font-size:15px}
+.wp-page-app .wp-price-card{padding:32px}
+.wp-page-app .wp-plan-desc,.wp-page-app .wp-price-card li,.wp-page-app .wp-trial-banner small,.wp-page-app .wp-price-note,.wp-page-app .wp-final-cta p,.wp-page-app .wp-final-actions a,.wp-page-app .wp-footer-links a,.wp-page-app .wp-footer-brand p{font-size:13px;line-height:1.6}
+.wp-page-app .wp-trial-banner b,.wp-page-app .wp-plan-button{font-size:14px}
+.wp-page-app .wp-footer-brand img{width:75px}
+.wp-page-app .wp-footer>small{font-size:11px}
+.wp-page-app .easy-welcome{padding:30px 32px;border-radius:18px}
+.wp-page-app .easy-welcome h1{font-size:26px;line-height:1.2}
+.wp-page-app .easy-welcome p{font-size:14px;max-width:650px}
+.wp-page-app .easy-welcome .btn{background:#fff!important;color:#173b78!important}
+.wp-page-app .home-range-panel{padding:14px 18px}
+.wp-page-app .home-range-label{font-size:13px}
+.wp-page-app .stat{padding:24px;box-shadow:0 8px 28px #10233f08}
+.wp-page-app .stat-icon{width:42px;height:42px}
+.wp-page-app .hub-tile{transition:border-color .15s,box-shadow .15s}
+.wp-page-app .hub-tile:hover{box-shadow:0 8px 24px #10233f10}
+.wp-page-app .easy-queue-row{padding:16px 0;gap:14px}
+.wp-page-workspace .stat.dark,.wp-page-workspace .plan.premium{background:#10233f;color:#fff;border-color:#10233f}
+.wp-page-auth .shell>.panel{background:#10233f}
+.wp-page-auth .card{box-shadow:0 20px 60px #10233f0d}
+@media(max-width:1000px){
+ .wp-page-app .wp-site-links{gap:14px}
+ .wp-page-app .wp-site-brand small{display:none}
+}
+@media(max-width:780px){
+ .wp-page-app .wp-site-nav{height:70px;padding:0 18px}
+ .wp-page-app .wp-site-brand img{width:52px;height:38px}
+ .wp-page-app .wp-site-brand span{font-size:17px}
+ .wp-page-app .wp-site-links{top:64px;gap:0}
+ .wp-page-app .wp-site-links a{font-size:14px}
+ .wp-page-app .wp-hero{padding:48px 20px 0!important}
+ .wp-page-app .wp-hero-grid{min-height:0;gap:24px}
+ .wp-page-app .wp-hero h1{font-size:clamp(42px,10vw,60px);letter-spacing:-.05em}
+ .wp-page-app .wp-hero-lede{font-size:16px}
+ .wp-page-app .wp-dashboard-window{padding:14px}
+ .wp-page-app .wp-value-strip{padding:28px 20px;gap:18px}
+ .wp-page-app .wp-feature-card{padding:24px}
+ .wp-page-app .easy-welcome{padding:24px}
+}
+@media(max-width:520px){
+ .wp-page-app .wp-hero-actions{display:grid;grid-template-columns:1fr;gap:10px}
+ .wp-page-app .wp-hero-visual{min-height:330px}
+ .wp-page-app .wp-dash-stats b{font-size:18px}
+ .wp-page-app .wp-dash-stats span,.wp-page-app .wp-queue-row b,.wp-page-app .wp-chart-head b{font-size:9px}
+ .wp-page-app .wp-dash-stats small,.wp-page-app .wp-queue-row small,.wp-page-app .wp-queue-row em,.wp-page-app .wp-chart-days{font-size:8px}
+ .wp-page-app .wp-mini-chart{height:72px}
+ .wp-page-app .wp-float-chip{display:none}
+ .wp-page-app .wp-final-cta{padding:30px 24px}
+ .wp-page-app .easy-welcome h1{font-size:22px}
+}
+.wp-page-app .sidebar .brand{display:flex;align-items:center;gap:12px;padding:0 4px 8px}
+.wp-page-app .sidebar .brand .brand-lockup{width:60px;height:42px;object-fit:contain;background:#fff;border-radius:8px}
+.wp-page-app .sidebar .brand strong{display:block;color:#fff;font-size:19px;line-height:1.1}
+.wp-page-app .sidebar .brand small{display:block;color:#aabdd7;font-size:8px;letter-spacing:.08em;margin-top:5px}
+@media(max-width:780px){
+ .wp-page-app #publicLanding .wp-hero-lede{color:#c2d2e7!important;font-size:16px!important;line-height:1.7!important}
+ .wp-page-app #publicLanding .wp-hero-proof b{color:#e6eef9!important}
+ .wp-page-app #publicLanding .wp-hero-proof small{color:#aebfd4!important}
+}
+.wp-page-app .login-brand .brand-lockup{width:100px;height:58px;object-fit:contain;background:#fff;padding:5px}
+.wp-page-app .login-mobile-brand .brand-lockup{width:80px;height:48px;object-fit:contain}
+@media(max-width:760px){
+ .wp-page-app .stat{padding:18px}
+ .wp-page-app .stat-top{flex-wrap:nowrap;gap:8px}
+ .wp-page-app .stat-icon{width:34px;height:34px;flex:0 0 34px}
+ .wp-page-app .stat-value{margin:12px 0 6px}
+}
+
+/* Dashboard: clear summaries and touch-friendly daily tasks. */
+.wp-page-app .wp-dashboard{display:grid;gap:24px}
+.wp-page-app .wp-dashboard-intro{display:flex;align-items:end;justify-content:space-between;gap:20px}
+.wp-page-app .wp-dashboard-eyebrow{display:block;color:#4269a5;font-size:11px;font-weight:750;letter-spacing:.1em;margin-bottom:7px}
+.wp-page-app .wp-dashboard-intro h1{font-size:32px;line-height:1.15;margin:0 0 6px}
+.wp-page-app .wp-dashboard-intro p,.wp-page-app .wp-dashboard-section-head p,.wp-page-app .wp-dashboard .panel-head p{color:#596a80;font-size:13px;line-height:1.5;margin:4px 0 0}
+.wp-page-app .wp-dashboard-section-head{margin-bottom:14px}
+.wp-page-app .wp-dashboard h2{font-size:17px;line-height:1.3;letter-spacing:-.025em;margin:0}
+.wp-page-app .wp-dashboard .stats{margin:0}
+.wp-page-app .wp-dashboard-stats .stat,.wp-page-app .wp-dashboard-periods .stat{padding:20px}
+.wp-page-app .wp-dashboard .stat-value{margin:12px 0 4px}
+.wp-page-app .wp-dashboard .stat-note{font-size:12px;line-height:1.4;color:#596a80}
+.wp-page-app .wp-dashboard-main-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:20px}
+.wp-page-app .wp-dashboard .panel-head{align-items:flex-start}
+.wp-page-app .wp-dashboard-rows{display:grid}
+.wp-page-app .wp-dashboard-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 0;border-top:1px solid #e7edf4}
+.wp-page-app .wp-dashboard-row-main{min-width:0;display:grid;gap:3px}
+.wp-page-app .wp-dashboard-row-main strong{font-size:14px;overflow-wrap:anywhere}
+.wp-page-app .wp-dashboard-row-main span{font-size:13px;color:#596a80;overflow-wrap:anywhere}
+.wp-page-app .wp-dashboard-empty{padding:22px;border-radius:12px;background:#f6f8fc;display:grid;gap:4px;color:#596a80;font-size:13px}
+.wp-page-app .wp-dashboard-empty strong{color:#17243a;font-size:14px}
+.wp-page-app .wp-dashboard-guide ol{list-style:none;margin:0;padding:0;display:grid;gap:18px}
+.wp-page-app .wp-dashboard-guide li{display:flex;gap:12px;align-items:flex-start}
+.wp-page-app .wp-dashboard-guide li>span{display:grid;place-items:center;flex:0 0 30px;height:30px;background:#edf3ff;border-radius:9px;color:#2854a2;font-size:13px;font-weight:750}
+.wp-page-app .wp-dashboard-guide strong,.wp-page-app .wp-dashboard-guide small{display:block}
+.wp-page-app .wp-dashboard-guide strong{font-size:13px;color:#17243a}
+.wp-page-app .wp-dashboard-guide small{font-size:12px;line-height:1.5;color:#596a80;margin-top:3px}
+.wp-page-app .wp-dashboard-periods{grid-template-columns:repeat(3,minmax(0,1fr))}
+.wp-page-app .wp-dashboard-recent .table-wrap{margin:0}
+.wp-page-app .wp-dashboard-details{align-items:start}
+@media(max-width:900px){.wp-page-app .wp-dashboard-main-grid{grid-template-columns:1fr}}
+@media(max-width:760px){
+ .wp-page-app .wp-dashboard{gap:18px}
+ .wp-page-app .wp-dashboard-intro{align-items:stretch;flex-direction:column;gap:14px}
+ .wp-page-app .wp-dashboard-intro h1{font-size:27px}
+ .wp-page-app .wp-dashboard-start{width:100%;min-height:48px}
+ .wp-page-app .wp-dashboard h2{font-size:16px}
+ .wp-page-app .wp-dashboard-stats .stat,.wp-page-app .wp-dashboard-periods .stat{padding:16px}
+ .wp-page-app .wp-dashboard .stat-top{font-size:12px;align-items:flex-start}
+ .wp-page-app .wp-dashboard .stat-value{font-size:24px}
+ .wp-page-app .wp-dashboard .panel-head{align-items:center}
+ .wp-page-app .wp-dashboard-periods{grid-template-columns:1fr;gap:10px}
+ .wp-page-app .wp-dashboard-periods .stat{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px 12px}
+ .wp-page-app .wp-dashboard-periods .stat-top{grid-column:1;display:block}
+ .wp-page-app .wp-dashboard-periods .stat-icon{display:none}
+ .wp-page-app .wp-dashboard-periods .stat-value{grid-column:2;grid-row:1 / span 2;margin:0;font-size:21px}
+ .wp-page-app .wp-dashboard-periods .stat-note{grid-column:1}
+}
+.wp-page-app .wp-dashboard #wpDashboardBookingNotifications:empty{display:none}
+@media(max-width:760px){
+ .wp-page-app .wp-dashboard-recent .table-wrap{border:0;overflow:visible}
+ .wp-page-app .wp-dashboard-recent table{display:block;min-width:0;width:100%}
+ .wp-page-app .wp-dashboard-recent thead{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+ .wp-page-app .wp-dashboard-recent tbody{display:grid;gap:12px}
+ .wp-page-app .wp-dashboard-recent tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border:1px solid #e2e9f2;border-radius:12px;padding:12px;gap:10px;background:#fafcff}
+ .wp-page-app .wp-dashboard-recent td{display:block;padding:0;border:0;font-size:12px;overflow-wrap:anywhere}
+ .wp-page-app .wp-dashboard-recent td::before{display:block;font-size:10px;font-weight:700;letter-spacing:.03em;color:#596a80;margin-bottom:3px}
+ .wp-page-app .wp-dashboard-recent td:nth-child(1)::before{content:'RECEIPT'}
+ .wp-page-app .wp-dashboard-recent td:nth-child(2)::before{content:'DATE'}
+ .wp-page-app .wp-dashboard-recent td:nth-child(3)::before{content:'VEHICLE'}
+ .wp-page-app .wp-dashboard-recent td:nth-child(4)::before{content:'SERVICE'}
+ .wp-page-app .wp-dashboard-recent td:nth-child(5)::before{content:'PAYMENT'}
+ .wp-page-app .wp-dashboard-recent td:nth-child(6)::before{content:'WASH STATUS'}
+ .wp-page-app .wp-dashboard-recent td:nth-child(7)::before{content:'FINANCIAL STATUS'}
+ .wp-page-app .wp-dashboard-recent td:nth-child(8)::before{content:'TOTAL'}
+ .wp-page-app .wp-dashboard-recent tr:hover td{background:transparent}
+}
+.wp-page-app .wp-dashboard .wp-client-subscription-banner{margin:0}
+@media(max-width:760px){.wp-page-app .wp-dashboard-recent td,.wp-page-app .wp-dashboard-recent td .subtle{white-space:normal;overflow-wrap:anywhere}}
+@media(max-width:760px){
+ .wp-page-app .top-actions .wp-tour-launch{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:8px 10px;white-space:nowrap}
+ .wp-page-app .crumb small{display:none}
+}
+
+/* WashPilot platform tokens: navy identity, restrained business controls. */
+:root{--font:Inter,system-ui,sans-serif;--font-d:Poppins,system-ui,sans-serif;--r-card:12px;--r-ctl:8px;--surface:#f5f7fa;--shadow:none}
+body,button,input,select,textarea{font-family:Inter,system-ui,sans-serif!important}
+h1,h2,h3,h4{font-family:Poppins,system-ui,sans-serif!important;font-weight:600!important;letter-spacing:-.025em!important}
+.wp-page-app h1,.wp-page-workspace h1{font-size:clamp(24px,3vw,32px)}
+.wp-page-app .wp-hero h1{font-size:clamp(32px,4vw,50px)!important;line-height:1.2!important;max-width:620px}
+.wp-page-app .wp-hero-grid{min-height:0;gap:40px;padding-bottom:48px}
+.wp-page-app .wp-hero-visual{min-height:400px}
+.wp-page-app .wp-visual-orbit,.wp-page-app .wp-float-chip,.wp-page-app .wp-kicker,.wp-page-app .wp-dashboard-eyebrow{display:none}
+.wp-page-app .wp-hero-copy>*,.wp-page-app .wp-dashboard-window{animation:none!important}
+.wp-page-app .wp-feature-card,.wp-page-app .wp-price-card,.wp-page-app .panel,.wp-page-app .stat,.wp-page-app .form-section,.wp-page-workspace .panel,.wp-page-workspace .stat,.wp-page-auth .card{border-radius:12px!important;box-shadow:none!important}
+.wp-page-app .stat-icon,.wp-page-app .btn,.wp-page-app .avatar,.wp-page-app .wp-nav-cta{box-shadow:none!important}
+.wp-page-app .btn,.wp-page-workspace .btn,.wp-page-auth .btn{border-radius:8px!important;min-height:44px;font-size:14px}
+.wp-page-app .field input,.wp-page-app .field select,.wp-page-app .field textarea{font-size:16px;min-height:46px;width:100%;max-width:100%}
+.wp-page-app .field input[type=checkbox],.wp-page-app .field input[type=radio]{width:22px;min-height:22px}
+.wp-page-app .choice{padding:16px;min-height:72px;border-radius:8px}
+.wp-page-app .choice input{width:20px;height:20px;flex:none}
+.wp-page-app .choice-main small{font-size:13px;line-height:1.5}
+.wp-page-app .choice-price{white-space:nowrap}
+.wp-page-app .summary-total{font-size:20px}
+.wp-page-app .modal{width:min(720px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto}
+.wp-page-app .wp-signup-card,.wp-page-app .forgot-card{max-height:calc(100dvh - 24px);overflow:auto}
+.wp-page-app .wp-contact-heading h1,.wp-page-app .wp-directory-head h1{font-size:clamp(28px,4vw,44px)}
+.wp-page-app .wp-contact-panel p,.wp-page-app .wp-contact-side small,.wp-page-app .wp-public-service-card p{font-size:14px;line-height:1.65}
+.wp-page-app .wp-steps article{box-shadow:none;border-radius:10px}
+.wp-page-app .wp-price-card li,.wp-page-app .wp-plan-desc{font-size:14px!important}
+.wp-page-app .wp-feature-label,.wp-page-app .wp-eyebrow,.wp-page-app .nav-label{text-transform:none;letter-spacing:0}
+.wp-page-auth .card h1{font-size:28px}
+.wp-page-auth .shell>.panel h2{font-size:clamp(28px,3vw,40px)}
+@media(max-width:760px){
+ .wp-page-app .content{padding:20px 12px calc(100px + env(safe-area-inset-bottom))!important}
+ .wp-page-app .panel,.wp-page-app .form-section{padding:16px}
+ .wp-page-app .grid.two,.wp-page-app .form-grid,.wp-page-app .wp-booking-layout{grid-template-columns:minmax(0,1fr)}
+ .wp-page-app .kanban{display:grid;grid-template-columns:minmax(0,1fr);overflow:visible}
+ .wp-page-app .kanban-col{min-width:0}
+ .wp-page-app .page-head .actions{width:100%}
+ .wp-page-app .page-head .actions .btn{flex:1;white-space:normal}
+ .wp-page-app .modal-backdrop{padding:12px;align-items:center}
+ .wp-page-app .modal{border-radius:12px}
+ .wp-page-app aside.panel{position:static!important}
+ .wp-page-app .wp-hero-visual{min-height:300px}
+ .wp-page-app .wp-hero-proof{margin-top:24px}
+ .wp-page-app .wp-hero-foot{display:none}
+ .wp-page-app .table-wrap:has(.wp-responsive-table){overflow:visible;border:0}
+ .wp-page-app .wp-responsive-table{display:block!important;min-width:0!important;width:100%!important}
+ .wp-page-app .wp-responsive-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+ .wp-page-app .wp-responsive-table tbody{display:grid;gap:12px}
+ .wp-page-app .wp-responsive-table tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:14px;border:1px solid #dce3ec;border-radius:10px}
+ .wp-page-app .wp-responsive-table td{display:block;padding:0!important;border:0;min-width:0;white-space:normal!important;overflow-wrap:anywhere}
+ .wp-page-app .wp-responsive-table td::before{content:attr(data-label);display:block;font-size:12px;color:#596a80;font-weight:600;margin-bottom:4px}
+ .wp-page-app .wp-responsive-table td *{white-space:normal!important;overflow-wrap:anywhere}
+ .wp-page-app .wp-responsive-table td .btn{width:100%;margin-top:6px}
+ .wp-page-app .recipe-row,.wp-page-app .easy-queue-row{flex-wrap:wrap}
+ .wp-page-app .search{max-width:100%;width:100%}
+}
+.wp-page-app #publicLanding .wp-hero h1{font-size:clamp(30px,4vw,48px)!important;line-height:1.2!important}
+.wp-page-app .wp-proof-avatars{display:none}
+@media(max-width:360px){.wp-page-app .wp-site-nav{padding:0 10px;gap:10px}.wp-page-app .wp-nav-cta{white-space:nowrap;padding:10px 12px}.wp-page-app .wp-site-brand span{font-size:15px}.wp-page-app .wp-site-brand img{width:42px}.wp-page-app .wp-nav-actions{gap:6px}}

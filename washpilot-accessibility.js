@@ -23,10 +23,21 @@
       else button.removeAttribute('aria-current');
     });
     root.querySelectorAll('.table-wrap').forEach(table => {
+      table.querySelectorAll('table').forEach(dataTable => {
+        const headers = Array.from(dataTable.querySelectorAll('thead th')).map(h => h.textContent.trim());
+        if (!headers.length || dataTable.querySelector('td[colspan],td[rowspan]')) return;
+        dataTable.classList.add('wp-responsive-table');
+        dataTable.querySelectorAll('tbody tr').forEach(row => Array.from(row.cells).forEach((cell, i) => {
+          cell.dataset.label = headers[i] || 'Actions';
+        }));
+      });
       table.tabIndex = 0;
       table.setAttribute('role', 'region');
       if (!table.hasAttribute('aria-label')) table.setAttribute('aria-label', 'Scrollable data table');
     });
+    const menu = document.querySelector('.mobile-menu[aria-controls="sidebar"]');
+    const sidebar = document.getElementById('sidebar');
+    if (menu && sidebar) menu.setAttribute('aria-expanded', String(sidebar.classList.contains('open')));
     const toast = document.getElementById('toast');
     if (toast) { toast.setAttribute('role', 'status'); toast.setAttribute('aria-live', 'polite'); }
   }
@@ -74,6 +85,10 @@
       if (event.key === 'Escape' && dialog) {
         const close = dialog.querySelector('.close,.wp-signup-close');
         if (close) { event.preventDefault(); close.click(); }
+      }
+      if (event.key === 'Escape' && !dialog && sidebar) {
+        const menu = document.querySelector('.mobile-menu[aria-controls="sidebar"]');
+        if (menu) { event.preventDefault(); menu.click(); menu.focus(); }
       }
       if (event.key !== 'Tab') return;
       const elements = Array.from(region.querySelectorAll(focusable)).filter(visible);

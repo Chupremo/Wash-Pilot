@@ -8,7 +8,7 @@
 <link rel="icon" type="image/svg+xml" href="washpilot-logo.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700;750;800&family=Plus+Jakarta+Sans:wght@500;600;650;700;750;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
 <title>WashPilot — Carwash Management Solutions & Pricing</title>
 <style>
 :root{--navy:#10233f;--navy2:#17365e;--blue:#2563eb;--cyan:#38bdf8;--ink:#17243a;--muted:#738096;--line:#e4eaf2;--bg:#f4f7fb;--card:#fff;--green:#159b69;--red:#dc5656;--amber:#d58a18;--purple:#7456d8;--shadow:0 8px 28px rgba(17,39,70,.07)}
@@ -1356,16 +1356,18 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
 .wp-google-address-status,.wp-google-address-error{padding:12px 13px;border:1px solid #dce6f2;border-radius:10px;background:#f7faff;color:#61738e;font-size:11px;line-height:1.5}
 .wp-google-address-error{background:#fff4f4;border-color:#f2d4d4;color:#b94d56}
 </style>
+<link rel="stylesheet" href="/washpilot-design.css?v=20261117">
+<script src="/washpilot-accessibility.js?v=20261117" defer></script>
 </head>
-<body>
+<body class="wp-page-app">
 
 <section class="wp-public" id="publicLanding" aria-label="WashPilot subscription landing page">
   <header class="wp-site-nav">
-    <a class="wp-site-brand" href="/" aria-label="WashPilot home"><img src="washpilot-logo.svg" alt="WashPilot Management Solutions"></a>
-    <nav class="wp-site-links" aria-label="Main navigation">
+    <a class="wp-site-brand" href="/" aria-label="WashPilot home"><img src="washpilot-logo.svg" alt=""><span>WashPilot<small>CARWASH MANAGEMENT</small></span></a>
+    <nav class="wp-site-links" id="publicNavigation" aria-label="Main navigation">
       <a href="/features">Features</a><a href="/businesses">Businesses</a><a href="/how-it-works">How it works</a><a href="/pricing">Pricing</a><a href="/about">About</a><a href="/faq">FAQ</a><a href="/contact">Contact</a>
     </nav>
-    <div class="wp-nav-actions"><button class="wp-nav-cta" type="button" onclick="showLoginScreen()">Sign in <span>↗</span></button><button class="wp-menu-toggle" type="button" aria-label="Open navigation" onclick="togglePublicMenu()">☰</button></div>
+    <div class="wp-nav-actions"><button class="wp-nav-cta" type="button" onclick="showLoginScreen()">Sign in <span>↗</span></button><button class="wp-menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="publicNavigation" onclick="togglePublicMenu()">☰</button></div>
   </header>
 
   <main id="top">
@@ -1373,15 +1375,15 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
       <div class="wp-hero-grid">
         <div class="wp-hero-copy">
           <div class="wp-kicker"><span class="wp-kicker-dot"></span> CARWASH MANAGEMENT, REIMAGINED</div>
-          <h1>More shine.<br><em>Less stress.</em><br>Total control.</h1>
-          <p class="wp-hero-lede">The all-in-one workspace for running a smarter carwash. Keep every wash moving, every payment visible, and every day organized.</p>
-          <div class="wp-hero-actions"><a class="wp-btn-primary" href="/pricing">Explore plans <span>→</span></a><a class="wp-btn-secondary" href="/how-it-works">See how it works <span>↓</span></a></div>
+          <h1>Run your carwash business smarter with WashPilot.</h1>
+          <p class="wp-hero-lede">Manage sales, services, bookings, staff, and daily operations in one place. Spend less time on paperwork and more time looking after your business.</p>
+          <div class="wp-hero-actions"><a class="wp-btn-primary" href="/signup">Get started free</a><a class="wp-btn-secondary" href="/features">Explore features</a></div>
           <div class="wp-hero-proof"><div class="wp-proof-avatars"><span>W</span><span>P</span><span>+</span></div><div><b>Made for the people behind every wash.</b><small>Owners · Cashiers · Wash teams</small></div></div>
         </div>
         <div class="wp-hero-visual" aria-label="Illustration of the WashPilot operations dashboard">
           <div class="wp-visual-orbit wp-orbit-one"></div><div class="wp-visual-orbit wp-orbit-two"></div>
           <div class="wp-dashboard-window">
-            <div class="wp-dash-top"><div class="wp-dash-brand"><span class="wp-dash-mark">W</span><div><b>WashPilot</b><small>Business overview</small></div></div><span class="wp-live"><i></i> TODAY</span></div>
+            <div class="wp-dash-top"><div class="wp-dash-brand"><span class="wp-dash-mark">W</span><div><b>WashPilot</b><small>Business overview</small></div></div><span class="wp-live">Example dashboard</span></div>
             <div class="wp-dash-welcome"><div><small>WEDNESDAY, YOUR BUSINESS AT A GLANCE</small><h3>Good morning, Alex</h3></div><span class="wp-dash-avatar">A</span></div>
             <div class="wp-dash-stats"><div><span>Today's sales</span><b>₱8,450</b><small class="wp-stat-up">↑ Daily snapshot</small></div><div><span>Vehicles served</span><b>24</b><small>Across all services</small></div><div><span>In queue</span><b>06</b><small>Moving through wash</small></div></div>
             <div class="wp-dash-lower"><div class="wp-chart-card"><div class="wp-chart-head"><b>Sales overview</b><span>THIS WEEK</span></div><div class="wp-mini-chart"><i style="height:35%"></i><i style="height:54%"></i><i style="height:43%"></i><i style="height:76%"></i><i style="height:61%"></i><i style="height:92%"></i><i style="height:70%"></i></div><div class="wp-chart-days"><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span><span>SUN</span></div></div>
@@ -1409,14 +1411,17 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
         <article class="wp-feature-card"><div class="wp-feature-icon wp-ico-green">✳</div><span class="wp-feature-label">04 / SERVICES & ADD-ONS</span><h3>Make every service count.</h3><p>Set up your wash menu, pricing, and add-ons to make checkout clear and consistent.</p><div class="wp-service-pills"><span>Basic Wash</span><span>Interior</span><span>Wax</span><span>Detailing</span></div></article>
         <article class="wp-feature-card"><div class="wp-feature-icon wp-ico-amber">▤</div><span class="wp-feature-label">05 / TEAM & EXPENSES</span><h3>Bring the team together.</h3><p>Give your team the right tools with Premium.</p><div class="wp-team-mini"><span>OW</span><span>CA</span><span>WS</span><b>Team workspace</b></div></article>
         <article class="wp-feature-card"><div class="wp-feature-icon wp-ico-navy">▦</div><span class="wp-feature-label">06 / INVENTORY & BRANCHES</span><h3>Ready for the next stage.</h3><p>Manage inventory, service recipes, multiple branches and centralized reporting with Premium.</p><div class="wp-branch-mini"><span>MAIN LOCATION</span><b>● Active</b><span>2 MORE LOCATIONS</span><b>● Active</b></div></article>
+        <article class="wp-feature-card"><h3>Smart Vendo</h3><span class="badge">Coming soon</span><p>Planned tools for machine usage, coin transactions and maintenance. Hardware integration and manufacturer-specific adapters are still required.</p></article>
       </div>
     </section>
 
-    <section class="wp-how" id="wp-how">
-      <div class="wp-how-inner"><div class="wp-how-intro"><span class="wp-eyebrow wp-eyebrow-light">A SIMPLE DAILY FLOW</span><h2>From the first rinse<br>to the final receipt.</h2><p>WashPilot helps your team follow a clearer process, so your operation feels easier to manage throughout the day.</p><a class="wp-how-cta" href="/features">Explore the features <span>→</span></a></div>
-        <div class="wp-steps"><article><span>01</span><div><h3>Register the wash</h3><p>Add the vehicle, select the service, and capture any extras before the wash begins.</p></div><b>＋</b></article><article><span>02</span><div><h3>Move through the queue</h3><p>Update the wash status as your team completes each stage of service.</p></div><b>◷</b></article><article><span>03</span><div><h3>Complete and collect</h3><p>Finish the service, collect payment, and keep the transaction in your records.</p></div><b>✓</b></article></div>
-      </div>
-    </section>
+    <section class="wp-how" id="wp-how"><div class="wp-how-inner"><div class="wp-how-intro"><h2>From setting up to your first wash.</h2><p>Start with your business details and service menu. Your team can then follow the same process for every vehicle.</p><a class="wp-how-cta" href="/signup">Create your free account</a></div><div class="wp-steps">
+<article><span>1</span><div><h3>Register your business</h3><p>Create your owner account and enter your business details.</p></div></article>
+<article><span>2</span><div><h3>Set up your services</h3><p>Add your wash services, vehicle sizes, prices and optional extras.</p></div></article>
+<article><span>3</span><div><h3>Organize your team</h3><p>Premium includes staff management. Free accounts can start with the owner workspace.</p></div></article>
+<article><span>4</span><div><h3>Record a wash</h3><p>Create a ticket, update the service queue and collect payment at pickup.</p></div></article>
+<article><span>5</span><div><h3>Review your day</h3><p>Check recorded payments and transactions to understand your daily activity.</p></div></article>
+</div></div></section>
 
     <section class="wp-pricing" id="wp-pricing">
       <div class="wp-section-head wp-pricing-head"><div><span class="wp-eyebrow">CLEAR, STRAIGHTFORWARD PRICING</span><h2>Start free.<br><em>Upgrade when you're ready.</em></h2></div><p>Two plans. No monthly commitment. Premium access lasts 30 days from the date your payment is approved.</p></div>
@@ -1529,10 +1534,10 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
 </section>
 <div class="app auth-hidden" id="washpilotApp">
 <aside class="sidebar" id="sidebar">
-  <div class="brand" aria-label="WashPilot Management Solutions"><img class="brand-lockup" src="washpilot-logo.svg" alt="WashPilot Management Solutions" /></div>
-  <div id="ownerWorkspaceGroup"><div class="nav-label">Workspace</div><nav class="nav" id="primaryNav">
+  <div class="brand" aria-label="WashPilot Management Solutions"><img class="brand-lockup" src="washpilot-logo.svg" alt="" /><span><strong>WashPilot</strong><small>MANAGEMENT SOLUTIONS</small></span></div>
+  <div id="ownerWorkspaceGroup"><div class="nav-label">Main</div><nav class="nav" id="primaryNav">
     <button data-page="dashboard" class="active"><span class="ico">▦</span>Dashboard</button>
-    <button data-page="newwash"><span class="ico">＋</span>New Wash</button>
+    <button data-page="newwash"><span class="ico">＋</span>Digital POS</button>
     <button data-page="queue"><span class="ico">◷</span>Service Queue</button>
     <button data-page="transactions"><span class="ico">▤</span>Transactions</button>
     <button data-page="customers"><span class="ico">♙</span>Customers</button>
@@ -1540,7 +1545,7 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
     <button data-page="listing"><span class="ico">⌂</span>Facility Listing</button>
   </nav></div>
   <div id="easyToolsGroup" style="display:none"><div class="nav-label">More</div><nav class="nav"><button data-page="managementHub"><span class="ico">⚙</span>Business Management</button></nav></div>
-  <div class="management-nav-group" id="managementNavGroup"><div><div class="nav-label">Advanced Management</div><nav class="nav" id="managementNav">
+  <div class="management-nav-group" id="managementNavGroup"><div><div class="nav-label">Business management</div><nav class="nav" id="managementNav">
     <button data-page="catalog"><span class="ico">◇</span>Services & Pricing</button>
     <button data-page="loyalty"><span class="ico">★</span>Loyalty & Packages</button>
     <button data-page="addons"><span class="ico">↗</span>Add-on Analytics</button>
@@ -1551,7 +1556,7 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
     <button data-page="branches"><span class="ico">⌂</span>Branches <span class="badge" style="margin-left:auto">Premium</span></button>
     <button data-page="recipes"><span class="ico">⚗</span>Service Recipes <span class="badge" style="margin-left:auto">Premium</span></button>
     <button data-page="reconcile"><span class="ico">⇄</span>Shift & Reconciliation</button>
-    <button data-page="subscription"><span class="ico">▣</span>Subscription & Billing</button>
+    <button data-page="vendo"><span class="ico">▣</span>Smart Vendo <span class="badge">Soon</span></button><button data-page="subscription"><span class="ico">▣</span>Subscription & Billing</button>
   </nav></div></div>
   <div id="platformNavGroup" style="display:none"><div class="nav-label">Platform Control</div><nav class="nav" id="platformNav">
     <button data-page="platform" class="active"><span class="ico">▦</span>Overview</button>
@@ -1562,8 +1567,8 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
 </aside>
 <main class="main">
 <header class="topbar">
-  <div class="topbar-left" style="display:flex;align-items:center;gap:10px"><button class="mobile-menu" onclick="toggleSidebar()">☰</button><img class="topbar-brand-icon" src="washpilot-logo.svg" alt="WashPilot" /><div class="crumb" id="crumb">Dashboard<small id="crumbSub">Welcome back! Here's your business overview.</small></div></div>
-  <div class="top-actions"><button class="pill wp-tour-launch" id="wpTourLaunch" type="button" onclick="openWashPilotTourChooser()" title="Choose a guided walkthrough">▶ Guided Tour</button><button class="avatar" type="button" onclick="logoutDemo()" title="Sign out" aria-label="Sign out">BO</button></div>
+  <div class="topbar-left" style="display:flex;align-items:center;gap:10px"><button class="mobile-menu" type="button" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false" onclick="toggleSidebar()">☰</button><img class="topbar-brand-icon" src="washpilot-logo.svg" alt="WashPilot" /><div class="crumb" id="crumb">Dashboard<small id="crumbSub">Welcome back! Here's your business overview.</small></div></div>
+  <div class="top-actions"><button class="pill wp-tour-launch" id="wpTourLaunch" type="button" onclick="openWashPilotTourChooser()" title="Choose a guided walkthrough">▶ Guide</button><button class="avatar" type="button" onclick="logoutDemo()" title="Sign out" aria-label="Sign out">BO</button></div>
 </header>
 <div class="content" id="content"></div>
 </main>
@@ -1787,7 +1792,7 @@ function minPlan(page){
 function planName(tier){return Number(tier)===2?'Premium':'Free'}
 function planPrice(tier){return Number(tier)===2?'₱499 / 30 days':'Free forever'}
 function allowed(page){return planRank(effectivePlan())>=minPlan(page)}
-const pageNames={dashboard:'Dashboard',newwash:'New Wash',queue:'Service Queue',transactions:'Transactions',customers:'Customers & Vehicles',bookings:'Bookings',listing:'Facility Listing',catalog:'Services & Pricing',addons:'Add-on Analytics',employees:'Employees',expenses:'Expenses',reports:'Reports',inventory:'Inventory',branches:'Branches',loyalty:'Loyalty & Packages',recipes:'Service Recipes',reconcile:'Shift & Reconciliation',subscription:'Subscription & Billing',managementHub:'Business Management'};
+const pageNames={vendo:'Smart Vendo',dashboard:'Dashboard',newwash:'New Wash',queue:'Service Queue',transactions:'Transactions',customers:'Customers & Vehicles',bookings:'Bookings',listing:'Facility Listing',catalog:'Services & Pricing',addons:'Add-on Analytics',employees:'Employees',expenses:'Expenses',reports:'Reports',inventory:'Inventory',branches:'Branches',loyalty:'Loyalty & Packages',recipes:'Service Recipes',reconcile:'Shift & Reconciliation',subscription:'Subscription & Billing',managementHub:'Business Management'};
 const pageSubs={dashboard:'Welcome back! Here is your business overview.',newwash:'Record a vehicle, select services and collect payment.',queue:'Keep every vehicle moving through the wash process.',transactions:'Review, search and manage recorded transactions.',customers:'Automatic vehicle history based on plate number.',bookings:'Review and manage public online carwash reservations.',listing:'Update your public facility details and operating hours.',catalog:'Manage your main services, prices and add-ons.',addons:'See which extras increase your average transaction value.',employees:'Manage staff accounts and performance.',expenses:'Record operating costs and understand your net earnings.',reports:'Review sales, payment mix and business performance.',inventory:'Monitor supplies, stock levels and usage.',branches:'Manage locations and compare branch performance.',loyalty:'Manage rewards and prepaid wash packages.',recipes:'Configure supply usage for each service.',reconcile:'Balance cashier payments and the cash drawer.',subscription:'Review your current plan and available upgrades.',managementHub:'See included tools and features available to unlock.'};
 function setPlan(p){
  if(window.wpRealWorkspaceActive){
@@ -1846,7 +1851,44 @@ function subscriptionStatusBanner(){
  }
  return '<section class="wp-client-subscription-banner is-free"><div class="wp-client-subscription-main"><span class="wp-client-subscription-kicker">FREE PLAN</span><b>Free forever</b><small>No expiration date · Core carwash operations</small></div><div class="wp-client-subscription-action"><span>Unlock all Premium features for ₱499 / 30 days</span><button class="btn" onclick="openPlanUpgradeModal(\'premium\')">Get Premium <span>→</span></button></div></section>';
 }
-function dashboardPage(){if(viewMode==='easy')return easyDashboardPage();let todayTx=state.transactions.filter(isToday),sales=totalCollectedBetween(today(),today()),vehicles=todayTx.filter(t=>t.status!=='Cancelled').length,expenses=state.expenses.filter(e=>e.date===today()).reduce((s,e)=>s+e.amount,0),week=state.transactions.filter(t=>t.date>=isoAgo(6)&&t.status!=='Cancelled'),month=state.transactions.filter(t=>t.date.slice(0,7)===today().slice(0,7)&&t.status!=='Cancelled');let weekSales=totalCollectedBetween(isoAgo(6),today()),monthSales=totalCollectedBetween(today().slice(0,7)+'-01',today()),avg=vehicles?sales/vehicles:0,waiting=todayTx.filter(t=>t.status==='Waiting').length,washing=todayTx.filter(t=>t.status==='Washing').length,completed=todayTx.filter(t=>t.status==='Completed').length;let days=Array.from({length:7},(_,i)=>{let d=new Date();d.setDate(d.getDate()-(6-i));let key=dateKey(d);return {key,label:d.toLocaleDateString('en-US',{weekday:'short'}),value:totalCollectedBetween(key,key)}});let max=Math.max(1,...days.map(d=>d.value));return `${pageHead('Business Overview','Monitor sales, vehicles, queue activity and daily performance.',`<button class="btn" onclick="go('newwash')">＋ New Wash</button>` )}${subscriptionStatusBanner()}${dailyKpiStrip()}<div id="wpDashboardBookingNotifications"></div><div class="grid stats">${stat("Today's Sales",money(sales),`${vehicles} vehicles recorded today`,'₱','green')}${stat('This Week',money(weekSales),'Last 7 days','↗')}${stat('This Month',money(monthSales),'Current month','▣','purple')}${stat('Average per Vehicle',money(avg),'Average transaction value','🚘','amber')}</div><div class="grid two"><section class="panel"><div class="panel-head"><h3>Sales Overview</h3><span class="subtle">Last 7 days</span></div><div class="chart">${days.map(d=>`<div class="bar-wrap"><div class="bar" title="${money(d.value)}" style="height:${Math.max(3,d.value/max*78)}%"></div><span class="bar-label">${d.label}</span></div>`).join('')}</div><div class="grid three" style="margin-top:16px"><div class="mini-card"><small>Waiting</small><strong>${waiting}</strong></div><div class="mini-card"><small>Washing</small><strong>${washing}</strong></div><div class="mini-card"><small>Completed</small><strong>${completed}</strong></div></div></section><section class="panel"><div class="panel-head"><h3>Today's Service Queue</h3><button class="btn ghost small" onclick="go('queue')">View queue</button></div><div class="queue-list">${todayTx.filter(t=>t.status!=='Cancelled').slice(0,4).map(queueHtml).join('')||'<div class="empty">No vehicles in the queue yet.</div>'}</div></section></div><div class="grid two" style="margin-top:16px"><section class="panel"><div class="panel-head"><h3>Recent Transactions</h3><button class="btn ghost small" onclick="go('transactions')">View all</button></div>${transactionTable(state.transactions.slice().sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time)).slice(0,5),false)}</section><section class="panel"><div class="panel-head"><h3>Payment Breakdown</h3><span class="subtle">Today</span></div>${paymentBreakdown(paidTransactionsBetween(today(),today()))}<div class="divider"></div>${planRank(effectivePlan())>=2?`<div class="panel-head"><h3>Daily Expenses</h3><strong>${money(expenses)}</strong></div><div class="muted-box"><div style="display:flex;justify-content:space-between;font-size:11px"><span>Estimated net earnings</span><b style="color:var(--green)">${money(sales-expenses)}</b></div><small class="subtle">Gross sales less recorded expenses. Not a full accounting profit calculation.</small></div>`:`<div class="muted-box"><b style="font-size:11px">Want to track expenses and estimated earnings?</b><p class="subtle">Upgrade to Premium for ₱499 / 30 days to record operating costs and see estimated net earnings.</p><button class="btn small" onclick="setPlan('premium')">Preview Premium</button></div>`}</section></div>`}
+function vendoPage(){return `<section class="panel"><span class="badge">Coming soon</span><h1>WashPilot Smart Vendo</h1><p>Connect compatible coin-operated carwash machines to your workspace when hardware integration becomes available.</p><h2>Planned capabilities</h2><ul><li>Registered devices and installation status</li><li>Coin transactions, usage and machine revenue</li><li>Connectivity and maintenance alerts</li><li>Service settings for each machine</li></ul><p>No machines are connected. Retrofitting existing machines will require compatible hardware adapters for each manufacturer.</p></section>`;}
+function dashboardPage(){
+ if(viewMode==='easy')return easyDashboardPage();
+ const todayTx=state.transactions.filter(isToday);
+ const validToday=todayTx.filter(t=>t.status!=='Cancelled');
+ const sales=totalCollectedBetween(today(),today());
+ const vehicles=validToday.length;
+ const active=validToday.filter(t=>!['Completed','Cancelled'].includes(t.status));
+ const completed=validToday.filter(t=>t.status==='Completed').length;
+ const expenses=state.expenses.filter(e=>e.date===today()).reduce((sum,e)=>sum+e.amount,0);
+ const weekSales=totalCollectedBetween(isoAgo(6),today());
+ const monthSales=totalCollectedBetween(today().slice(0,7)+'-01',today());
+ const avg=vehicles?sales/vehicles:0;
+ const days=Array.from({length:7},(_,i)=>{
+  const d=new Date();d.setDate(d.getDate()-(6-i));
+  const key=dateKey(d);
+  return {label:d.toLocaleDateString('en-US',{weekday:'short'}),value:totalCollectedBetween(key,key)};
+ });
+ const max=Math.max(1,...days.map(d=>d.value));
+ const recent=state.transactions.slice().sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time)).slice(0,5);
+ const queue=active.slice(0,4).map(t=>`<div class="wp-dashboard-row"><div class="wp-dashboard-row-main"><strong>${esc(t.plate)}</strong><span>${esc(t.vehicle)} · ${esc(t.main)}</span></div>${statusPill(t.status)}</div>`).join('');
+ return `<div class="wp-dashboard">
+  <div class="wp-dashboard-intro"><div><span class="wp-dashboard-eyebrow">YOUR WORKSPACE</span><h1>Dashboard</h1><p>See today’s activity and keep your washes moving.</p></div><button class="btn wp-dashboard-start" type="button" onclick="go('newwash')">＋ New wash</button></div>
+  <div id="wpDashboardBookingNotifications"></div>
+  <section aria-labelledby="wpDashboardToday"><div class="wp-dashboard-section-head"><div><h2 id="wpDashboardToday">Today at a glance</h2><p>Sales include payments collected today. Vehicle counts are based on tickets registered today.</p></div></div>
+   <div class="grid stats wp-dashboard-stats">${stat('Sales collected',money(sales),'Payments received today','₱','green')}${stat('Vehicles registered',vehicles,'Tickets created today','▣')}${stat('In progress',active.length,'Today’s tickets still active','◷','amber')}${stat('Completed',completed,'Today’s tickets finished','✓','purple')}</div>
+  </section>
+  <div class="wp-dashboard-main-grid">
+   <section class="panel wp-dashboard-queue" aria-labelledby="wpDashboardQueue"><div class="panel-head"><div><h2 id="wpDashboardQueue">Vehicles in progress</h2><p>Active tickets registered today</p></div><button class="btn ghost small" type="button" onclick="go('queue')">Open queue →</button></div>${queue?`<div class="wp-dashboard-rows">${queue}</div>`:'<div class="wp-dashboard-empty"><strong>No active washes today</strong><span>When you create a wash ticket, it will appear here.</span></div>'}</section>
+   <section class="panel wp-dashboard-guide" aria-labelledby="wpDashboardGuide"><div class="panel-head"><div><h2 id="wpDashboardGuide">Your daily flow</h2><p>Three simple steps for each vehicle</p></div></div><ol><li><span>1</span><div><strong>Create a wash</strong><small>Add the vehicle and choose a service.</small></div></li><li><span>2</span><div><strong>Update the queue</strong><small>Move the wash through each stage.</small></div></li><li><span>3</span><div><strong>Collect payment</strong><small>Record payment when the vehicle is ready.</small></div></li></ol></section>
+  </div>
+  ${subscriptionStatusBanner()}
+  <section class="panel wp-dashboard-recent" aria-labelledby="wpDashboardRecent"><div class="panel-head"><div><h2 id="wpDashboardRecent">Recent transactions</h2><p>Your latest wash tickets</p></div><button class="btn ghost small" type="button" onclick="go('transactions')">View all →</button></div>${transactionTable(recent,false)}</section>
+  <section aria-labelledby="wpDashboardSales"><div class="wp-dashboard-section-head"><div><h2 id="wpDashboardSales">Sales over time</h2><p>Collected payments for each period</p></div></div><div class="grid wp-dashboard-periods">${stat('Last 7 days',money(weekSales),'Including today','↗')}${stat('This month',money(monthSales),'Since the first of the month','▣','purple')}${stat('Average per vehicle',money(avg),'Today’s sales ÷ today’s tickets','₱','amber')}</div></section>
+  <div class="grid two wp-dashboard-details"><section class="panel"><div class="panel-head"><h2>Daily sales</h2><span class="subtle">Last 7 days</span></div><div class="chart" aria-label="Daily sales for the last seven days">${days.map(d=>`<div class="bar-wrap" aria-label="${esc(d.label)}: ${money(d.value)}"><div class="bar" title="${money(d.value)}" style="height:${Math.max(3,d.value/max*78)}%"></div><span class="bar-label">${d.label}</span></div>`).join('')}</div></section>
+   <section class="panel"><div class="panel-head"><h2>Payment breakdown</h2><span class="subtle">Today</span></div>${paymentBreakdown(paidTransactionsBetween(today(),today()))}<div class="divider"></div>${planRank(effectivePlan())>=2?`<div class="panel-head"><h2>Daily expenses</h2><strong>${money(expenses)}</strong></div><div class="muted-box"><div style="display:flex;justify-content:space-between;font-size:11px"><span>Estimated net earnings</span><b style="color:var(--green)">${money(sales-expenses)}</b></div><small class="subtle">Gross sales less recorded expenses. Not a full accounting profit calculation.</small></div>`:`<div class="muted-box"><b>Want to track expenses and estimated earnings?</b><p class="subtle">Upgrade to Premium for ₱499 / 30 days to record operating costs and see estimated net earnings.</p><button class="btn small" onclick="setPlan('premium')">Preview Premium</button></div>`}</section></div>
+ </div>`;
+}
 function paymentBreakdown(list){let methods=['Cash','GCash','Maya','Card','Other'];let paid=list.filter(t=>t.status!=='Cancelled'&&(t.financialStatus||'Paid')==='Paid');let total=totalSales(paid);return methods.map((m,i)=>{let v=paid.filter(t=>t.payment===m).reduce((s,t)=>s+Number(t.total||0),0);if(!v)return '';return `<div style="margin:11px 0"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px"><span>${m}</span><b>${money(v)}</b></div><div class="progress"><span style="width:${total?v/total*100:0}%"></span></div></div>`}).join('')||'<div class="empty">No payments recorded yet.</div>'}
 function newWashPage(){let main=state.services.filter(s=>s.type==='main'&&s.active),adds=state.services.filter(s=>s.type==='addon'&&s.active);if(window.wpRealWorkspaceActive&&!main.length)return pageHead('New Wash','Set up your main wash services before creating your first ticket.')+'<section class="panel" style="max-width:720px"><h2 style="margin:0 0 8px">Your service menu is empty</h2><p class="subtle" style="line-height:1.7">Add at least one main service with its price and estimated duration. Optional extras can be added afterward.</p><button class="btn" onclick="catalogTab=\'main\';go(\'catalog\')">Add your first main service</button></section>';return `${pageHead('New Wash','Register a vehicle, select the main service and add any extras.') }<div class="grid two"><div class="grid" style="gap:14px"><section class="form-section"><h3>① Vehicle information</h3><div class="form-grid"><div class="field"><label>Plate number *</label><input id="washPlate" placeholder="e.g. ABC 1234" value=""></div><div class="field"><label>Vehicle type *</label><select id="washVehicle"><option>Sedan</option><option>SUV</option><option>Pickup</option><option>Van</option><option>Motorcycle</option><option>Other</option></select></div></div><div class="field" style="margin-top:12px"><label>Customer name (optional)</label><input id="washCustomer" placeholder="Walk-in customer"></div></section><section class="form-section"><h3>② Select main service</h3><div class="choice-list">${main.map(s=>`<label class="choice ${selectedMain===s.name?'selected':''}"><input type="radio" name="mainService" value="${esc(s.name)}" ${selectedMain===s.name?'checked':''} onchange="selectMain('${esc(s.name)}')"><span class="choice-main"><b>${esc(s.name)}</b><small>${esc(s.description||'')} · ${s.duration} min</small></span><span class="choice-price" data-main-price="${s.id}">${money(servicePriceForSize(s,getSelectedVehicleSize()))}</span></label>`).join('')}</div></section><section class="form-section"><h3>③ Additional services / add-ons <span class="badge">Select multiple</span></h3><div class="choice-list">${adds.map(s=>`<label class="choice ${selectedAddons.includes(s.id)?'selected':''}"><input type="checkbox" ${selectedAddons.includes(s.id)?'checked':''} onchange="toggleAddon(${s.id},this.checked)"><span class="choice-main"><b>${esc(s.name)}</b><small>${esc(s.description||'')}</small></span><span class="choice-price">+ ${money(s.price)}</span></label>`).join('')||'<div class="empty">No active add-ons. Add them in Services & Pricing.</div>'}</div></section><section class="form-section"><h3>④ Payment details</h3><div class="form-grid"><div class="field"><label>Payment method</label><select id="washPayment"><option>Cash</option><option>GCash</option><option>Maya</option><option>Card</option><option>Other</option></select></div>${planRank(effectivePlan())>=2?`<div class="field"><label>Assigned staff</label><select id="washEmployee"><option value="">Choose staff</option>${state.employees.filter(e=>e.status==='Active').map(e=>`<option>${esc(e.name)}</option>`).join('')}</select></div>`:''}</div><div class="field" style="margin-top:12px"><label>Notes (optional)</label><input id="washNotes" placeholder="Special instructions"></div></section></div><aside class="panel" style="height:max-content;position:sticky;top:92px"><div class="panel-head"><h3>Transaction Summary</h3><span class="badge">Live total</span></div><div id="washSummary">${washSummaryHtml()}</div><button class="btn success" style="width:100%;margin-top:15px;padding:13px" onclick="saveWash()">Save transaction & record payment</button><p class="subtle" style="line-height:1.5;margin-bottom:0">Saving records the sale, creates a queue entry and updates your dashboard. This demo uses local browser storage.</p></aside></div>`}
 const VEHICLE_SIZE_OPTIONS=['Small','Medium','Large','XL'];
@@ -2077,6 +2119,7 @@ function openRealPlatformWorkspace(user){
  renderNav();render();window.scrollTo({top:0,behavior:'instant'});
 }
 function canAccessRolePage(page){
+ if(page==='vendo')return currentRole==='business'&&currentStaffRole==='owner';
  if(currentRole==='platform')return ['platform','tenants','platformBilling'].includes(page);
  const permissions={owner:null,supervisor:['dashboard','newwash','queue','transactions','customers','bookings','listing','catalog','employees','reports','reconcile','managementHub','addons','inventory','recipes','expenses','branches','loyalty','subscription'],cashier:['dashboard','newwash','queue','transactions','customers'],washer:['queue']};
  const list=permissions[currentStaffRole];return list===null||list===undefined||list.includes(page);
@@ -2098,7 +2141,7 @@ function renderNav(){
  document.querySelector('.top-actions .avatar').textContent=isPlatform?'SA':isOwner?'BO':currentStaffRole==='supervisor'?'SU':currentStaffRole==='cashier'?'CA':'WA';
  document.querySelectorAll('.nav button[data-page]').forEach(b=>{
   const page=b.dataset.page,allowedRole=canAccessRolePage(page),locked=!isPlatform&&(isOwner||isSupervisor)&&!allowed(page)&&!['managementHub','subscription'].includes(page);
-  b.style.display=allowedRole?'flex':'none';b.classList.toggle('active',page===currentPage);
+  b.style.display=allowedRole&&!locked?'flex':'none';b.classList.toggle('active',page===currentPage);
   let tag=b.querySelector('.badge');
   if(locked){
    if(!tag){tag=document.createElement('span');tag.className='badge';tag.style.marginLeft='auto';b.appendChild(tag);}
@@ -2106,7 +2149,7 @@ function renderNav(){
   }else if(tag?.classList.contains('wp-plan-lock-badge')){tag.remove();}
   if(tag&&!locked)tag.style.opacity='.45';
  });
- document.querySelectorAll('[data-mobile-page]').forEach(b=>{const page=b.dataset.mobilePage;b.style.display=canAccessRolePage(page)?'flex':'none';b.classList.toggle('active',page===currentPage)});
+ document.querySelectorAll('[data-mobile-page]').forEach(b=>{const page=b.dataset.mobilePage;b.style.display=canAccessRolePage(page)&&allowed(page)?'flex':'none';b.classList.toggle('active',page===currentPage)});
  document.querySelector('.mobile-bottom-nav').style.display=isPlatform?'none':'';
 }
 function go(page){if(!canAccessRolePage(page)){toast('This section is not available for your workspace role.');return}if(page!=='managementHub'&&!allowed(page)&&page!=='dashboard'&&page!=='newwash'&&page!=='queue'&&page!=='transactions'&&page!=='customers'){currentPage=page;renderNav();render();document.getElementById('sidebar').classList.remove('open');document.body.classList.remove('sidebar-visible');return}currentPage=page;renderNav();render();document.getElementById('sidebar').classList.remove('open');document.body.classList.remove('sidebar-visible')}
@@ -2121,7 +2164,7 @@ function render(){
  if(currentRole==='platform'){const pp={platform:platformDashboard,tenants:tenantsPage,platformBilling:platformBillingPage};c.innerHTML=pp[currentPage]();if(currentPage==='platformBilling')loadPlatformBillingRequests();return}
  if(currentPage==='managementHub'){c.innerHTML=managementHubPage();return}
  if(!allowed(currentPage)){c.innerHTML=lockedPage();return}
- const pages={dashboard:dashboardPage,newwash:newWashPage,queue:queuePage,transactions:transactionsPage,customers:customersPage,bookings:bookingsPage,listing:facilityListingPage,catalog:catalogPage,addons:addonsPage,employees:employeesPage,expenses:expensesPage,reports:reportsPage,inventory:inventoryPage,branches:branchesPage,loyalty:loyaltyPage,recipes:recipesPage,reconcile:reconcilePage,subscription:subscriptionPage};
+ const pages={vendo:vendoPage,dashboard:dashboardPage,newwash:newWashPage,queue:queuePage,transactions:transactionsPage,customers:customersPage,bookings:bookingsPage,listing:facilityListingPage,catalog:catalogPage,addons:addonsPage,employees:employeesPage,expenses:expensesPage,reports:reportsPage,inventory:inventoryPage,branches:branchesPage,loyalty:loyaltyPage,recipes:recipesPage,reconcile:reconcilePage,subscription:subscriptionPage};
  try{
   const pageRenderer=pages[currentPage]||dashboardPage;
   const markup=pageRenderer();
@@ -2183,7 +2226,7 @@ function managementHubPage(){
   ['Stock & locations',[['inventory','Inventory','Track supplies and stock levels','▣'],['recipes','Service Recipes','Automate supply use per wash','⚗'],['branches','Branches','Manage additional locations','⌂']]]
  ];
  return `${pageHead('Business Management','Included tools and paid features available to unlock.')}`+
- sections.map(([heading,tiles])=>`<section class="hub-section"><h3>${heading}</h3><div class="hub-grid">${tiles.filter(([page])=>canAccessRolePage(page)).map(([page,title,desc,ico])=>{
+ sections.map(([heading,tiles])=>`<section class="hub-section"><h3>${heading}</h3><div class="hub-grid">${tiles.filter(([page])=>canAccessRolePage(page)&&allowed(page)).map(([page,title,desc,ico])=>{
   const need=minPlan(page),locked=!allowed(page),tier=planName(need);
   return `<button class="hub-tile ${locked?'wp-hub-locked':''}" onclick="go('${page}')"><span class="hub-icon">${locked?'🔒':ico}</span><span><b>${title}</b><small>${desc}${locked?' · Locked · Requires '+tier:''}</small></span>${locked?'<span class="wp-hub-tier">'+tier+'</span>':''}</button>`;
  }).join('')}</div></section>`).join('')+
@@ -2345,7 +2388,7 @@ function renderBookingNotificationUi(){
  const mount=document.getElementById('wpDashboardBookingNotifications');
  if(mount){
   mount.innerHTML=count>0
-   ?'<section class="wp-dashboard-booking-alert"><div class="wp-dashboard-booking-alert-icon">!</div><div class="wp-dashboard-booking-alert-copy"><span class="wp-dashboard-booking-alert-kicker">NEW ONLINE BOOKINGS</span><strong>'+count+' booking '+(count===1?'request needs':'requests need')+' your attention</strong><p>Payment proof '+(count===1?'is':'s are')+' waiting for verification. Review the customer details and verify payment before confirming the reservation.</p></div><button type="button" class="btn" onclick="go(\'bookings\')">Review bookings <span>→</span></button></section>'
+   ?'<section class="wp-dashboard-booking-alert"><div class="wp-dashboard-booking-alert-icon">!</div><div class="wp-dashboard-booking-alert-copy"><span class="wp-dashboard-booking-alert-kicker">NEW ONLINE BOOKINGS</span><strong>'+count+' booking '+(count===1?'request needs':'requests need')+' your attention</strong><p>Payment proof'+(count===1?' is':'s are')+' waiting for verification. Review the customer details and verify payment before confirming the reservation.</p></div><button type="button" class="btn" onclick="go(\'bookings\')">Review bookings <span>→</span></button></section>'
    :'';
  }
 }
@@ -2612,7 +2655,7 @@ window.wpApplyAuthenticatedWorkspaceState=function(workspace,subscription,reques
   selectedAddons=[];
   transactionSearch='';
   selectedHomeRange=1;
-  const allowedPages=new Set(['dashboard','newwash','queue','transactions','customers','bookings','listing','catalog','addons','employees','expenses','reports','inventory','branches','loyalty','recipes','reconcile','subscription','managementHub']);
+  const allowedPages=new Set(['vendo','dashboard','newwash','queue','transactions','customers','bookings','listing','catalog','addons','employees','expenses','reports','inventory','branches','loyalty','recipes','reconcile','subscription','managementHub']);
   const destination=allowedPages.has(requestedPage)?requestedPage:'dashboard';
   currentPage=destination;
   window.wpStorage.setItem('wp_home_range','1');
@@ -2630,7 +2673,7 @@ initAuth();
 /* Public landing navigation and demo entry state */
 function togglePublicMenu(){
  const menu=document.querySelector('.wp-site-links');
- if(menu)menu.classList.toggle('wp-menu-open');
+ if(menu){const open=menu.classList.toggle('wp-menu-open');document.querySelector('.wp-menu-toggle')?.setAttribute('aria-expanded',String(open));}
 }
 function showLoginScreen(){
  const landing=document.getElementById('publicLanding'),login=document.getElementById('loginScreen');
@@ -3228,7 +3271,7 @@ async listPublicFacilities(){const {data,error}=await getClient().rpc('list_publ
    addStep(out,{page:'queue',section:'WASHER WORKSPACE',title:'Hand off when the wash is done',description:'After washing, send the vehicle to the next stage and let the supervisor know when it is ready for inspection. The cashier records payment only when the customer collects the vehicle.',purpose:'Wash progress and payment collection are separate responsibilities.',targets:['#content .panel']});
    return out;
   }
-  addStep(out,{page:'dashboard',section:'GETTING STARTED',title:'Your daily dashboard',description:'The dashboard is your business snapshot. Sales includes collected payments only; Vehicles Served counts registered wash tickets; In Progress shows active jobs; Completed counts paid, completed washes. Use the period selector to change the reporting range.',purpose:'Start here each day to understand sales and workload at a glance.',targets:['#content .home-range-panel','#content .easy-welcome','#content .grid.stats']});
+  addStep(out,{page:'dashboard',section:'GETTING STARTED',title:'Your daily dashboard',description:'Sales shows payments collected today. The vehicle counts show tickets registered today, including those still in progress and those completed. Open the queue to update a wash.',purpose:'Start here each day to understand sales and workload at a glance.',targets:['#content .wp-dashboard-stats','#content .home-range-panel','#content .grid.stats']});
   if(role==='cashier'){
    addStep(out,{page:'newwash',section:'REGISTER A VEHICLE',title:'Enter the vehicle details',description:'Enter the plate number, select the vehicle type, and confirm the vehicle size. WashPilot suggests a size from the type, but you can change it when a vehicle needs a different category.',purpose:'The size matters because each main wash service can have a different rate for Small, Medium, Large and XL vehicles.',targets:['#content .form-section:nth-of-type(1)']});
    addStep(out,{page:'newwash',section:'CHOOSE THE WASH',title:'Select a service and extras',description:'Choose the main wash service first. Add optional extras when the customer requests them. The summary on the right updates the amount due using the selected vehicle-size price.',purpose:'This makes sure the cashier starts with the correct service and amount.',targets:['#content .form-section:nth-of-type(2)','#content aside.panel']});
@@ -3278,7 +3321,7 @@ async listPublicFacilities(){const {data,error}=await getClient().rpc('list_publ
    add({page:'queue',section:'HANDOFF',title:'Send the vehicle for inspection and pickup',description:'After washing, move the ticket to Quality Check, then Ready when the final inspection is complete. The Ready status tells the cashier the vehicle can be handed back to the customer.',purpose:'Wash progress and payment collection are separate responsibilities. The cashier confirms payment at pickup.',tryThis:'Review which action moves a vehicle to the next stage. The demo tour will not collect a real payment.',targets:['#content .easy-queue-row','#content .panel']});
    return out;
   }
-  add({page:'dashboard',section:'STEP 1 · DAILY OVERVIEW',title:'Start at your daily dashboard',description:'This is your carwash command center. Review collected sales, vehicles served, active washes and completed jobs. Use the reporting period controls to change the time range, and use the shortcuts to open common tasks.',purpose:'Start here each day to see how the business is performing and what needs attention.',tryThis:'Look at the sales summary, vehicle counters and the New Wash shortcut. This is the screen you can return to throughout the day.',targets:['#content .easy-welcome','#content .grid.stats','#content .home-range-panel']});
+  add({page:'dashboard',section:'STEP 1 · DAILY OVERVIEW',title:'Start at your daily dashboard',description:'Review payments collected today and tickets registered today. See active vehicles below, then open the queue to update a wash or start a new ticket.',purpose:'Start here each day to see how the business is performing and what needs attention.',tryThis:'Look at the sales summary, vehicle counters and the New Wash shortcut. This is the screen you can return to throughout the day.',targets:['#content .wp-dashboard-stats','#content .easy-welcome','#content .grid.stats']});
   if(role==='owner'||role==='supervisor'){
    add({page:'catalog',section:'STEP 2 · OWNER SETUP',title:'Set up your service menu',description:'Create your main wash services and enter the rates for Small, Medium, Large and XL vehicles. Add optional extras with their own prices. These settings are used by the New Wash form.',purpose:'A complete service menu helps staff quote consistently and lets WashPilot calculate the right total for each vehicle.',tryThis:'Review the sample service names and price tiers. You can edit them in the demo, then continue.',targets:['#content .panel','#content .table-wrap']});
   }
@@ -3401,7 +3444,7 @@ function showPublicFacilityPage(slug){
  const main=document.getElementById('top');if(main)Array.from(main.children).forEach(el=>el.style.display=el.id==='wp-booking-public-view'?'':'none');
  const view=document.getElementById('wp-booking-public-view');if(view)view.style.display='block';
  document.body.classList.add('wp-public-route');document.body.classList.remove('wp-login-route');
- document.querySelector('.wp-site-links')?.classList.remove('open');document.title='WashPilot | Book a Car Wash';loadPublicFacility(slug);
+ document.querySelector('.wp-site-links')?.classList.remove('open','wp-menu-open');document.querySelector('.wp-menu-toggle')?.setAttribute('aria-expanded','false');document.title='WashPilot | Book a Car Wash';loadPublicFacility(slug);
 }
 function wpFormatClock(value){const [h,m]=String(value||'00:00').slice(0,5).split(':').map(Number);return new Date(2000,0,1,h,m).toLocaleTimeString('en-PH',{hour:'numeric',minute:'2-digit'});}
 function wpTimeMinutes(value){const [h,m]=String(value).slice(0,5).split(':').map(Number);return h*60+m;}
@@ -3500,6 +3543,7 @@ async function submitPublicBooking(e){
 (function(){
   'use strict';
   const pagePaths = {
+    vendo:'/vendo-management',
     dashboard:'/dashboard',
     newwash:'/new-wash',
     queue:'/service-queue',
@@ -3524,7 +3568,7 @@ async function submitPublicBooking(e){
     platformBilling:'/platform/billing-revenue'
   };
   const pageTitles = {
-    dashboard:'Dashboard',
+    vendo:'Smart Vendo',dashboard:'Dashboard',
     newwash:'New Wash',
     queue:'Service Queue',
     transactions:'Transactions',
@@ -3610,7 +3654,7 @@ async function submitPublicBooking(e){
     if(main){
       Array.from(main.children).forEach(el=>{
         if(slug==='home'){
-          el.style.display=(el.classList.contains('wp-hero')||el.classList.contains('wp-value-strip')||el.classList.contains('wp-final-cta'))?'':'none';
+          el.style.display=(el.classList.contains('wp-hero')||el.classList.contains('wp-value-strip')||el.classList.contains('wp-features')||el.classList.contains('wp-how')||el.classList.contains('wp-pricing')||el.classList.contains('wp-faq')||el.classList.contains('wp-final-cta'))?'':'none';
         }else{
           const section=Object.values(publicSections).find(item=>item.slug===slug)||null;
           el.style.display=section&&el.id===section.id?'':'none';
@@ -3622,7 +3666,7 @@ async function submitPublicBooking(e){
     setTitle(label,slug==='home'
       ?'WashPilot helps carwash owners manage daily operations, teams, payments and business performance.'
       :'Explore '+label+' from WashPilot Carwash Management Solutions.');
-    document.querySelector('.wp-site-links')?.classList.remove('open');
+    document.querySelector('.wp-site-links')?.classList.remove('open','wp-menu-open');document.querySelector('.wp-menu-toggle')?.setAttribute('aria-expanded','false');
   }
   function showLoginRoute(){
     const landing=document.getElementById('publicLanding');
