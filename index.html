@@ -440,7 +440,9 @@ body.platform-mode .mobile-bottom-nav{display:none!important}
   .sidebar { position:fixed !important; top:0; bottom:0; left:0 !important; right:auto !important; width:min(285px,86vw) !important; max-width:86vw; height:100dvh; height:100vh; transform:translateX(-105%); transition:transform .22s ease; z-index:100 !important; overflow-y:auto; overscroll-behavior:contain; padding-bottom:calc(22px + env(safe-area-inset-bottom)); }
   .sidebar.open { left:0 !important; right:auto !important; transform:translateX(0); }
   body.sidebar-visible { overflow:hidden; }
-  body.sidebar-visible::after { content:""; position:fixed; inset:0; background:rgba(6,18,35,.48); z-index:90; }
+  body.sidebar-visible::after { display:none !important; }
+  .sidebar.open { z-index:2147483000 !important; pointer-events:auto !important; }
+  .sidebar.open .nav, .sidebar.open .nav button { pointer-events:auto !important; touch-action:manipulation; }
   .content { padding:16px 12px calc(92px + env(safe-area-inset-bottom)) !important; overflow-x:hidden; }
   .page-head { align-items:flex-start; flex-direction:column; gap:10px; }
   .stats { grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
