@@ -2532,8 +2532,8 @@ async function loadFacilityListing(){
  try{
   const f=await window.washPilotBookingApi.getMyFacility();if(!f){el.innerHTML='<div class="empty">No facility is linked to this business yet. Please contact support.</div>';return;}
   window.wpFacilityCurrent=f;window.wpFacilityGalleryDraft=(f.gallery_images||[]).slice(0,5);window.wpFacilityLogoDraft=f.logo_url||'';
-  const days=[['Sunday',0],['Monday',1],['Tuesday',2],['Wednesday',3],['Thursday',4],['Friday',5],['Saturday',6]],publicUrl='https://washpilot.shop/book/'+f.slug;
-  el.innerHTML='<div class="wp-facility-brand-editor"><div id="wpFacilityLogoPreview" class="wp-facility-logo-preview">'+(window.wpFacilityLogoDraft?'<img src="'+esc(window.wpFacilityLogoDraft)+'" alt="Business logo">':'<span>LOGO</span>')+'</div><div class="wp-facility-brand-controls"><b>Business logo</b><p class="wp-form-hint">Shown at the top of your public booking page and business listing.</p><label class="wp-upload-tile wp-logo-upload"><input id="wpFacilityLogoUpload" type="file" accept="image/jpeg,image/png,image/webp" onchange="uploadFacilityLogo(this)"><span>＋ Upload logo</span><small>JPG, PNG or WEBP · 8 MB max</small></label><button type="button" class="btn ghost small" onclick="removeFacilityLogo()">Remove logo</button></div></div>'+'<div class="wp-share-panel"><div><span class="wp-share-kicker">YOUR PUBLIC BOOKING LINK</span><div class="wp-share-url">'+esc(publicUrl)+'</div><div class="wp-share-actions"><button type="button" class="btn small" onclick="copyFacilityLink()">Copy link</button><button type="button" class="btn ghost small" onclick="copyFacilitySlug()">Copy slug</button><a class="btn ghost small" href="'+esc(publicUrl)+'" target="_blank" rel="noopener">Open page ↗</a></div></div><div class="wp-qr-wrap"><div id="wpFacilityQr"></div><button type="button" class="btn ghost small" onclick="downloadFacilityQr()">Download QR</button></div></div>'+
+  const days=[['Sunday',0],['Monday',1],['Tuesday',2],['Wednesday',3],['Thursday',4],['Friday',5],['Saturday',6]],publicUrl='https://washpilot.shop/facility/'+f.slug;
+  el.innerHTML='<div class="wp-facility-brand-editor"><div id="wpFacilityLogoPreview" class="wp-facility-logo-preview">'+(window.wpFacilityLogoDraft?'<img src="'+esc(window.wpFacilityLogoDraft)+'" alt="Business logo">':'<span>LOGO</span>')+'</div><div class="wp-facility-brand-controls"><b>Business logo</b><p class="wp-form-hint">Shown at the top of your public booking page and business listing.</p><label class="wp-upload-tile wp-logo-upload"><input id="wpFacilityLogoUpload" type="file" accept="image/jpeg,image/png,image/webp" onchange="uploadFacilityLogo(this)"><span>＋ Upload logo</span><small>JPG, PNG or WEBP · 8 MB max</small></label><button type="button" class="btn ghost small" onclick="removeFacilityLogo()">Remove logo</button></div></div>'+'<div class="wp-share-panel"><div><span class="wp-share-kicker">YOUR PUBLIC FACILITY LINK</span><div class="wp-share-url">'+esc(publicUrl)+'</div><div class="wp-share-actions"><button type="button" class="btn small" onclick="copyFacilityLink()">Copy facility link</button><button type="button" class="btn ghost small" onclick="copyFacilitySlug()">Copy slug</button><a class="btn ghost small" href="'+esc(publicUrl)+'" target="_blank" rel="noopener">Open page ↗</a></div></div><div class="wp-qr-wrap"><div id="wpFacilityQr"></div><button type="button" class="btn ghost small" onclick="downloadFacilityQr()">Download QR</button></div></div>'+
    '<form id="wpFacilityProfileForm" onsubmit="saveFacilityListing(event)"><h3>Facility details</h3><p class="wp-form-hint">Your business-name slug is used in the public link.</p><div class="field wp-public-description-field"><label>Public business description</label><textarea id="wpFacilityPublicDescription" rows="4" maxlength="1200" placeholder="Tell customers what makes your facility special, your equipment, service quality and what they can expect.">'+esc(f.public_description||'')+'</textarea><small>This introduction appears below your logo and facility name on the public booking page.</small></div><div class="grid two">'+
    '<div class="field"><label>Business / facility name</label><input name="name" maxlength="100" required value="'+esc(f.name)+'"></div><div class="field"><label>Public link slug</label><input name="slug" maxlength="50" pattern="[a-zA-Z0-9-]+" required value="'+esc(f.slug)+'"></div>'+
    '<div class="field"><label>Contact number</label><input name="phone" maxlength="30" value="'+esc(f.phone||'')+'"></div><div class="field"><label>Facility address</label><div id="wpFacilityAddressPicker" class="wp-google-address-picker"></div><input name="address" id="wpFacilityAddress" type="hidden" value="'+esc(f.address||'')+'" required><small>Search and select the exact Google Maps location for this facility.</small></div>'+
@@ -2588,8 +2588,8 @@ function renderFacilityQr(url){
  new QRCode(box,{text:url,width:156,height:156,colorDark:'#10233f',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});
 }
 async function copyFacilityLink(){
- const url='https://washpilot.shop/book/'+(window.wpFacilityCurrent?.slug||'');
- try{await navigator.clipboard.writeText(url);toast('Booking link copied.');}catch(_){window.prompt('Copy your booking link:',url);}
+ const url='https://washpilot.shop/facility/'+(window.wpFacilityCurrent?.slug||'');
+ try{await navigator.clipboard.writeText(url);toast('Facility link copied.');}catch(_){window.prompt('Copy your facility link:',url);}
 }
 async function copyFacilitySlug(){
  const slug=window.wpFacilityCurrent?.slug||'';
@@ -3077,14 +3077,20 @@ function logoutDemo(){
     return data;
   };
   window.showLoginScreen=function(){
+    window.closeTrialSignup?.();
     const landing=$('publicLanding'),login=$('loginScreen');
     if(landing)landing.style.display='none';
     if(login){login.hidden=false;login.style.display='grid';}
     document.body.dataset.washpilotLoginOpen='1';
+    window.wpSignupReturnScreen='login';
     window.scrollTo({top:0,behavior:'smooth'});
     setAuthMode('account');
   };
   window.openTrialSignup=function(plan){
+    const login=$('loginScreen'),landing=$('publicLanding');
+    window.wpSignupReturnScreen=(login&&login.style.display==='grid')?'login':'landing';
+    if(login)login.style.display='none';
+    if(landing)landing.style.display='none';
     selectedSignupPlan='basic';wpSignupGooglePlace=null;
     const form=$('wpSignupForm');if(form)form.reset();
     signupMessage('','');
@@ -3095,6 +3101,14 @@ function logoutDemo(){
   window.closeTrialSignup=function(){
     const box=$('wpSignupBackdrop');
     if(box){box.classList.remove('show');box.setAttribute('aria-hidden','true');document.body.style.overflow='';}
+    const login=$('loginScreen'),landing=$('publicLanding');
+    if(window.wpSignupReturnScreen==='login'){
+      if(landing)landing.style.display='none';
+      if(login){login.hidden=false;login.style.display='grid';}
+    }else{
+      if(login)login.style.display='none';
+      if(landing)landing.style.display='';
+    }
   };
   window.signupBackdropClose=function(e){if(e.target&&e.target.id==='wpSignupBackdrop')window.closeTrialSignup();};
 
@@ -4210,7 +4224,7 @@ async function submitPublicBooking(e){
       window.wpFacilityGalleryDraft=(f.gallery_images||[]).slice(0,5);
       window.wpFacilityLogoDraft=f.logo_url||'';
       const days=[['Monday',1],['Tuesday',2],['Wednesday',3],['Thursday',4],['Friday',5],['Saturday',6],['Sunday',0]];
-      const publicUrl='https://washpilot.shop/book/'+f.slug;
+      const publicUrl='https://washpilot.shop/facility/'+f.slug;
       const selectedDays=f.operating_days||[0,1,2,3,4,5,6];
       el.innerHTML=`
         <div class="wp-facility-wizard">
@@ -4236,8 +4250,8 @@ async function submitPublicBooking(e){
                 </div>
               </div>
               <div class="wp-facility-share">
-                <div><span class="wp-share-kicker">YOUR PUBLIC BOOKING LINK</span><div class="wp-share-url">${esc(publicUrl)}</div><div class="wp-share-actions"><button type="button" class="btn small" onclick="copyFacilityLink()">Copy link</button><a class="btn ghost small" href="${esc(publicUrl)}" target="_blank" rel="noopener">Preview booking page ↗</a></div></div>
-                <div class="wp-qr-wrap"><div id="wpFacilityQr"></div><button type="button" class="btn ghost small" onclick="downloadFacilityQr()">Download QR code</button></div>
+                <div><span class="wp-share-kicker">YOUR PUBLIC FACILITY LINK</span><div class="wp-share-url">${esc(publicUrl)}</div><div class="wp-share-actions"><button type="button" class="btn small" onclick="copyFacilityLink()">Copy facility link</button><a class="btn ghost small" href="${esc(publicUrl)}" target="_blank" rel="noopener">Preview facility page ↗</a></div></div>
+                <div class="wp-qr-wrap"><div id="wpFacilityQr"></div><button type="button" class="btn ghost small" onclick="downloadFacilityQr()">Download facility QR code</button></div>
               </div>
               <div class="field wp-public-description-field"><label for="wpFacilityPublicDescription">Business description</label><textarea id="wpFacilityPublicDescription" rows="4" maxlength="1200" placeholder="Introduce your car wash. Tell customers about your services, equipment and what makes your facility special.">${esc(f.public_description||'')}</textarea><small>This description appears on your public booking page.</small></div>
               <div class="form-grid">
