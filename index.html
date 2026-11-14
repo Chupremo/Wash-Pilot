@@ -3631,17 +3631,43 @@ function renderPublicServiceCards(){
  return '<section class="wp-public-services"><div class="wp-public-services-heading"><span class="wp-eyebrow">OUR SERVICES</span><h2>Choose the service that fits your vehicle</h2><p>Compare the included features before making a reservation.</p></div><div class="wp-public-service-grid">'+wpCurrentPublicServices.map(s=>{
   const bullets=String(s.description||'').split(/\r?\n/).map(line=>line.replace(/^\s*[-•*]\s*/,'').trim()).filter(Boolean);
   const bulletHtml=bullets.length?'<ul>'+bullets.map(line=>'<li>'+esc(line)+'</li>').join('')+'</ul>':'<p class="wp-service-no-description">Service details will be provided by the facility.</p>';
-  return '<article class="wp-public-service-card"><div class="wp-public-service-card-head"><h3>'+esc(s.name)+'</h3><strong>'+money(s.base_price_php)+'</strong></div><span class="wp-public-service-duration">'+Number(s.duration_minutes||30)+' min estimated</span>'+bulletHtml+'</article>';
+  return '<article class="wp-public-service-card"><div class="wp-public-service-card-head"><h3>'+esc(s.name)+'</h3><strong>From '+money(wpPublicServicePriceForSize(s,'Small'))+'</strong></div><span class="wp-public-service-duration">'+Number(s.duration_minutes||30)+' min estimated</span>'+bulletHtml+'</article>';
  }).join('')+'</div></section>';
 }
-function renderPublicServiceBulletList(){
+function wpPublicServicePriceForSize(service,size){
+ const prices=service?.price_by_size||service?.priceBySize||{};
+ const raw=size?prices[size]:null;
+ return Number(raw!==undefined&&raw!==null&&raw!==''?raw:(service?.base_price_php??service?.price??0));
+}
+function renderPublicServiceBulletList(size){
  if(!wpCurrentPublicServices.length)return '<p class="wp-summary-no-services">No online services are currently listed.</p>';
  return '<ul class="wp-summary-service-list">'+wpCurrentPublicServices.map(s=>{
-  const price=money(s.base_price_php);
+  const amount=wpPublicServicePriceForSize(s,size);
+  const price=money(amount)+(size?'':' <small class="wp-service-price-hint">starting price</small>');
   const inclusions=String(s.description||'').split(/\r?\n/).map(line=>line.replace(/^\s*[-•*]\s*/,'').trim()).filter(Boolean);
   const nested=inclusions.length?'<ul class="wp-summary-service-inclusions">'+inclusions.map(line=>'<li>'+esc(line)+'</li>').join('')+'</ul>':'';
   return '<li class="wp-summary-service-item"><div class="wp-summary-service-line"><span>'+esc(s.name)+'</span><strong>'+price+'</strong></div>'+nested+'</li>';
  }).join('')+'</ul>';
+}
+function updatePublicServicePricing(){
+ const form=document.getElementById('wpPublicBookingForm');if(!form)return;
+ const size=form.elements.vehicle_size?.value||'';
+ const select=document.getElementById('wpPublicService');
+ const previous=select?.value||'';
+ const list=document.getElementById('wpPublicServiceList');
+ if(list)list.innerHTML=renderPublicServiceBulletList(size);
+ if(!select)return;
+ if(!size){
+  select.disabled=true;
+  select.innerHTML='<option value="">Choose vehicle size first</option>';
+ }else{
+  select.disabled=false;
+  select.innerHTML='<option value="">Choose a service</option>'+wpCurrentPublicServices.map(s=>'<option value="'+s.service_id+'">'+esc(s.name)+' · '+money(wpPublicServicePriceForSize(s,size))+'</option>').join('');
+  if(wpCurrentPublicServices.some(s=>s.service_id===previous))select.value=previous;
+ }
+ const note=document.getElementById('wpPublicBookingPrice');
+ const service=wpCurrentPublicServices.find(s=>s.service_id===select.value);
+ if(note)note.textContent=service?'Selected price: '+money(wpPublicServicePriceForSize(service,size))+' · '+Number(service.duration_minutes||30)+' minutes.':'Choose a service and booking date to view available times.';
 }
 function renderPublicLocationCta(f){
  if(!f.address&&!f.latitude&&!f.longitude)return '';
@@ -3661,15 +3687,15 @@ async function loadPublicFacility(slug){
   const gallery=(f.gallery_images||[]).length?'<section class="wp-public-gallery-section"><div class="wp-section-heading"><h2>Inside the facility</h2><span>Photos</span></div><div class="wp-public-gallery">'+f.gallery_images.slice(0,5).map((src,i)=>'<img src="'+esc(src)+'" alt="'+esc(f.facility_name)+' facility photo '+(i+1)+'" loading="lazy">').join('')+'</div></section>':'';
   el.innerHTML='<div class="wp-public-facility-page">'+
    '<a class="wp-public-back" href="/business">← <span>All businesses</span></a>'+
-   '<aside class="wp-booking-summary wp-facility-details-top"><div class="wp-summary-topline"><span class="wp-summary-icon">WP</span><span>FACILITY DETAILS</span></div><h3>'+esc(f.facility_name)+'</h3><p class="wp-summary-address">'+esc(f.address||'Address not provided')+'</p><div class="wp-summary-hours"><span>Opening hours</span><b>'+wpFormatClock(f.opening_time)+' – '+wpFormatClock(f.closing_time)+'</b></div><div class="wp-summary-divider"></div><div class="wp-summary-payment"><b>Online payment</b><p>Pay through GCash or bank transfer. Upload your proof for verification. Cash is not accepted for online bookings.</p></div><div class="wp-summary-price">'+(bookingOn?'Available services':'Listed on WashPilot')+'</div>'+(bookingOn?renderPublicServiceBulletList():'')+'<p class="wp-summary-footnote">Available times follow this facility’s published operating hours.</p></aside>'+
+   '<aside class="wp-booking-summary wp-facility-details-top"><div class="wp-summary-topline"><span class="wp-summary-icon">WP</span><span>FACILITY DETAILS</span></div><h3>'+esc(f.facility_name)+'</h3><p class="wp-summary-address">'+esc(f.address||'Address not provided')+'</p><div class="wp-summary-hours"><span>Opening hours</span><b>'+wpFormatClock(f.opening_time)+' – '+wpFormatClock(f.closing_time)+'</b></div><div class="wp-summary-divider"></div><div class="wp-summary-payment"><b>Online payment</b><p>Pay through GCash or bank transfer. Upload your proof for verification. Cash is not accepted for online bookings.</p></div><div class="wp-summary-price">'+(bookingOn?'Available services':'Listed on WashPilot')+'</div>'+(bookingOn?'<div id="wpPublicServiceList">'+renderPublicServiceBulletList()+'</div>':'')+'<p class="wp-summary-footnote">Available times follow this facility’s published operating hours.</p></aside>'+
    '<div class="wp-booking-layout"><section class="wp-booking-form">'+(bookingOn?
     '<div class="wp-booking-form-heading"><div><h2>Book your car wash</h2><p>Choose a service, pick a time and send your booking request.</p></div><span class="wp-booking-secure">Secure booking</span></div>'+
     '<div class="wp-booking-stepper" aria-label="Booking steps"><div class="is-current"><span>1</span><b>Wash</b></div><i></i><div><span>2</span><b>Payment</b></div><i></i><div><span>3</span><b>Details</b></div></div>'+
     '<form id="wpPublicBookingForm" onsubmit="submitPublicBooking(event)">'+
     '<section class="wp-booking-group is-active" data-booking-step="1"><div class="wp-booking-group-title"><span>01</span><div><h3>Your wash</h3><p>Select your service and preferred schedule.</p></div></div>'+
-    '<div class="field"><label>Choose a service</label><select name="service_id" id="wpPublicService" required onchange="refreshPublicBookingSlots()">'+wpCurrentPublicServices.map(s=>'<option value="'+s.service_id+'">'+esc(s.name)+' · '+money(s.base_price_php)+'</option>').join('')+'</select></div>'+
-    '<div class="grid two"><div class="field"><label>Booking date</label><input type="date" name="booking_date" id="wpPublicBookingDate" min="'+new Date().toISOString().slice(0,10)+'" max="'+new Date(Date.now()+60*86400000).toISOString().slice(0,10)+'" required onchange="refreshPublicBookingSlots()"></div><div class="field"><label>Available time</label><select name="start_time" id="wpPublicBookingTime" required><option value="">Choose a date first</option></select></div></div>'+
-    '<div class="field"><label>Vehicle size</label><select name="vehicle_size"><option>Small</option><option selected>Medium</option><option>Large</option><option>XL</option></select></div></section>'+
+    '<div class="field"><label>1. Select your vehicle size</label><select name="vehicle_size" id="wpPublicVehicleSize" required onchange="updatePublicServicePricing();refreshPublicBookingSlots()"><option value="">Choose vehicle size</option><option value="Small">Small · Sedan / Hatchback</option><option value="Medium">Medium · SUV / Crossover / MPV</option><option value="Large">Large · Pickup / Van / Large SUV</option></select><small>Service prices will update automatically based on your vehicle size.</small></div>'+
+    '<div class="field"><label>2. Choose a service</label><select name="service_id" id="wpPublicService" required disabled onchange="refreshPublicBookingSlots()"><option value="">Choose vehicle size first</option></select></div>'+
+    '<div class="grid two"><div class="field"><label>Booking date</label><input type="date" name="booking_date" id="wpPublicBookingDate" min="'+new Date().toISOString().slice(0,10)+'" max="'+new Date(Date.now()+60*86400000).toISOString().slice(0,10)+'" required onchange="refreshPublicBookingSlots()"></div><div class="field"><label>Available time</label><select name="start_time" id="wpPublicBookingTime" required><option value="">Choose a date first</option></select></div></div></section>'+
     '<section class="wp-booking-group" data-booking-step="2" hidden><div class="wp-booking-group-title"><span>02</span><div><h3>Payment</h3><p>Pay online and attach your transfer confirmation.</p></div></div>'+
     '<div class="field"><label>Payment method</label><select name="payment_method" id="wpBookingPaymentMethod" required onchange="updatePublicPaymentInstructions()">'+
      (f.gcash_mobile_number&&f.gcash_account_name?'<option value="gcash">GCash</option>':'')+
@@ -3688,7 +3714,7 @@ async function loadPublicFacility(slug){
     '<h2>Online booking unavailable</h2><p class="wp-booking-note">This facility is listed on WashPilot but has not activated online booking. Contact the facility directly or browse another car wash.</p><a class="wp-btn-primary" href="/businesses">Browse businesses</a>')+
    '</section></div>'+
    gallery+renderPublicLocationCta(f)+'</div>';
-  if(bookingOn){refreshPublicBookingSlots();updatePublicPaymentInstructions();}
+  if(bookingOn){updatePublicServicePricing();refreshPublicBookingSlots();updatePublicPaymentInstructions();}
  }catch(err){el.innerHTML='<div class="wp-directory-empty">Could not load this facility: '+esc(err.message||err)+'</div>';}
 }
 let wpPublicBookingStep=1;
@@ -3723,8 +3749,9 @@ function changePublicBookingStep(direction){
 }
 async function refreshPublicBookingSlots(){
  const f=wpCurrentPublicFacility,form=document.getElementById('wpPublicBookingForm');if(!f||!form)return;
- const date=form.elements.booking_date.value,select=document.getElementById('wpPublicBookingTime'),service=wpCurrentPublicServices.find(s=>s.service_id===form.elements.service_id.value);
- const note=document.getElementById('wpPublicBookingPrice');if(note&&service)note.textContent='Starting at '+money(service.base_price_php)+' · '+service.duration_minutes+' minutes. Final price may vary by vehicle size.';
+ const date=form.elements.booking_date.value,select=document.getElementById('wpPublicBookingTime'),service=wpCurrentPublicServices.find(s=>s.service_id===form.elements.service_id.value),size=form.elements.vehicle_size?.value||'';
+ const note=document.getElementById('wpPublicBookingPrice');
+ if(note)note.textContent=service&&size?'Selected price: '+money(wpPublicServicePriceForSize(service,size))+' · '+Number(service.duration_minutes||30)+' minutes.':(size?'Choose a service and booking date to view available times.':'Choose your vehicle size and service to view available times.');
  if(!date){select.innerHTML='<option value="">Choose a date first</option>';return;}
  const day=new Date(date+'T12:00:00').getDay();if(!(f.operating_days||[]).includes(day)){select.innerHTML='<option value="">Facility is closed on this day</option>';return;}
  select.innerHTML='<option value="">Checking availability…</option>';
