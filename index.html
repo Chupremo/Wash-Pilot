@@ -3707,23 +3707,35 @@ function renderPublicServiceBulletList(){
   const hasSizePrice=prices[size]!==undefined&&prices[size]!==null&&prices[size]!=='';
   return money(hasSizePrice?Number(prices[size]):Number(service?.base_price_php??service?.price??0));
  };
+ const inclusionsFor=service=>String(service.description||'').split(/\r?\n/).map(line=>line.replace(/^\s*[-•*]\s*/,'').trim()).filter(line=>line&&line.toLowerCase()!==String(service.name||'').trim().toLowerCase());
+ const mainServices=wpCurrentPublicServices.filter(service=>(service.service_type||service.serviceType||'main')!=='addon');
+ const addOns=wpCurrentPublicServices.filter(service=>(service.service_type||service.serviceType||'main')==='addon');
  const columns='minmax(0,2.15fr) repeat(3,minmax(0,1fr))';
  const headerCell='min-width:0;padding:7px 3px;text-align:center;font-size:9px;font-weight:800;line-height:1.15;color:#fff!important;background:rgba(255,255,255,.07)!important;overflow-wrap:anywhere;';
  const rowCell='min-width:0;padding:7px 3px;text-align:center;font-size:9px;font-weight:700;line-height:1.2;color:#fff!important;background:transparent!important;border-bottom:1px solid rgba(255,255,255,.15);font-variant-numeric:tabular-nums;overflow-wrap:anywhere;';
- return '<div class="wp-summary-compact-pricing" role="table" aria-label="Service prices by vehicle size" style="display:block;width:100%;max-width:100%;min-width:0;overflow:hidden!important;margin:12px 0 18px;color:#fff!important;background:transparent!important;">'+
+ const mainTable=mainServices.length?'<div class="wp-summary-compact-pricing" role="table" aria-label="Main service prices by vehicle size" style="display:block;width:100%;max-width:100%;min-width:0;overflow:hidden!important;margin:12px 0 18px;color:#fff!important;background:transparent!important;">'+
   '<div role="row" style="display:grid;grid-template-columns:'+columns+';width:100%;min-width:0;border-bottom:1px solid rgba(255,255,255,.25);">'+
    '<div role="columnheader" style="'+headerCell+'text-align:left;">SERVICE</div>'+
    sizes.map(size=>'<div role="columnheader" style="'+headerCell+'">'+size.toUpperCase()+'</div>').join('')+
   '</div>'+
-  wpCurrentPublicServices.map(service=>{
-   const inclusions=String(service.description||'').split(/\r?\n/).map(line=>line.replace(/^\s*[-•*]\s*/,'').trim()).filter(line=>line&&line.toLowerCase()!==String(service.name||'').trim().toLowerCase());
-   const details=inclusions.length?'<div style="margin-top:3px;font-size:8px!important;font-weight:400;line-height:1.25;color:#cbd8e8!important;white-space:normal;overflow-wrap:anywhere;">Includes: '+inclusions.map(esc).join(' · ')+'</div>':'';
+  mainServices.map(service=>{
+   const inclusions=inclusionsFor(service);
+   const bullets=inclusions.length?'<ul style="margin:4px 0 0;padding-left:13px;list-style:disc;text-align:left;color:#cbd8e8!important;font-size:8px!important;font-weight:400;line-height:1.35;white-space:normal;">'+inclusions.map(item=>'<li style="display:list-item;margin:1px 0;padding:0;color:#cbd8e8!important;">'+esc(item)+'</li>').join('')+'</ul>':'';
    return '<div role="row" style="display:grid;grid-template-columns:'+columns+';width:100%;min-width:0;border-bottom:1px solid rgba(255,255,255,.15);">'+
-    '<div role="rowheader" style="'+rowCell+'text-align:left;font-size:9px;font-weight:800;">'+esc(service.name)+details+'</div>'+
+    '<div role="rowheader" style="'+rowCell+'text-align:left;font-size:9px;font-weight:800;">'+esc(service.name)+bullets+'</div>'+
     sizes.map(size=>'<div role="cell" style="'+rowCell+'">'+priceCell(service,size)+'</div>').join('')+
    '</div>';
   }).join('')+
- '</div>';
+ '</div>':'';
+ const addOnSection=addOns.length?'<section class="wp-public-addons" aria-label="Optional add-ons" style="margin:18px 0 4px;padding-top:13px;border-top:1px solid rgba(255,255,255,.25);">'+
+  '<div style="margin:0 0 9px;font-size:12px;font-weight:900;letter-spacing:.5px;color:#fff!important;">OPTIONAL ADD-ONS</div>'+
+  '<p style="margin:0 0 10px;font-size:9px;line-height:1.35;color:#cbd8e8!important;">Add these extra services to your car wash booking if needed.</p>'+
+  '<ul style="list-style:none;margin:0;padding:0;display:grid;gap:9px;">'+addOns.map(service=>{
+   const inclusions=inclusionsFor(service);
+   const bullets=inclusions.length?'<ul style="list-style:disc;margin:4px 0 0;padding-left:16px;display:block;">'+inclusions.map(item=>'<li style="display:list-item;margin:2px 0;font-size:9px;line-height:1.3;color:#cbd8e8!important;">'+esc(item)+'</li>').join('')+'</ul>':'';
+   return '<li style="display:block;padding:0 0 8px;border-bottom:1px solid rgba(255,255,255,.12);"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;"><strong style="font-size:10px;line-height:1.3;color:#fff!important;">'+esc(service.name)+'</strong><strong style="font-size:10px;white-space:nowrap;color:#fff!important;">'+money(service.base_price_php??service.price??0)+'</strong></div>'+bullets+'</li>';
+  }).join('')+'</ul></section>':'';
+ return mainTable+addOnSection||'<p class="wp-summary-no-services">No online services are currently listed.</p>';
 }
 function updatePublicServicePricing(){
  const form=document.getElementById('wpPublicBookingForm');if(!form)return;
