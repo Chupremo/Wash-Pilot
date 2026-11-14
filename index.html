@@ -3237,7 +3237,19 @@ window.submitTrialSignup=async function(e){
     const {data:subscription,error:subscriptionError}=await sb.from('subscriptions').select('plan_code,status,trial_starts_at,trial_ends_at,current_period_ends_at').eq('business_id',businessId).single();
     if(subscriptionError)throw new Error('Your business is available, but its subscription could not be loaded: '+subscriptionError.message);
     openRealWorkspace(user,business,subscription);
-    if(window.washPilotBookingApi){try{const services=typeof window.wpReadWorkspaceServices==='function'?window.wpReadWorkspaceServices():[];await window.washPilotBookingApi.syncServices(businessId,services);}catch(syncError){console.warn('Facility service sync deferred:',syncError.message||syncError);}}
+    if(window.washPilotBookingApi){
+      try{
+        const localServices=typeof window.wpReadWorkspaceServices==='function'?window.wpReadWorkspaceServices():[];
+        let databaseServices=await window.washPilotBookingApi.getMyServices(businessId);
+        // Existing facility services are the source of truth for both POS and public booking.
+        // Migrate local-only catalogues only when no facility services exist yet.
+        if(!databaseServices.length&&localServices.length){
+          await window.washPilotBookingApi.syncServices(businessId,localServices);
+          databaseServices=await window.washPilotBookingApi.getMyServices(businessId);
+        }
+        if(databaseServices.length||!localServices.length)window.wpReplaceWorkspaceServices?.(databaseServices);
+      }catch(syncError){console.warn('Facility catalogue hydration deferred:',syncError.message||syncError);}
+    }
   }
   function removeDemoFixturesFromWorkspace(workspace){
  const result=Object.assign({},workspace||{});
@@ -3489,10 +3501,24 @@ function openRealWorkspace(user,business,subscription){
       if(error)throw error;return path;
     },
     async getPaymentProofUrl(path){const {data,error}=await getClient().storage.from('washpilot-booking-proofs').createSignedUrl(path,3600);if(error)throw error;return data.signedUrl;},
-async syncServices(businessId,services){
+async getMyServices(businessId){
+      const sb=getClient(),id=businessId||window.wpRealBusinessId;
+      if(!id)throw new Error('The business workspace is not ready.');
+      const {data:f,error:fe}=await sb.from('business_facilities').select('id').eq('business_id',id).eq('is_primary',true).maybeSingle();
+      if(fe)throw fe;if(!f)throw new Error('Public facility not found.');
+      const {data,error}=await sb.from('facility_services').select('id,source_key,name,description,base_price_php,price_by_size,duration_minutes,is_active,sort_order,service_type').eq('facility_id',f.id).order('sort_order',{ascending:true}).order('name',{ascending:true});
+      if(error)throw error;
+      let nextId=Math.max(0,...(data||[]).map(row=>/^\\d+$/.test(String(row.source_key||''))?Number(row.source_key):0));
+      return (data||[]).map(row=>{
+        const numeric=/^\\d+$/.test(String(row.source_key||''))?Number(row.source_key):0;
+        if(!numeric)nextId+=1;
+        return {id:numeric||nextId,sourceKey:String(row.source_key||''),facilityServiceId:row.id,name:row.name,description:row.description||'',price:Number(row.base_price_php||0),priceBySize:row.price_by_size||{},duration:Number(row.duration_minutes||30),type:row.service_type==='addon'?'addon':'main',active:!!row.is_active};
+      });
+    },
+    async syncServices(businessId,services){
       const sb=getClient(),{data:f,error:fe}=await sb.from('business_facilities').select('id').eq('business_id',businessId).eq('is_primary',true).maybeSingle();
       if(fe)throw fe;if(!f)throw new Error('Public facility not found.');
-      const rows=(services||[]).map((s,i)=>({facility_id:f.id,source_key:String(s.id),name:s.name,description:s.description||null,base_price_php:Number(s.price||0),price_by_size:s.type==='main'?(s.priceBySize||{}):{},duration_minutes:Math.max(5,Math.min(1440,Number(s.duration||30))),is_active:!!s.active,sort_order:i,updated_at:new Date().toISOString()}));
+      const rows=(services||[]).map((s,i)=>({facility_id:f.id,source_key:String(s.sourceKey||s.id),name:s.name,description:s.description||null,base_price_php:Number(s.price||0),price_by_size:s.type==='main'?(s.priceBySize||{}):{},duration_minutes:Math.max(5,Math.min(1440,Number(s.duration||30))),is_active:!!s.active,service_type:s.type==='addon'?'addon':'main',sort_order:i,updated_at:new Date().toISOString()}));
       if(rows.length){const {error}=await sb.from('facility_services').upsert(rows,{onConflict:'facility_id,source_key'});if(error)throw error;}return rows.length;
     },
     async getMyBookings(){
