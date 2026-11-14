@@ -639,10 +639,13 @@ html{scroll-behavior:smooth;scroll-padding-top:85px}
 /* WashPilot guided product tour */
 .wp-tour-launch{display:inline-flex;align-items:center;gap:7px;border:1px solid #dbe6f5;background:#f7faff;color:#194b86;font-weight:800;cursor:pointer}
 .wp-tour-launch:hover{background:#eaf3ff;border-color:#b8d0ef}
-.wp-tour-backdrop{position:fixed;inset:0;background:rgba(7,20,40,.025);z-index:1;pointer-events:none}
-#washpilotApp:not(.auth-hidden){position:relative;z-index:2}
-.wp-tour-spotlight{position:relative!important;z-index:10011!important;outline:3px solid #31b9ee!important;outline-offset:4px!important;box-shadow:0 0 0 8px rgba(49,185,238,.18)!important;border-radius:12px!important}
-.wp-tour-panel{position:fixed;right:24px;bottom:24px;z-index:10020;width:min(450px,calc(100vw - 32px));background:#fff;border:1px solid #d8e4f3;border-radius:20px;box-shadow:0 22px 70px rgba(7,25,55,.28);padding:20px;color:#1a2b45;font-family:inherit}
+.wp-tour-backdrop{position:fixed;inset:0;background:rgba(7,20,40,.58);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);z-index:10000;pointer-events:auto;opacity:0;animation:wpTourFadeIn .22s ease forwards}
+#washpilotApp:not(.auth-hidden){position:relative;z-index:auto}
+.wp-tour-spotlight{position:relative!important;z-index:10011!important;outline:3px solid #31b9ee!important;outline-offset:4px!important;box-shadow:0 0 0 8px rgba(49,185,238,.22),0 0 0 9999px rgba(7,20,40,.58)!important;border-radius:12px!important;animation:wpTourPulse 1.8s ease-in-out infinite}
+.wp-tour-panel{position:fixed;right:24px;bottom:24px;z-index:10020;width:min(450px,calc(100vw - 32px));max-height:min(78dvh,680px);overflow-y:auto;overscroll-behavior:contain;background:#fff;border:1px solid #d8e4f3;border-radius:20px;box-shadow:0 22px 70px rgba(7,25,55,.28);padding:20px;color:#1a2b45;font-family:inherit;animation:wpTourPanelIn .24s cubic-bezier(.2,.8,.2,1) both}
+@keyframes wpTourFadeIn{to{opacity:1}}
+@keyframes wpTourPanelIn{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes wpTourPulse{0%,100%{outline-color:#31b9ee;box-shadow:0 0 0 8px rgba(49,185,238,.18),0 0 0 9999px rgba(7,20,40,.58)}50%{outline-color:#8be3ff;box-shadow:0 0 0 12px rgba(49,185,238,.25),0 0 0 9999px rgba(7,20,40,.58)}}
 .wp-tour-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
 .wp-tour-kicker{font-size:10px;letter-spacing:.09em;text-transform:uppercase;font-weight:900;color:#2871c7}
 .wp-tour-count{font-size:11px;color:#70819a;font-weight:800;white-space:nowrap}
@@ -678,7 +681,7 @@ html{scroll-behavior:smooth;scroll-padding-top:85px}
 .wp-tour-chooser-foot{font-size:10px;line-height:1.5;color:#8190a5;margin:13px 0 0}
 @media(max-width:700px){.wp-tour-try{margin:9px 0}.wp-tour-choice{padding:12px}.wp-tour-chooser-intro{font-size:12px}}
 
-@media(max-width:700px){.wp-tour-launch{padding:7px 9px;font-size:11px}.wp-tour-panel{left:12px;right:12px;bottom:12px;width:auto;padding:17px;border-radius:16px}.wp-tour-panel h2{font-size:19px}.wp-tour-actions{gap:6px}.wp-tour-panel button{padding:9px 10px}}
+@media(max-width:700px){.wp-tour-launch{padding:7px 9px;font-size:11px}.wp-tour-panel{left:14px;right:14px;bottom:max(14px,env(safe-area-inset-bottom));width:auto;max-height:72dvh;padding:15px;border-radius:18px}.wp-tour-panel h2{font-size:18px;line-height:1.22;margin-bottom:7px}.wp-tour-panel p,.wp-tour-chooser-intro{font-size:12px;line-height:1.5;margin-bottom:9px}.wp-tour-top{margin-bottom:8px}.wp-tour-choice-grid{gap:7px}.wp-tour-choice{padding:10px;gap:9px}.wp-tour-choice-icon{width:32px;height:32px;flex-basis:32px}.wp-tour-choice-copy strong{font-size:12px}.wp-tour-choice-copy small{font-size:10px;line-height:1.4}.wp-tour-choice-arrow{font-size:16px}.wp-tour-chooser-foot{font-size:9px;margin-top:8px;line-height:1.4}.wp-tour-actions{gap:6px;margin-top:10px}.wp-tour-panel button{padding:9px 10px}}
 /* ===== WashPilot v2 design layer: aqua-to-electric gradient system ===== */
 :root{--g1:#3b6cff;--g2:#1fa9f4;--g3:#2de2c5;--blue:#2f6bff;--cyan:#1fb0f2;--ink:#0f1d35;--muted:#6b7a93;--line:#e6ecf6;--bg:#f3f6fc;--green:#10a67a;--radius:20px;
 --grad:linear-gradient(135deg,#3b6cff 0%,#1fa9f4 55%,#2fdcc6 100%);
