@@ -1,5 +1,5 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
-const source=fs.readFileSync(require('node:path').join(__dirname,'../index.html'),'utf8');
+const source=fs.readFileSync(require('node:path').join(__dirname,'../app.html'),'utf8');
 const elements=new Map(['wpFacilityListingPanel','wpFacilityAddressPicker','wpFacilityAddress'].map(id=>[id,{innerHTML:'',value:''}]));
 const facility={id:'facility-test',name:'Test Facility',slug:'test-facility',address:'Existing saved address',google_place_id:'saved-place',latitude:14,longitude:121};
 const context={window:{washPilotBookingApi:{getMyFacility:async()=>facility}},document:{getElementById:id=>elements.get(id)},renderFacilityQr:()=>{},esc:v=>String(v??'')};vm.createContext(context);

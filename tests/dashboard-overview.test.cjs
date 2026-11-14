@@ -1,7 +1,7 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
-const source = fs.readFileSync(require('node:path').join(__dirname, '../index.html'), 'utf8');
+const source = fs.readFileSync(require('node:path').join(__dirname, '../app.html'), 'utf8');
 const start = source.indexOf('function dashboardPage(){');
 const end = source.indexOf('\nfunction paymentBreakdown(', start);
 assert(start >= 0 && end > start, 'dashboard renderer exists');

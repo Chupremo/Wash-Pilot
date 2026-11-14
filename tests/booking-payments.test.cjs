@@ -1,5 +1,5 @@
 const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict');
-const source=fs.readFileSync(require('path').join(__dirname,'../index.html'),'utf8');
+const source=fs.readFileSync(require('path').join(__dirname,'../app.html'),'utf8');
 function decl(name){const marker='function '+name+'(';const start=source.lastIndexOf(marker);assert(start>=0,name);let pos=start+marker.length,depth=0,quote='',escape=false; // use the next top-level function boundary for single-line declarations in this app
  const end=source.indexOf('\nfunction ',pos);return source.slice(start,end<0?undefined:end);}
 const helper=source.slice(source.indexOf('// Booking receipts stay authoritative'),source.indexOf('function ticketDateOf'));
