@@ -3591,9 +3591,40 @@ async listPublicFacilities(){const {data,error}=await getClient().rpc('list_publ
       if(error)throw error;
       if(data.session){
         if(new URLSearchParams(location.search).get('wpRecovery')==='1')window.setTimeout(()=>{window.openPasswordRecoveryForm?.();history.replaceState({},'',window.location.pathname);},120);
-        // Keep public routes public even when the visitor has an existing Supabase session.
-        // Workspace initialization belongs only on protected app routes or the explicit login route.
-        if(window.wpRouteIsWorkspace||window.wpRouteIsLogin)await activateTrial(data.session.user);
+        // This auth bootstrap runs before the route controller later in this file.
+        // Resolve the requested app route directly from the URL so a persisted Supabase
+        // session is restored correctly on mobile refreshes and deep links as well.
+        const initialPath=String(location.pathname||'/').split('?')[0].replace(/\/+$/,'').toLowerCase()||'/';
+        const initialPageByPath={
+          '/vendo-management':'vendo',
+          '/dashboard':'dashboard',
+          '/new-wash':'newwash',
+          '/service-queue':'queue',
+          '/transactions':'transactions',
+          '/customers':'customers',
+          '/bookings':'bookings',
+          '/booking':'bookings',
+          '/facility-listing':'listing',
+          '/services-pricing':'catalog',
+          '/add-on-analytics':'addons',
+          '/employees':'employees',
+          '/expenses':'expenses',
+          '/reports':'reports',
+          '/inventory':'inventory',
+          '/branches':'branches',
+          '/loyalty-packages':'loyalty',
+          '/service-recipes':'recipes',
+          '/shift-reconciliation':'reconcile',
+          '/subscription-billing':'subscription',
+          '/business-management':'managementHub',
+          '/platform/overview':'platform',
+          '/platform/businesses':'tenants',
+          '/platform/billing-revenue':'platformBilling'
+        };
+        const initialRequestedPage=initialPageByPath[initialPath]||null;
+        const routeNeedsWorkspace=!!initialRequestedPage||initialPath==='/login'||initialPath==='/signup';
+        if(initialRequestedPage)window.wpRequestedRoutePage=initialRequestedPage;
+        if(routeNeedsWorkspace)await activateTrial(data.session.user);
         else window.wpPublicSessionUser=data.session.user;
       }else{
         window.wpStorage.removeItem('wp_demo_authenticated');window.wpStorage.removeItem('wb_demo_authenticated');

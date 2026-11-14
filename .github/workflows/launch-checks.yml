@@ -21,6 +21,8 @@ jobs:
         run: node tests/booking-payments.test.cjs
       - name: Verify dashboard summaries
         run: node tests/dashboard-overview.test.cjs
+      - name: Verify canonical sign-in and dashboard routes
+        run: node tests/login-routing.test.cjs
       - name: Parse all inline and homepage JavaScript
         run: node tests/inline-js-syntax.test.cjs
       - name: Check homepage feature runtime syntax
