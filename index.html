@@ -3023,7 +3023,7 @@ window.submitTrialSignup=async function(e){
       if(error)throw error;
       businessId=data;
     }
-    const {data:business,error:businessError}=await sb.from('businesses').select('id,name,status,created_at').eq('id',businessId).single();
+    const {data:business,error:businessError}=await sb.from('businesses').select('id,name,status,created_at,address,contact_phone').eq('id',businessId).single();
     if(businessError)throw new Error('Your business was found, but its workspace could not be loaded: '+businessError.message);
     const {data:subscription,error:subscriptionError}=await sb.from('subscriptions').select('plan_code,status,trial_starts_at,trial_ends_at,current_period_ends_at').eq('business_id',businessId).single();
     if(subscriptionError)throw new Error('Your business is available, but its subscription could not be loaded: '+subscriptionError.message);
