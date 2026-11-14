@@ -776,3 +776,42 @@ img,svg,video,canvas{max-width:100%}
   .wp-booking-form .wp-wizard-actions{margin-inline:-12px;padding-inline:12px}
   .wp-site-header .wrap{padding-inline:12px}
 }
+
+
+/* Public booking viewport lock + visible WashPilot wordmark on phones */
+html,body{max-width:100%;overflow-x:hidden!important;overscroll-behavior-x:none}
+body.wp-page-app{position:relative;width:100%;min-width:0}
+.wp-public{position:relative;width:100%;max-width:100%;min-width:0;overflow-x:clip!important;overscroll-behavior-x:none;touch-action:pan-y pinch-zoom}
+.wp-public *{min-width:0}
+.wp-public img,.wp-public svg{max-width:100%}
+.wp-public .wp-site-nav{width:100%;max-width:100%;margin:0;padding-inline:clamp(14px,4vw,30px);box-sizing:border-box;overflow:visible}
+.wp-public .wp-site-brand{display:flex;align-items:center;flex:0 1 auto;gap:10px;width:auto;min-width:0;max-width:68%;overflow:visible;white-space:nowrap}
+.wp-public .wp-site-brand img{display:block;flex:0 0 58px;width:58px;height:42px;max-width:58px;object-fit:contain;object-position:center;background:#fff}
+.wp-public .wp-site-brand span{display:block;min-width:0;font-size:19px;font-weight:800;line-height:1.05;letter-spacing:-.045em;color:#14294b}
+.wp-public .wp-site-brand small{display:block;margin-top:4px;font-size:8px;line-height:1.2;letter-spacing:.1em;color:#718096}
+.wp-public .wp-nav-actions{display:flex;flex:0 0 auto;align-items:center;gap:8px}
+.wp-public .wp-site-links{max-width:calc(100vw - 28px)}
+.wp-directory-view,.wp-public-facility-page,.wp-facility-hero,.wp-booking-layout,.wp-booking-form,.wp-booking-form-heading{width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+@media(max-width:760px){
+ html,body{overflow-x:hidden!important;overscroll-behavior-x:none!important}
+ body.wp-page-app{overflow-x:hidden!important}
+ .wp-public{width:100%;max-width:100%;overflow-x:clip!important}
+ .wp-public .wp-site-nav{height:76px;min-height:76px;padding:0 14px;gap:8px}
+ .wp-public .wp-site-brand{max-width:calc(100% - 126px);gap:8px}
+ .wp-public .wp-site-brand img{width:52px;height:38px;flex-basis:52px;max-width:52px}
+ .wp-public .wp-site-brand span{font-size:17px}
+ .wp-public .wp-site-brand small{font-size:7px}
+ .wp-public .wp-nav-actions{gap:7px}
+ .wp-public .wp-nav-cta{min-height:46px;padding:10px 14px;font-size:13px;white-space:nowrap}
+ .wp-public .wp-menu-toggle{width:46px;height:46px;min-width:46px;display:inline-flex;align-items:center;justify-content:center}
+ .wp-directory-view{padding-inline:14px}
+ .wp-public-facility-page,.wp-facility-hero,.wp-booking-layout,.wp-booking-form{margin-inline:0!important;left:auto!important;right:auto!important;transform:none!important}
+}
+@media(max-width:380px){
+ .wp-public .wp-site-nav{padding-inline:10px}
+ .wp-public .wp-site-brand{max-width:calc(100% - 112px);gap:6px}
+ .wp-public .wp-site-brand img{width:44px;height:34px;flex-basis:44px;max-width:44px}
+ .wp-public .wp-site-brand span{font-size:15px}
+ .wp-public .wp-nav-cta{padding-inline:10px;font-size:12px}
+ .wp-directory-view{padding-inline:10px}
+}
