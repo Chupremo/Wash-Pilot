@@ -3551,30 +3551,60 @@ async function loadPublicFacility(slug){
     '<div class="wp-booking-form-heading"><div><h2>Book your car wash</h2><p>Choose a service, pick a time and send your booking request.</p></div><span class="wp-booking-secure">Secure booking</span></div>'+
     '<div class="wp-booking-stepper" aria-label="Booking steps"><div class="is-current"><span>1</span><b>Wash</b></div><i></i><div><span>2</span><b>Payment</b></div><i></i><div><span>3</span><b>Details</b></div></div>'+
     '<form id="wpPublicBookingForm" onsubmit="submitPublicBooking(event)">'+
-    '<section class="wp-booking-group"><div class="wp-booking-group-title"><span>01</span><div><h3>Your wash</h3><p>Select your service and preferred schedule.</p></div></div>'+
+    '<section class="wp-booking-group is-active" data-booking-step="1"><div class="wp-booking-group-title"><span>01</span><div><h3>Your wash</h3><p>Select your service and preferred schedule.</p></div></div>'+
     '<div class="field"><label>Choose a service</label><select name="service_id" id="wpPublicService" required onchange="refreshPublicBookingSlots()">'+wpCurrentPublicServices.map(s=>'<option value="'+s.service_id+'">'+esc(s.name)+' · '+money(s.base_price_php)+'</option>').join('')+'</select></div>'+
     '<div class="grid two"><div class="field"><label>Booking date</label><input type="date" name="booking_date" id="wpPublicBookingDate" min="'+new Date().toISOString().slice(0,10)+'" max="'+new Date(Date.now()+60*86400000).toISOString().slice(0,10)+'" required onchange="refreshPublicBookingSlots()"></div><div class="field"><label>Available time</label><select name="start_time" id="wpPublicBookingTime" required><option value="">Choose a date first</option></select></div></div>'+
     '<div class="field"><label>Vehicle size</label><select name="vehicle_size"><option>Small</option><option selected>Medium</option><option>Large</option><option>XL</option></select></div></section>'+
-    '<section class="wp-booking-group"><div class="wp-booking-group-title"><span>02</span><div><h3>Payment</h3><p>Pay online and attach your transfer confirmation.</p></div></div>'+
+    '<section class="wp-booking-group" data-booking-step="2" hidden><div class="wp-booking-group-title"><span>02</span><div><h3>Payment</h3><p>Pay online and attach your transfer confirmation.</p></div></div>'+
     '<div class="field"><label>Payment method</label><select name="payment_method" id="wpBookingPaymentMethod" required onchange="updatePublicPaymentInstructions()">'+
      (f.gcash_mobile_number&&f.gcash_account_name?'<option value="gcash">GCash</option>':'')+
      (f.bank_name&&f.bank_account_name&&f.bank_account_number?'<option value="bank_transfer">Bank transfer</option>':'')+
     '</select></div><div id="wpPublicPaymentInstructions" class="wp-payment-instructions"></div>'+
     '<div class="field"><label>Payment reference <span>(optional)</span></label><input name="payment_reference" maxlength="100" placeholder="Enter transfer reference number"></div>'+
     '<div class="field"><label>Upload payment proof <em>Required</em></label><input name="payment_proof" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" required><small>JPG, PNG, WEBP or PDF · Maximum 5 MB</small></div></section>'+
-    '<section class="wp-booking-group"><div class="wp-booking-group-title"><span>03</span><div><h3>Your details</h3><p>Tell the facility who is bringing the vehicle.</p></div></div>'+
+    '<section class="wp-booking-group" data-booking-step="3" hidden><div class="wp-booking-group-title"><span>03</span><div><h3>Your details</h3><p>Tell the facility who is bringing the vehicle.</p></div></div>'+
     '<div class="field"><label>Full name</label><input name="customer_name" minlength="2" maxlength="100" autocomplete="name" placeholder="Your full name" required></div>'+
     '<div class="field"><label>Contact number</label><input name="customer_phone" type="tel" maxlength="30" autocomplete="tel" placeholder="09XX XXX XXXX" required></div>'+
     '<div class="grid two"><div class="field"><label>Email <span>(optional)</span></label><input name="customer_email" type="email" maxlength="160" autocomplete="email" placeholder="you@example.com"></div><div class="field"><label>Plate number <span>(optional)</span></label><input name="vehicle_plate" maxlength="20" placeholder="ABC 1234"></div></div>'+
     '<div class="field"><label>Notes <span>(optional)</span></label><textarea name="notes" rows="3" maxlength="500" placeholder="Any special instructions?"></textarea></div></section>'+
     '<div class="wp-booking-total" id="wpPublicBookingPrice">Select a service and date to view available slots.</div>'+
-    '<button class="wp-btn-primary wp-booking-submit" type="submit" id="wpPublicBookingSubmit">Request booking <span>→</span></button>'+
+    '<div class="wp-booking-navigation"><button class="wp-booking-back" type="button" id="wpPublicBookingBack" onclick="changePublicBookingStep(-1)" hidden>← Back</button><span class="wp-booking-step-count" id="wpPublicBookingStepCount">Step 1 of 3</span><button class="wp-btn-primary wp-booking-next" type="button" id="wpPublicBookingNext" onclick="changePublicBookingStep(1)">Continue <span>→</span></button><button class="wp-btn-primary wp-booking-submit" type="submit" id="wpPublicBookingSubmit" hidden>Request booking <span>→</span></button></div>'+
     '<p class="wp-booking-terms">Your booking is not confirmed until the facility verifies your payment.</p></form>':
     '<h2>Online booking unavailable</h2><p class="wp-booking-note">This facility is listed on WashPilot but has not activated online booking. Contact the facility directly or browse another car wash.</p><a class="wp-btn-primary" href="/businesses">Browse businesses</a>')+
    '</section><aside class="wp-booking-summary"><div class="wp-summary-topline"><span class="wp-summary-icon">WP</span><span>FACILITY DETAILS</span></div><h3>'+esc(f.facility_name)+'</h3><p class="wp-summary-address">'+esc(f.address||'Address not provided')+'</p><div class="wp-summary-hours"><span>Opening hours</span><b>'+wpFormatClock(f.opening_time)+' – '+wpFormatClock(f.closing_time)+'</b></div><div class="wp-summary-divider"></div><div class="wp-summary-payment"><b>Online payment</b><p>Pay through GCash or bank transfer. Upload your proof for verification. Cash is not accepted for online bookings.</p></div><div class="wp-summary-price">'+(bookingOn?'Available services':'Listed on WashPilot')+'</div>'+(bookingOn?renderPublicServiceBulletList():'')+'<p class="wp-summary-footnote">Available times follow this facility’s published operating hours.</p></aside></div>'+
    gallery+renderPublicLocationCta(f)+'</div>';
   if(bookingOn){refreshPublicBookingSlots();updatePublicPaymentInstructions();}
  }catch(err){el.innerHTML='<div class="wp-directory-empty">Could not load this facility: '+esc(err.message||err)+'</div>';}
+}
+let wpPublicBookingStep=1;
+function changePublicBookingStep(direction){
+ const form=document.getElementById('wpPublicBookingForm');if(!form)return;
+ const next=Math.min(3,Math.max(1,wpPublicBookingStep+Number(direction||0)));
+ if(next>wpPublicBookingStep){
+  const current=form.querySelector('.wp-booking-group[data-booking-step="'+wpPublicBookingStep+'"]');
+  const required=[...current.querySelectorAll('[required]')];
+  for(const field of required){
+   if(!field.checkValidity()){field.reportValidity();field.focus({preventScroll:false});return;}
+  }
+ }
+ wpPublicBookingStep=next;
+ form.querySelectorAll('.wp-booking-group[data-booking-step]').forEach(group=>{
+  const active=Number(group.dataset.bookingStep)===wpPublicBookingStep;
+  group.hidden=!active;group.classList.toggle('is-active',active);
+ });
+ const steps=document.querySelectorAll('#wpPublicFacilityContent .wp-booking-stepper>div');
+ steps.forEach((item,index)=>{
+  item.classList.toggle('is-current',index+1===wpPublicBookingStep);
+  item.classList.toggle('is-complete',index+1<wpPublicBookingStep);
+  const marker=item.querySelector('span');if(marker)marker.textContent=index+1<wpPublicBookingStep?'✓':String(index+1);
+ });
+ const back=document.getElementById('wpPublicBookingBack'),nextButton=document.getElementById('wpPublicBookingNext'),submit=document.getElementById('wpPublicBookingSubmit'),count=document.getElementById('wpPublicBookingStepCount');
+ if(back)back.hidden=wpPublicBookingStep===1;
+ if(nextButton)nextButton.hidden=wpPublicBookingStep===3;
+ if(submit)submit.hidden=wpPublicBookingStep!==3;
+ if(count)count.textContent='Step '+wpPublicBookingStep+' of 3';
+ const formCard=document.querySelector('#wpPublicFacilityContent .wp-booking-form');
+ if(formCard)formCard.scrollIntoView({behavior:'smooth',block:'start'});
 }
 async function refreshPublicBookingSlots(){
  const f=wpCurrentPublicFacility,form=document.getElementById('wpPublicBookingForm');if(!f||!form)return;
@@ -3601,6 +3631,8 @@ function updatePublicPaymentInstructions(){
 }
 async function submitPublicBooking(e){
  e.preventDefault();const form=e.currentTarget,btn=document.getElementById('wpPublicBookingSubmit'),f=wpCurrentPublicFacility;if(!f)return;
+ if(wpPublicBookingStep!==3){changePublicBookingStep(3-wpPublicBookingStep);return;}
+ if(!form.reportValidity())return;
  const data=new FormData(form),proof=form.elements.payment_proof.files[0];
  if(!proof){alert('Upload your GCash or bank transfer payment proof before submitting.');return;}
  if(proof.size>5*1024*1024||!['image/jpeg','image/png','image/webp','application/pdf'].includes(proof.type)){alert('Payment proof must be JPG, PNG, WEBP or PDF up to 5 MB.');return;}
