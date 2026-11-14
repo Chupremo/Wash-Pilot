@@ -834,3 +834,29 @@ body.wp-page-app{position:relative;width:100%;min-width:0}
  .wp-public .wp-facility-hours{text-align:left;font-size:12px}
  .wp-public .wp-facility-info-strip .wp-facility-status{font-size:11px}
 }
+
+
+/* Public booking page: move the existing facility details card above the booking wizard. */
+.wp-public .wp-public-facility-page>.wp-facility-details-top{
+  position:relative!important;
+  inset:auto!important;
+  display:block;
+  width:100%;
+  max-width:100%;
+  margin:14px 0 20px!important;
+  box-sizing:border-box;
+}
+.wp-public .wp-booking-layout{
+  grid-template-columns:minmax(0,1fr)!important;
+  width:100%;
+  max-width:100%;
+  margin-top:0!important;
+}
+@media(max-width:760px){
+  .wp-public .wp-public-facility-page>.wp-facility-details-top{
+    margin:12px 0 16px!important;
+    padding:22px 18px!important;
+    border-radius:20px!important;
+  }
+  .wp-public .wp-booking-layout{display:block!important}
+}
