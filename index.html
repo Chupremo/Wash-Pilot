@@ -1404,7 +1404,83 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
  .wp-workflow-log{margin-top:10px!important;padding:11px!important}
  .wp-workflow-log .recipe-row{align-items:flex-start;gap:8px;padding:9px 0}
  .wp-workflow-log .recipe-row small{display:block;overflow-wrap:anywhere;line-height:1.45}
-}</style>
+}
+/* Facility Listing mobile-first guided editor */
+.wp-facility-wizard{max-width:920px;margin:0 auto}
+.wp-facility-wizard-intro{margin:0 0 16px;padding:14px 16px;border:1px solid #dce7f6;border-radius:13px;background:#f6f9ff;color:#526783;font-size:12px;line-height:1.6}
+.wp-facility-progress{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:0 0 18px}
+.wp-facility-progress-step{min-width:0;padding:10px 8px;border:1px solid #e1e8f1;border-radius:11px;background:#fff;color:#78869b;text-align:center;font-size:10px;font-weight:800}
+.wp-facility-progress-step b{display:grid;place-items:center;width:24px;height:24px;margin:0 auto 6px;border-radius:50%;background:#eef2f7;color:#64748b;font-size:11px}
+.wp-facility-progress-step.active{border-color:#9dbbf2;background:#f3f7ff;color:#204f9c}
+.wp-facility-progress-step.active b,.wp-facility-progress-step.done b{background:#2563eb;color:#fff}
+.wp-facility-progress-step.done{color:#315b92}
+.wp-facility-step{display:none;padding:20px;border:1px solid #e1e8f1;border-radius:15px;background:#fff;box-shadow:0 5px 18px rgba(16,42,77,.045)}
+.wp-facility-step.active{display:block}
+.wp-facility-step h3{margin:0 0 5px;color:#183453;font-size:17px}
+.wp-facility-step .wp-step-description{margin:0 0 18px;color:#738096;font-size:12px;line-height:1.6}
+.wp-facility-brand-editor{display:grid;grid-template-columns:104px minmax(0,1fr);gap:16px;align-items:center;margin:0 0 18px;padding:15px;border:1px solid #e1e8f1;border-radius:13px;background:#f7f9fc}
+.wp-facility-logo-preview{width:104px;height:104px;min-width:0;flex:none;border:1px dashed #a8b8ce;border-radius:13px;background:#fff;overflow:hidden;display:grid;place-items:center;color:#9aa9bd;font-size:11px;font-weight:900}
+.wp-facility-logo-preview img{width:100%;height:100%;object-fit:contain;padding:8px}
+.wp-facility-brand-controls{min-width:0}
+.wp-facility-brand-controls>b{display:block;margin-bottom:4px;color:#193453;font-size:14px}
+.wp-facility-brand-controls .wp-form-hint{margin:0 0 9px;font-size:11px}
+.wp-step-upload{position:relative;display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;width:100%;padding:10px 12px;border:1px dashed #9fb2cc;border-radius:10px;background:#fff;color:#31517d;font-size:12px;font-weight:800;cursor:pointer;overflow:hidden}
+.wp-step-upload input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.wp-step-upload small{display:block;color:#78869b;font-size:10px;font-weight:500}
+.wp-facility-step .field{min-width:0;margin-bottom:13px}
+.wp-facility-step .field label{display:block;margin-bottom:6px;font-size:11px;font-weight:800;color:#58677e}
+.wp-facility-step .field input,.wp-facility-step .field select,.wp-facility-step .field textarea{width:100%;max-width:100%;min-width:0;padding:12px;border:1px solid #dce4ef;border-radius:10px;background:#fff;color:#17243a;font-size:13px}
+.wp-facility-step .field textarea{min-height:104px;resize:vertical}
+.wp-facility-step .field small{display:block;margin-top:5px;color:#718096;font-size:10px;line-height:1.5}
+.wp-facility-step .form-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.wp-facility-share{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;padding:15px;margin:0 0 18px;border:1px solid #dce7f5;border-radius:13px;background:#f5f8fd}
+.wp-facility-share .wp-share-url{font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+.wp-facility-share .wp-qr-wrap{width:144px;padding:9px}
+.wp-facility-share .wp-qr-wrap #wpFacilityQr{min-width:0;min-height:0}
+.wp-facility-share .wp-qr-wrap canvas,.wp-facility-share .wp-qr-wrap img{width:112px!important;height:112px!important}
+.wp-facility-days{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.wp-facility-days label{display:flex;align-items:center;gap:7px;min-width:0;padding:11px 9px;border:1px solid #e0e7f0;border-radius:10px;background:#fff;font-size:11px;font-weight:700;color:#425570}
+.wp-facility-days input{accent-color:#2563eb}
+.wp-facility-hours-note{margin-top:12px;padding:12px;border-radius:10px;background:#f3f7ff;color:#536985;font-size:11px;line-height:1.55}
+.wp-facility-gallery-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0}
+.wp-facility-gallery-grid .wp-owner-photo{min-width:0}
+.wp-facility-gallery-grid .wp-owner-photo img{display:block;width:100%;height:100%;object-fit:cover}
+.wp-facility-gallery-empty{padding:20px;border:1px dashed #c8d4e3;border-radius:12px;background:#f8fafd;color:#8190a5;text-align:center;font-size:11px;line-height:1.6}
+.wp-facility-payment-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.wp-facility-payment-grid .wp-payment-settings-card{min-width:0;padding:14px}
+.wp-facility-toggle{display:flex;align-items:flex-start;gap:11px;padding:14px;border:1px solid #dce7f5;border-radius:12px;background:#f5f8fd}
+.wp-facility-toggle input{flex:0 0 auto;width:18px;height:18px;margin-top:2px;accent-color:#2563eb}
+.wp-facility-toggle b{display:block;color:#193453;font-size:12px}
+.wp-facility-toggle small{display:block;margin-top:4px;color:#718096;font-size:10px;line-height:1.5}
+.wp-facility-wizard-actions{position:sticky;bottom:92px;z-index:5;display:flex;justify-content:space-between;gap:10px;margin-top:14px;padding:12px;border:1px solid #e1e8f1;border-radius:13px;background:rgba(255,255,255,.97);box-shadow:0 8px 24px rgba(16,42,77,.12);backdrop-filter:blur(10px)}
+.wp-facility-wizard-actions .btn{min-width:112px;min-height:44px;font-size:12px}
+.wp-facility-wizard-actions .btn[hidden]{display:none!important}
+.wp-facility-save-note{margin:10px 0 0;color:#7b899d;font-size:10px;line-height:1.5;text-align:center}
+@media(max-width:760px){
+ .wp-facility-wizard{width:100%;max-width:100%}
+ .wp-facility-wizard-intro{font-size:11px;padding:12px}
+ .wp-facility-progress{gap:5px;margin-bottom:12px}
+ .wp-facility-progress-step{padding:8px 3px;font-size:9px;border-radius:9px}
+ .wp-facility-progress-step b{width:22px;height:22px;margin-bottom:4px}
+ .wp-facility-step{padding:14px;border-radius:13px}
+ .wp-facility-step h3{font-size:16px}
+ .wp-facility-step .wp-step-description{font-size:11px;margin-bottom:14px}
+ .wp-facility-brand-editor{grid-template-columns:1fr;justify-items:stretch;padding:13px;gap:12px}
+ .wp-facility-logo-preview{width:100%;height:120px}
+ .wp-facility-brand-controls{width:100%}
+ .wp-facility-share{grid-template-columns:minmax(0,1fr);gap:12px;padding:13px}
+ .wp-facility-share .wp-qr-wrap{width:100%;justify-self:stretch;grid-template-columns:112px minmax(0,1fr);justify-items:center;align-items:center}
+ .wp-facility-share .wp-qr-wrap .btn{width:100%;white-space:normal}
+ .wp-facility-step .form-grid{grid-template-columns:1fr;gap:0}
+ .wp-facility-days{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .wp-facility-payment-grid{grid-template-columns:1fr}
+ .wp-facility-gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .wp-facility-wizard-actions{bottom:calc(84px + env(safe-area-inset-bottom));margin-left:-2px;margin-right:-2px;padding:9px}
+ .wp-facility-wizard-actions .btn{flex:1;min-width:0;padding:11px 8px}
+}
+@media(max-width:360px){.wp-facility-progress-step{font-size:8px}.wp-facility-progress-step b{width:20px;height:20px}.wp-facility-days{gap:6px}.wp-facility-days label{font-size:10px;padding:9px 7px}}
+
+</style>
 <link rel="stylesheet" href="/washpilot-design.css?v=20261114-facility-top">
 <script src="/washpilot-accessibility.js?v=20261117" defer></script>
 </head>
@@ -3962,5 +4038,136 @@ async function submitPublicBooking(e){
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+<script>
+/* Guided Facility Listing editor: preserves existing Supabase/API handlers */
+(function(){
+  window.wpFacilityStep=1;
+  window.goFacilityStep=function(step){
+    const form=document.getElementById('wpFacilityProfileForm');
+    if(!form)return;
+    const current=Number(window.wpFacilityStep||1);
+    if(step>current){
+      if(current===1){
+        const name=form.elements.name?.value.trim(),slug=form.elements.slug?.value.trim(),address=form.elements.address?.value.trim();
+        if(!name||!slug||!address){toast('Complete the business name, public link and facility address first.');return;}
+      }
+      if(current===2){
+        const days=[...form.querySelectorAll('input[name="operating_days"]:checked')];
+        if(!days.length){toast('Choose at least one operating day.');return;}
+        if(form.elements.opening_time.value>=form.elements.closing_time.value){toast('Closing time must be later than opening time.');return;}
+      }
+    }
+    window.wpFacilityStep=Math.max(1,Math.min(4,Number(step)||1));
+    document.querySelectorAll('.wp-facility-step').forEach(el=>el.classList.toggle('active',Number(el.dataset.step)===window.wpFacilityStep));
+    document.querySelectorAll('.wp-facility-progress-step').forEach(el=>{
+      const n=Number(el.dataset.progress);
+      el.classList.toggle('active',n===window.wpFacilityStep);
+      el.classList.toggle('done',n<window.wpFacilityStep);
+      if(n===window.wpFacilityStep)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current');
+    });
+    const back=document.getElementById('wpFacilityBack'),next=document.getElementById('wpFacilityNext'),save=document.getElementById('wpFacilitySave');
+    if(back)back.hidden=window.wpFacilityStep===1;
+    if(next)next.hidden=window.wpFacilityStep===4;
+    if(save)save.hidden=window.wpFacilityStep!==4;
+    const label=document.getElementById('wpFacilityStepLabel');
+    if(label)label.textContent='Step '+window.wpFacilityStep+' of 4';
+    const panel=document.getElementById('wpFacilityListingPanel');
+    if(panel)panel.scrollIntoView({behavior:'smooth',block:'start'});
+  };
+  window.loadFacilityListing=async function(){
+    const el=document.getElementById('wpFacilityListingPanel');
+    if(!el||!window.washPilotBookingApi)return;
+    try{
+      const f=await window.washPilotBookingApi.getMyFacility();
+      if(!f){el.innerHTML='<div class="empty">No facility is linked to this business yet. Please contact support.</div>';return;}
+      window.wpFacilityCurrent=f;
+      window.wpFacilityGalleryDraft=(f.gallery_images||[]).slice(0,5);
+      window.wpFacilityLogoDraft=f.logo_url||'';
+      const days=[['Monday',1],['Tuesday',2],['Wednesday',3],['Thursday',4],['Friday',5],['Saturday',6],['Sunday',0]];
+      const publicUrl='https://washpilot.shop/book/'+f.slug;
+      const selectedDays=f.operating_days||[0,1,2,3,4,5,6];
+      el.innerHTML=`
+        <div class="wp-facility-wizard">
+          <div class="wp-facility-wizard-intro">Complete these four short steps to keep your WashPilot business profile accurate and make it easier for customers to find and book your facility. Your existing details are pre-filled.</div>
+          <div class="wp-facility-progress" aria-label="Facility setup progress">
+            <div class="wp-facility-progress-step active" data-progress="1" aria-current="step"><b>1</b>Profile</div>
+            <div class="wp-facility-progress-step" data-progress="2"><b>2</b>Hours</div>
+            <div class="wp-facility-progress-step" data-progress="3"><b>3</b>Photos</div>
+            <div class="wp-facility-progress-step" data-progress="4"><b>4</b>Payments</div>
+          </div>
+          <form id="wpFacilityProfileForm" onsubmit="event.preventDefault();persistFacilityProfile(this)">
+            <section class="wp-facility-step active" data-step="1">
+              <h3>Business profile</h3>
+              <p class="wp-step-description">Add your logo and the details customers will see on your public booking page.</p>
+              <div class="wp-facility-brand-editor">
+                <div id="wpFacilityLogoPreview" class="wp-facility-logo-preview">${window.wpFacilityLogoDraft?'<img src="'+esc(window.wpFacilityLogoDraft)+'" alt="Business logo">':'<span>YOUR LOGO</span>'}</div>
+                <div class="wp-facility-brand-controls">
+                  <b>Business logo</b>
+                  <p class="wp-form-hint">Use your car wash logo so customers can recognize your business.</p>
+                  <label class="wp-step-upload"><input id="wpFacilityLogoUpload" type="file" accept="image/jpeg,image/png,image/webp" onchange="uploadFacilityLogo(this)"><span>＋ Choose and upload logo</span></label>
+                  <small>JPG, PNG or WEBP · Maximum 8 MB</small>
+                  <button type="button" class="btn ghost small" style="margin-top:8px" onclick="removeFacilityLogo()">Remove logo</button>
+                </div>
+              </div>
+              <div class="wp-facility-share">
+                <div><span class="wp-share-kicker">YOUR PUBLIC BOOKING LINK</span><div class="wp-share-url">${esc(publicUrl)}</div><div class="wp-share-actions"><button type="button" class="btn small" onclick="copyFacilityLink()">Copy link</button><a class="btn ghost small" href="${esc(publicUrl)}" target="_blank" rel="noopener">Preview booking page ↗</a></div></div>
+                <div class="wp-qr-wrap"><div id="wpFacilityQr"></div><button type="button" class="btn ghost small" onclick="downloadFacilityQr()">Download QR code</button></div>
+              </div>
+              <div class="field wp-public-description-field"><label for="wpFacilityPublicDescription">Business description</label><textarea id="wpFacilityPublicDescription" rows="4" maxlength="1200" placeholder="Introduce your car wash. Tell customers about your services, equipment and what makes your facility special.">${esc(f.public_description||'')}</textarea><small>This description appears on your public booking page.</small></div>
+              <div class="form-grid">
+                <div class="field"><label>Business / facility name *</label><input name="name" maxlength="100" required value="${esc(f.name)}" placeholder="e.g. Kylie Carwash"></div>
+                <div class="field"><label>Public booking URL name *</label><input name="slug" maxlength="50" pattern="[a-zA-Z0-9-]+" required value="${esc(f.slug)}" placeholder="your-business-name"><small>Used in your public booking link. Use letters, numbers and hyphens.</small></div>
+                <div class="field"><label>Business contact number</label><input name="phone" type="tel" maxlength="30" value="${esc(f.phone||'')}" placeholder="09XX XXX XXXX"></div>
+                <div class="field"><label>Facility address *</label><div id="wpFacilityAddressPicker" class="wp-google-address-picker"></div><input name="address" id="wpFacilityAddress" type="hidden" value="${esc(f.address||'')}" required><small>Search and select the exact Google Maps location for this facility.</small></div>
+              </div>
+            </section>
+            <section class="wp-facility-step" data-step="2">
+              <h3>Opening hours</h3>
+              <p class="wp-step-description">Tell customers when your car wash is open. Select the days you accept customers and set your daily operating hours.</p>
+              <div class="form-grid">
+                <div class="field"><label>Opening time *</label><input name="opening_time" type="time" required value="${String(f.opening_time||'08:00').slice(0,5)}"></div>
+                <div class="field"><label>Closing time *</label><input name="closing_time" type="time" required value="${String(f.closing_time||'18:00').slice(0,5)}"></div>
+              </div>
+              <div class="field" style="margin-top:8px"><label>Days of operation *</label><div class="wp-facility-days">${days.map(([d,n])=>'<label><input type="checkbox" name="operating_days" value="'+n+'" '+(selectedDays.includes(n)?'checked':'')+'><span>'+d+'</span></label>').join('')}</div></div>
+              <div class="wp-facility-hours-note">Select every day your facility is open. Unchecked days will be shown as closed to customers.</div>
+            </section>
+            <section class="wp-facility-step" data-step="3">
+              <h3>Facility photos</h3>
+              <p class="wp-step-description">Show customers what your car wash looks like. Add clear photos of your entrance, wash bays, waiting area and services.</p>
+              <div class="wp-gallery-head"><div><b>Business gallery</b><p class="wp-form-hint">You can upload up to five photos.</p></div><span id="wpGalleryCount" class="wp-gallery-count">${window.wpFacilityGalleryDraft.length}/5 photos</span></div>
+              <div id="wpFacilityGalleryGrid" class="wp-owner-gallery wp-facility-gallery-grid">${window.wpFacilityGalleryDraft.map((src,i)=>'<div class="wp-owner-photo"><img src="'+esc(src)+'" alt="Facility photo '+(i+1)+'"><button type="button" aria-label="Remove photo '+(i+1)+'" onclick="removeFacilityPhoto('+i+')">×</button></div>').join('')||'<div class="wp-facility-gallery-empty">No photos uploaded yet. Add photos to help customers recognize your facility.</div>'}</div>
+              <label class="wp-step-upload"><input id="wpFacilityPhotoUpload" type="file" accept="image/jpeg,image/png,image/webp" multiple onchange="uploadFacilityPhotos(this)"><span>＋ Choose facility photos</span></label>
+              <small style="display:block;margin-top:8px;color:#718096;font-size:10px">JPG, PNG or WEBP · Maximum 8 MB per image · Up to 5 photos</small>
+            </section>
+            <section class="wp-facility-step" data-step="4">
+              <h3>Online payment details</h3>
+              <p class="wp-step-description">Add the payment details customers can use when making online reservations. You can leave a payment method blank if you do not accept it.</p>
+              <div class="wp-facility-payment-grid">
+                <div class="wp-payment-settings-card"><b>GCash</b><div class="field"><label>Account name</label><input id="wpFacilityGcashName" maxlength="100" value="${esc(f.gcash_account_name||'')}" placeholder="Name on GCash account"></div><div class="field"><label>GCash mobile number</label><input id="wpFacilityGcashNumber" type="tel" maxlength="30" value="${esc(f.gcash_mobile_number||'')}" placeholder="09XXXXXXXXX"></div></div>
+                <div class="wp-payment-settings-card"><b>Bank transfer</b><div class="field"><label>Bank name</label><input id="wpFacilityBankName" maxlength="100" value="${esc(f.bank_name||'')}" placeholder="e.g. BDO, BPI, Metrobank"></div><div class="field"><label>Account name</label><input id="wpFacilityBankAccountName" maxlength="100" value="${esc(f.bank_account_name||'')}" placeholder="Name on bank account"></div><div class="field"><label>Account number</label><input id="wpFacilityBankAccountNumber" maxlength="40" value="${esc(f.bank_account_number||'')}" placeholder="Bank account number"></div></div>
+              </div>
+              <label class="wp-facility-toggle" style="margin-top:14px"><input type="checkbox" name="is_listed" ${f.is_listed?'checked':''}><span><b>Show my facility in the public directory</b><small>Choose whether your facility appears in the WashPilot Business Directory. Your public booking page remains available through its direct link.</small></span></label>
+              <div class="wp-facility-hours-note" style="margin-top:14px">Your logo, business details, operating hours, photos and payment instructions will be saved together when you select Save facility profile.</div>
+            </section>
+          </form>
+          <div class="wp-facility-wizard-actions">
+            <button type="button" id="wpFacilityBack" class="btn ghost" onclick="goFacilityStep((window.wpFacilityStep||1)-1)" hidden>← Back</button>
+            <span id="wpFacilityStepLabel" style="align-self:center;color:#718096;font-size:10px;font-weight:800">Step 1 of 4</span>
+            <button type="button" id="wpFacilityNext" class="btn" onclick="goFacilityStep((window.wpFacilityStep||1)+1)">Continue →</button>
+            <button type="button" id="wpFacilitySave" class="btn success" onclick="persistFacilityProfile(document.getElementById('wpFacilityProfileForm'))" hidden>Save facility profile</button>
+          </div>
+          <p class="wp-facility-save-note">You can go back to any step before saving. Your existing facility details are pre-filled.</p>
+        </div>`;
+      window.wpFacilityStep=1;
+      renderFacilityQr(publicUrl);
+      wpFacilityGooglePlace=(f.google_place_id&&f.latitude!=null&&f.longitude!=null)?{placeId:f.google_place_id,latitude:Number(f.latitude),longitude:Number(f.longitude),formattedAddress:f.address||''}:null;
+      await mountGoogleAddressPicker('wpFacilityAddressPicker','wpFacilityAddress',f.address||'',wpFacilityGooglePlace,place=>{wpFacilityGooglePlace=place;});
+    }catch(err){el.innerHTML='<div class="empty">Could not load facility details: '+esc(err.message||err)+'</div>';}
+  };
+  if(document.getElementById('wpFacilityListingPanel'))window.loadFacilityListing();
+})();
+</script>
+
 </body>
 </html>
