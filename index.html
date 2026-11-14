@@ -1764,12 +1764,6 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
 <div class="content" id="content"></div>
 </main>
 </div>
-<nav class="mobile-bottom-nav" aria-label="Quick navigation">
-  <button data-mobile-page="dashboard" onclick="go('dashboard')"><span class="nav-ico">▦</span><span>Home</span></button>
-  <button data-mobile-page="newwash" onclick="go('newwash')"><span class="nav-ico">＋</span><span>New Wash</span></button>
-  <button data-mobile-page="queue" onclick="go('queue')"><span class="nav-ico">◷</span><span>Queue</span></button>
-  <button data-mobile-page="transactions" onclick="go('transactions')"><span class="nav-ico">▤</span><span>Records</span></button>
-</nav>
 <div class="wp-signup-backdrop" id="wpSignupBackdrop" onclick="signupBackdropClose(event)" aria-hidden="true">
   <section class="wp-signup-card" role="dialog" aria-modal="true" aria-labelledby="wpSignupTitle">
     <button class="wp-signup-close" type="button" aria-label="Close" onclick="closeTrialSignup()">×</button>
@@ -2371,7 +2365,7 @@ function renderNav(){
   if(tag&&!locked)tag.style.opacity='.45';
  });
  document.querySelectorAll('[data-mobile-page]').forEach(b=>{const page=b.dataset.mobilePage;b.style.display=canAccessRolePage(page)&&allowed(page)?'flex':'none';b.classList.toggle('active',page===currentPage)});
- document.querySelector('.mobile-bottom-nav').style.display=isPlatform?'none':'';
+ const mobileNav=document.querySelector('.mobile-bottom-nav');if(mobileNav)mobileNav.style.display=isPlatform?'none':'';
 }
 function go(page){if(!canAccessRolePage(page)){toast('This section is not available for your workspace role.');return}if(page!=='managementHub'&&!allowed(page)&&page!=='dashboard'&&page!=='newwash'&&page!=='queue'&&page!=='transactions'&&page!=='customers'){currentPage=page;renderNav();render();document.getElementById('sidebar').classList.remove('open');document.body.classList.remove('sidebar-visible');return}currentPage=page;renderNav();render();document.getElementById('sidebar').classList.remove('open');document.body.classList.remove('sidebar-visible')}
 function render(){
