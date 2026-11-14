@@ -860,3 +860,34 @@ body.wp-page-app{position:relative;width:100%;min-width:0}
   }
   .wp-public .wp-booking-layout{display:block!important}
 }
+
+
+/* 3D homepage hero artwork */
+.wp-page-app #publicLanding .wp-hero-visual{
+  position:relative;display:flex;align-items:center;justify-content:center;
+  min-width:0;min-height:520px;padding:0;overflow:visible;isolation:isolate;
+}
+.wp-page-app #publicLanding .wp-hero-visual::before{
+  content:"";position:absolute;inset:9% 1% 2% 0;border-radius:42%;
+  background:radial-gradient(ellipse at 58% 55%,rgba(45,151,245,.32),rgba(10,39,77,.05) 62%,transparent 75%);
+  filter:blur(16px);z-index:-1;pointer-events:none;
+}
+.wp-page-app #publicLanding .wp-hero-3d-image{
+  display:block;width:100%;height:auto;max-width:720px;max-height:590px;
+  object-fit:contain;object-position:center;position:relative;z-index:1;
+  filter:drop-shadow(0 28px 44px rgba(0,7,20,.36));
+  transform:perspective(1400px) rotateY(-3deg);
+  transform-origin:center center;
+}
+@media(max-width:1020px){
+ .wp-page-app #publicLanding .wp-hero-visual{min-height:420px}
+ .wp-page-app #publicLanding .wp-hero-3d-image{max-height:470px}
+}
+@media(max-width:760px){
+ .wp-page-app #publicLanding .wp-hero-visual{min-height:340px;margin:0 auto -4px;max-width:620px}
+ .wp-page-app #publicLanding .wp-hero-3d-image{max-height:390px;transform:none}
+}
+@media(max-width:420px){
+ .wp-page-app #publicLanding .wp-hero-visual{min-height:285px}
+ .wp-page-app #publicLanding .wp-hero-3d-image{max-height:325px}
+}
