@@ -22,6 +22,7 @@ const context = {
   stat:(label,value,note)=>`<metric data-label="${label}" data-value="${value}">${note}</metric>`,
   statusPill:s=>`<status>${s}</status>`, subscriptionStatusBanner:()=>'<subscription></subscription>',
   transactionTable:list=>`<transactions>${list.map(t=>t.id).join(',')}</transactions>`,
+  reportTransactions:()=>rows, bookingSalesNotice:()=>'',
   paymentBreakdown:()=>'<payments></payments>', planRank:()=>1, effectivePlan:()=> 'basic'
 };
 context.totalCollectedBetween=(a,b)=>context.paidTransactionsBetween(a,b).reduce((sum,t)=>sum+t.total,0);
@@ -32,7 +33,7 @@ assert.match(html, /data-label="Sales collected" data-value="₱300"/);
 assert.match(html, /data-label="Vehicles registered" data-value="2"/);
 assert.match(html, /data-label="In progress" data-value="1"/);
 assert.match(html, /data-label="Completed" data-value="1"/);
-assert.match(html, /data-label="Average per vehicle" data-value="₱150"/);
+assert.doesNotMatch(html, /Average per vehicle/);
 assert.match(html, /id="wpDashboardBookingNotifications"/);
 assert.match(html, /<subscription>/);
 const queue=html.slice(html.indexOf('id="wpDashboardQueue"'), html.indexOf('id="wpDashboardGuide"'));
@@ -42,5 +43,5 @@ assert.match(queue, /go\('queue'\)/);
 rows.length=0;
 html=context.dashboardPage();
 assert.match(html, /No active washes today/);
-assert.match(html, /data-label="Average per vehicle" data-value="₱0"/);
+assert.doesNotMatch(html, /Average per vehicle/);
 console.log('Dashboard summary, payment-date totals, active queue, navigation and empty state passed.');
