@@ -45,7 +45,11 @@ assert.ok(app.includes('function newWashPage(){'),'POS must remain inside the in
 assert.ok(pages.includes(": '/dashboard';"),'Authenticated users must be sent to the integrated dashboard.');
 assert.ok(!pages.includes("'/dashboard.html'"),'Shared page helper must not route users to the standalone dashboard.');
 assert.ok(app.includes("if(path==='/login'||path==='/signin'){"),'Integrated app must handle its canonical sign-in route.');
-assert.ok(app.includes('body.wp-login-route #publicLanding{display:none!important}'),'The duplicate in-app public homepage must stay hidden on sign-in.');
+assert.ok(app.includes('html.wp-auth-route #publicLanding,'),'The auth-only route CSS must be independent of late body route initialization.');
+assert.ok(app.includes("document.documentElement.classList.add('wp-auth-route');"),'Sign-in must establish its auth-only marker.');
+assert.ok(app.includes('<script id="wp-auth-route-boot">'),'Sign-in route must set the auth-only marker before the embedded public landing is parsed.');
+assert.ok(app.indexOf('<script id="wp-auth-route-boot">')<app.indexOf('<section class="wp-public" id="publicLanding"'),'Early auth route guard must precede the secondary public landing.');
+assert.ok(app.includes("document.documentElement.classList.remove('wp-auth-route');"),'Public routes must clear the auth-only marker when navigating away from sign-in.');
 assert.ok(app.includes("if(landing){landing.hidden=true;landing.style.setProperty('display','none','important');}"),'Sign-in route must forcibly hide the secondary public landing view.');
 assert.ok(app.includes("if(login){login.hidden=false;login.style.setProperty('display','grid','important');}"),'Sign-in route must show the actual login form.');
 
