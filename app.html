@@ -4325,7 +4325,7 @@ async function submitPublicBooking(e){
     window.showLoginScreen=function(){
       requestedAppPage=null;
       window.wpRouteIsWorkspace=false;window.wpRouteIsLogin=true;
-      setPath('/signin',false);
+      setPath('/login',false);
       return originalShowLogin.apply(this,arguments);
     };
   }
