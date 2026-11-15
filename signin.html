@@ -3452,6 +3452,7 @@ async listPublicFacilities(){const {data,error}=await getClient().rpc('list_publ
   };
 
   async function initRealAuth(){
+    let bootstrapError=null;
     try{
       getClient().auth.onAuthStateChange((event)=>{
         if(event==='PASSWORD_RECOVERY')window.setTimeout(()=>window.openPasswordRecoveryForm?.(),60);
@@ -3516,8 +3517,22 @@ async listPublicFacilities(){const {data,error}=await getClient().rpc('list_publ
         if(app){app.hidden=true;app.classList.add('auth-hidden');app.style.display='none';}
         if(authRoute&&typeof window.wpShowLoginForRoute==='function')window.wpShowLoginForRoute();
       }
-    }catch(err){console.warn('WashPilot auth initialization:',err);}
+    }catch(err){
+      bootstrapError=err;
+      console.warn('WashPilot auth initialization:',err);
+    }
     setAuthMode('account');
+    if(bootstrapError){
+      const path=String(location.pathname||'/').replace(/\\/+$/,'').toLowerCase()||'/';
+      const protectedPaths=['/vendo-management','/dashboard','/new-wash','/service-queue','/transactions','/customers','/bookings','/booking','/facility-listing','/services-pricing','/add-on-analytics','/employees','/expenses','/reports','/inventory','/branches','/loyalty-packages','/service-recipes','/shift-reconciliation','/subscription-billing','/business-management','/platform/overview','/platform/businesses','/platform/billing-revenue','/login','/signin'];
+      if(protectedPaths.includes(path)&&!window.wpRealWorkspaceActive&&!window.wpRealPlatformAdminActive){
+        const landing=$('publicLanding'),login=$('loginScreen'),app=$('washpilotApp');
+        if(landing){landing.hidden=true;landing.style.display='none';}
+        if(app){app.hidden=true;app.style.display='none';app.classList.add('auth-hidden');}
+        if(login){login.hidden=false;login.style.display='grid';}
+        loginError(bootstrapError.message||'We could not load your WashPilot workspace. Please sign in again.');
+      }
+    }
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initRealAuth,{once:true});
   else initRealAuth();
