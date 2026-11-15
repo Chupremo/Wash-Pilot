@@ -13,8 +13,9 @@ assert.ok(!home.includes('href="/signin"'),'Homepage should use the canonical /l
 const redirect=(source,destination)=>config.redirects.some(x=>x.source===source&&x.destination===destination);
 const rewrite=(source,destination)=>config.rewrites.some(x=>x.source===source&&x.destination===destination);
 
-assert.ok(redirect('/login','/signin'),'Old /login URL should redirect to the canonical sign-in route.');
-assert.ok(!redirect('/signin.html','/signin'),'The dedicated sign-in HTML must not redirect back to /signin or it creates a rewrite loop.');
+assert.ok(redirect('/signin','/login'),'The old /signin URL should redirect once to canonical /login.');
+assert.ok(!redirect('/login','/signin'),'Canonical /login must never redirect back to /signin.');
+assert.ok(!redirect('/signin.html','/login'),'The dedicated login HTML must be served directly without redirecting back to /login.');
 assert.ok(redirect('/signup.html','/signup'),'Legacy sign-up URL should redirect to the integrated sign-up.');
 assert.ok(redirect('/forgot','/signin'),'Legacy forgot-password URL should return to the unified sign-in.');
 assert.ok(redirect('/forgot.html','/signin'),'Legacy forgot-password file URL should return to the unified sign-in.');
