@@ -49,7 +49,8 @@ assert.equal((signin.match(/<section class="wp-public" id="publicLanding"/g)||[]
 assert.equal((signin.match(/id="loginScreen"/g)||[]).length,1,'Dedicated sign-in document must contain exactly one login screen.');
 assert.equal((signin.match(/id="washpilotApp"/g)||[]).length,1,'Dedicated sign-in document must keep the integrated app available after authentication.');
 assert.ok(signin.includes('auth.signInWithPassword({email,password})'),'Dedicated sign-in document must retain real Supabase authentication.');
-assert.ok(signin.includes('href="/">← Back to website</a>'),'Dedicated sign-in page must return directly to the canonical homepage.');
+assert.ok(signin.includes('href="/" data-full-navigation="true">← Back to website</a>'),'Dedicated sign-in page must return directly to the canonical homepage.');
+assert.ok(signin.includes("anchor.hasAttribute('data-full-navigation')"),'The sign-in back link must bypass the SPA router and load the real homepage document.');
 assert.ok(app.includes("if(path==='/login'||path==='/signin'){"),'Integrated app must handle its canonical sign-in route.');
 assert.ok(app.includes('html.wp-auth-route #publicLanding,'),'The auth-only route CSS must be independent of late body route initialization.');
 assert.ok(app.includes("document.documentElement.classList.add('wp-auth-route');"),'Sign-in must establish its auth-only marker.');
