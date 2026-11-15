@@ -67,6 +67,16 @@ export default {
       return env.ASSETS.fetch(request);
     }
 
+    // Credentials and identity data must never remain in a page URL. Strip these
+    // parameters at the edge before any HTML or client-side JavaScript is served.
+    const sensitiveQueryKeys = ["email", "password", "passwd", "pwd", "access_token", "refresh_token", "token"];
+    const hasSensitiveQuery = sensitiveQueryKeys.some((key) => url.searchParams.has(key));
+    if (hasSensitiveQuery) {
+      const cleanUrl = new URL(url);
+      for (const key of sensitiveQueryKeys) cleanUrl.searchParams.delete(key);
+      return Response.redirect(cleanUrl.toString(), 302);
+    }
+
     const legacyDestination = LEGACY_REDIRECTS.get(path);
     if (legacyDestination) {
       return Response.redirect(redirectUrl(url, legacyDestination).toString(), 308);
