@@ -145,7 +145,7 @@
   }
 
   function redirectFor(workspace) {
-    return workspace?.isAdmin ? '/platform/overview' : '/dashboard.html';
+    return workspace?.isAdmin ? '/platform/overview' : '/dashboard';
   }
 
   async function signIn(email, password) {

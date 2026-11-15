@@ -2,8 +2,18 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "redirects": [
     {
-      "source": "/signin.html",
-      "destination": "/signin",
+      "source": "/app.html",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/home.html",
+      "destination": "/",
       "permanent": false
     },
     {
@@ -12,8 +22,28 @@
       "permanent": false
     },
     {
+      "source": "/signin.html",
+      "destination": "/signin",
+      "permanent": false
+    },
+    {
+      "source": "/signup.html",
+      "destination": "/signup",
+      "permanent": false
+    },
+    {
       "source": "/dashboard.html",
       "destination": "/dashboard",
+      "permanent": false
+    },
+    {
+      "source": "/pos.html",
+      "destination": "/new-wash",
+      "permanent": false
+    },
+    {
+      "source": "/pos",
+      "destination": "/new-wash",
       "permanent": false
     }
   ],
