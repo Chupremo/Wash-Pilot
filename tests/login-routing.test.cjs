@@ -26,6 +26,7 @@ assert.ok(redirect('/home.html','/'),'Old duplicate homepage URL should redirect
 assert.ok(!redirect('/app.html','/'),'The integrated app entry must not redirect away from internal rewrites.');
 
 assert.ok(rewrite('/login','/signin.html'),'Canonical /login must serve the dedicated login-only document.');
+assert.equal(JSON.parse(fs.readFileSync('wrangler.jsonc','utf8')).assets.html_handling,'none','Cloudflare must not canonicalize signin.html back to /signin.');
 assert.ok(!rewrite('/signin','/signin.html'),'The old /signin alias must redirect instead of creating a second rewrite path.');
 assert.ok(rewrite('/signup','/app.html'),'Canonical sign-up should load the integrated application.');
 assert.ok(rewrite('/dashboard','/app.html'),'Canonical dashboard should load the integrated application.');
