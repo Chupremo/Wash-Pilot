@@ -68,6 +68,16 @@ assert.equal((signin.match(/<section class="wp-public" id="publicLanding"/g)||[]
 assert.equal((signin.match(/id="loginScreen"/g)||[]).length,1,'Dedicated sign-in document must contain exactly one login screen.');
 assert.equal((signin.match(/id="washpilotApp"/g)||[]).length,1,'Dedicated sign-in document must keep the integrated app available after authentication.');
 assert.ok(signin.includes('auth.signInWithPassword({email,password})'),'Dedicated sign-in document must retain real Supabase authentication.');
+
+assert.ok(app.includes('function showAuthenticatedWorkspaceUI(){'),'Integrated app must explicitly finish the authenticated workspace UI handoff.');
+assert.ok(signin.includes('function showAuthenticatedWorkspaceUI(){'),'Dedicated sign-in page must explicitly finish the authenticated workspace UI handoff.');
+assert.ok(app.includes("document.documentElement.classList.remove('wp-auth-route');"),'Authenticated workspace must clear the login-only route marker.');
+assert.ok(signin.includes("document.body.classList.remove('wp-login-route','wp-public-route');"),'Authenticated sign-in must clear login and public route classes.');
+assert.ok(app.includes('if(!data.session&&window.wpLoginSubmissionActive)return;'),'A stale no-session bootstrap must not override a submitted login.');
+assert.ok(signin.includes('if(!data.session&&window.wpLoginSubmissionActive)return;'),'The dedicated sign-in bootstrap must not override a submitted login.');
+assert.ok(app.includes('window.wpLoginSubmissionActive=true;')&&app.includes('window.wpLoginSubmissionActive=false;'),'Integrated sign-in must guard its bootstrap race for the entire submission.');
+assert.ok(signin.includes('window.wpLoginSubmissionActive=true;')&&signin.includes('window.wpLoginSubmissionActive=false;'),'Dedicated sign-in must guard its bootstrap race for the entire submission.');
+
 assert.ok(signin.includes('href="/" data-full-navigation="true">← Back to website</a>'),'Dedicated sign-in page must return directly to the canonical homepage.');
 assert.ok(signin.includes("anchor.hasAttribute('data-full-navigation')"),'The sign-in back link must bypass the SPA router and load the real homepage document.');
 assert.ok(app.includes("if(path==='/login'||path==='/signin'){"),'Integrated app must handle its canonical sign-in route.');
