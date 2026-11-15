@@ -23,6 +23,8 @@
       "/transactions/*",
       "/customers",
       "/customers/*",
+      "/booking",
+      "/booking/*",
       "/bookings",
       "/bookings/*",
       "/facility-listing",

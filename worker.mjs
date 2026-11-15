@@ -7,6 +7,7 @@ const APP_ROUTES = new Set([
   "/service-queue",
   "/transactions",
   "/customers",
+  "/booking",
   "/bookings",
   "/facility-listing",
   "/services-pricing",
