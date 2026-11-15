@@ -73,7 +73,15 @@ export default {
       return Response.redirect(redirectUrl(url, legacyDestination).toString(), 308);
     }
 
-    // app.html is the shared application shell, not a second public homepage.
+    // The canonical sign-in route has its own auth-only document. It contains the existing
+    // Supabase login/workspace code but no embedded public landing-page markup.
+    if (path === "/signin") {
+      const signinUrl = new URL(url);
+      signinUrl.pathname = "/signin.html";
+      return env.ASSETS.fetch(new Request(signinUrl, request));
+    }
+
+    // app.html remains the shared shell for authenticated workspace and other app routes.
     if (path === "/app.html") {
       return Response.redirect(redirectUrl(url, "/").toString(), 308);
     }
