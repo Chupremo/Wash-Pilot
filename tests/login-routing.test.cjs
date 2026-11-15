@@ -45,6 +45,8 @@ assert.ok(app.includes("dashboard:'/dashboard'"),'Dashboard must use its canonic
 assert.ok(app.includes("newwash:'/new-wash'"),'POS must use its canonical route.');
 assert.ok(app.includes('auth.signInWithPassword({email,password})'),'Unified sign-in must authenticate through Supabase.');
 assert.ok(app.includes("loginForm.addEventListener('submit'"),'Integrated app sign-in must bind the form submit event explicitly.');
+assert.ok(app.includes("id=\"loginSubmitButton\" onclick=\"event.preventDefault(); if(typeof window.washPilotAccountLogin==='function')"),'Integrated app Sign in button must invoke authentication directly when clicked.');
+assert.ok(signin.includes("id=\"loginSubmitButton\" onclick=\"event.preventDefault(); if(typeof window.washPilotAccountLogin==='function')"),'Dedicated Sign in button must invoke authentication directly when clicked.');
 assert.ok(app.includes('function cleanCredentialsFromUrl()'),'Integrated app must remove credentials from auth query strings.');
 assert.ok(!app.includes("if(authMode==='demo'){"),'Integrated app production sign-in must not expose the legacy Owner demo branch.');
 assert.ok(!app.includes('onsubmit="handleLogin(event); return false;"'),'Integrated app must not rely on the legacy inline login submit handler.');
