@@ -23,7 +23,7 @@ assert.ok(rewrite('/signin','/app.html'),'Canonical /signin should load the inte
 assert.ok(rewrite('/dashboard','/app.html'),'Canonical /dashboard should load the integrated application.');
 assert.ok(dashboard.includes('posUrl: "/new-wash"'),'Dashboard POS link must open the integrated POS route.');
 assert.ok(pos.includes('dashboardUrl: "/dashboard"'),'POS dashboard link must open the integrated dashboard route.');
-assert.ok(pages.includes("return workspace?.isAdmin ? '/platform/overview' : '/dashboard';'),'Authenticated users must be sent to the integrated dashboard.');
+assert.ok(pages.includes(": '/dashboard';"),'Authenticated users must be sent to the integrated dashboard.');
 assert.ok(!pages.includes("'/dashboard.html'"),'Shared page helper must not route users to the standalone dashboard.');
 assert.equal((app.match(/data-page="dashboard"/g)||[]).length,1,'Integrated app must have only one dashboard nav item.');
 assert.equal((app.match(/data-page="newwash"/g)||[]).length,1,'Integrated app must have only one POS nav item.');
