@@ -1740,7 +1740,7 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
         <div class="wp-forgot-row" id="wpForgotRow"><button type="button" onclick="openForgotPassword()">Forgot password?</button></div>
         <div class="login-error" id="loginError" role="alert"></div>
         <div class="login-action-row">
-          <button class="login-submit" type="submit" id="loginSubmitButton">Sign in <span aria-hidden="true">→</span></button>
+          <button class="login-submit" type="submit" id="loginSubmitButton" onclick="event.preventDefault(); if(typeof window.washPilotAccountLogin==='function'){window.washPilotAccountLogin(event);}else{var e=document.getElementById('loginError');if(e){e.textContent='The sign-in script did not initialize. Reload this page and try again.';e.classList.add('show');}}">Sign in <span aria-hidden="true">→</span></button>
           <button class="login-register-button" type="button" id="loginRegisterButton" onclick="openTrialSignup('basic')">Register</button>
         </div>
       </form>
