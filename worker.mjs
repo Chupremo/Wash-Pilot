@@ -37,7 +37,6 @@ const APP_ROUTES = new Set([
 
 const LEGACY_REDIRECTS = new Map([
   ["/login", "/signin"],
-  ["/signin.html", "/signin"],
   ["/signup.html", "/signup"],
   ["/forgot", "/signin"],
   ["/forgot.html", "/signin"],
