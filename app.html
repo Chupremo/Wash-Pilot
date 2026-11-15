@@ -3335,7 +3335,26 @@ window.submitTrialSignup=async function(e){
  result.shiftClosings=(result.shiftClosings||[]).filter(x=>x.closedBy!=='Demo Owner');
  return result;
 }
-function openRealWorkspace(user,business,subscription){
+function showAuthenticatedWorkspaceUI(){
+  const routePaths={vendo:'/vendo-management',dashboard:'/dashboard',newwash:'/new-wash',queue:'/service-queue',transactions:'/transactions',customers:'/customers',bookings:'/bookings',listing:'/facility-listing',catalog:'/services-pricing',addons:'/add-on-analytics',employees:'/employees',expenses:'/expenses',reports:'/reports',inventory:'/inventory',branches:'/branches',loyalty:'/loyalty-packages',recipes:'/service-recipes',reconcile:'/shift-reconciliation',subscription:'/subscription-billing',managementHub:'/business-management',platform:'/platform/overview',tenants:'/platform/businesses',platformBilling:'/platform/billing-revenue'};
+  const page=window.wpRequestedRoutePage||'dashboard';
+  const destination=routePaths[page]||'/dashboard';
+  window.wpRequestedRoutePage=routePaths[page]?page:'dashboard';
+  window.wpRouteIsWorkspace=true;window.wpRouteIsLogin=false;
+  document.documentElement.classList.remove('wp-auth-route');
+  document.body.classList.remove('wp-login-route','wp-public-route');
+  document.body.dataset.washpilotLoginOpen='0';
+  const landing=document.getElementById('publicLanding'),login=document.getElementById('loginScreen'),app=document.getElementById('washpilotApp');
+  if(landing){landing.hidden=true;landing.style.display='none';}
+  if(login){login.hidden=true;login.style.display='none';}
+  if(app){app.hidden=false;app.classList.remove('auth-hidden');app.style.display='grid';}
+  document.body.classList.add('washpilot-authenticated');
+  if(['/login','/signin','/signup'].includes(location.pathname))history.replaceState({washpilot:true},'',destination);
+  document.title='WashPilot | '+(page==='platform'?'Platform Overview':page==='dashboard'?'Dashboard':'Workspace');
+}
+window.wpFinishAuthenticatedWorkspace=showAuthenticatedWorkspaceUI;
+
+  function openRealWorkspace(user,business,subscription){
     const businessId=business.id;const storageKey='wp_real_workspace_data_'+businessId;
     const clean={services:[],transactions:[],employees:[],expenses:[],inventory:[],branches:[],customers:[],recipes:[],inventoryMovements:[],loyaltyLedger:[],packages:[],packageSales:[],shiftClosings:[],shifts:[],shift:null,packageRedemptions:[],subscriptionInvoices:[]};
     let workspace=clean;const stored=window.wpStorage.getItem(storageKey);
@@ -3345,6 +3364,7 @@ function openRealWorkspace(user,business,subscription){
     window.wpRealWorkspaceActive=true;window.wpRealBusinessId=businessId;window.wpRealBusiness=business;window.wpRealSubscription=subscription;window.wpRealOwnerName=user.user_metadata?.full_name||user.email||'Owner';
     if(typeof window.wpApplyAuthenticatedWorkspaceState!=='function')throw new Error('WashPilot workspace scripts did not finish loading. Refresh the page and try again.');
     const destination=window.wpApplyAuthenticatedWorkspaceState(workspace,subscription,window.wpRequestedRoutePage);
+     showAuthenticatedWorkspaceUI();
     window.wpStorage.removeItem('wp_demo_authenticated');window.wpStorage.removeItem('wb_demo_authenticated');window.wpStorage.removeItem('wp_demo_role');window.wpStorage.removeItem('wp_demo_staff_role');window.wpStorage.setItem('wp_real_business_id',businessId);window.wpStorage.setItem('wp_view_mode','advanced');window.wpStorage.setItem('wp_real_workspace_plan_'+businessId,String(subscription.plan_code||'basic'));
     window.wpStorage.setItem('wp_home_range','1');
     const portal=document.getElementById('wpTrialPortal');if(portal)portal.remove();
@@ -3418,17 +3438,20 @@ function openRealWorkspace(user,business,subscription){
     if(!email||!password)return loginError('Enter your email address and password.');
     const btn=$('loginSubmitButton');if(btn){btn.disabled=true;btn.textContent='Signing in…';}
     loginError('');
+    window.wpLoginSubmissionActive=true;
     try{
       const {data,error}=await getClient().auth.signInWithPassword({email,password});
       if(error)throw error;
       const user=data.user||data.session?.user;
       if(!user)throw new Error('Supabase accepted the request but did not return an account session. Please sign in again.');
       await activateTrial(user);
+      if(window.wpRealWorkspaceActive||window.wpRealPlatformAdminActive)showAuthenticatedWorkspaceUI();
       if(!window.wpRealWorkspaceActive&&!window.wpRealPlatformAdminActive)throw new Error('Your account was verified, but the WashPilot workspace did not finish opening. Please refresh and try again.');
     }catch(err){
       console.error('WashPilot account sign-in:',err);
       loginError(err&&err.message?err.message:'We could not sign you in. Please try again.');
     }finally{
+      window.wpLoginSubmissionActive=false;
       if(btn){btn.disabled=false;btn.innerHTML='Sign in <span aria-hidden="true">→</span>';}
     }
   };
@@ -3649,6 +3672,8 @@ async listPublicFacilities(){const {data,error}=await getClient().rpc('list_publ
       });
       const {data,error}=await getClient().auth.getSession();
       if(error)throw error;
+      // Do not let an earlier no-session check overwrite a sign-in already being submitted.
+      if(!data.session&&window.wpLoginSubmissionActive)return;
       if(data.session){
         if(new URLSearchParams(location.search).get('wpRecovery')==='1')window.setTimeout(()=>{window.openPasswordRecoveryForm?.();history.replaceState({},'',window.location.pathname);},120);
         // This auth bootstrap runs before the route controller later in this file.
@@ -3684,7 +3709,7 @@ async listPublicFacilities(){const {data,error}=await getClient().rpc('list_publ
         const initialRequestedPage=initialPageByPath[initialPath]||null;
         const routeNeedsWorkspace=!!initialRequestedPage||initialPath==='/login'||initialPath==='/signin'||initialPath==='/signup';
         if(initialRequestedPage)window.wpRequestedRoutePage=initialRequestedPage;
-        if(routeNeedsWorkspace)await activateTrial(data.session.user);
+        if(routeNeedsWorkspace){await activateTrial(data.session.user);showAuthenticatedWorkspaceUI();}
         else window.wpPublicSessionUser=data.session.user;
       }else{
         window.wpStorage.removeItem('wp_demo_authenticated');window.wpStorage.removeItem('wb_demo_authenticated');
