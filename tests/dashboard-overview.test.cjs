@@ -41,7 +41,7 @@ assert.ok(html.indexOf('id="wpDashboardSales"') < html.indexOf('id="wpDashboardQ
 for (const page of ['app.html', 'signin.html']) {
   const pageSource = fs.readFileSync(require('node:path').join(__dirname, '..', page), 'utf8');
   const start = pageSource.indexOf('function dashboardPage(){');
-  const end = pageSource.indexOf('\\nfunction paymentBreakdown(', start);
+  const end = pageSource.indexOf('\nfunction paymentBreakdown(', start);
   assert.ok(start >= 0 && end > start, page + ' must contain the dashboard renderer');
   const dashboardSource = pageSource.slice(start, end);
   assert.ok(dashboardSource.indexOf('id="wpDashboardSales"') < dashboardSource.indexOf('id="wpDashboardToday"'), page + ' should show Sales over time ahead of Today at a glance');
