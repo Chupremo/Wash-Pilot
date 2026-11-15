@@ -3653,10 +3653,22 @@ async listPublicFacilities(){const {data,error}=await getClient().rpc('list_publ
         window.wpStorage.removeItem('wp_demo_authenticated');window.wpStorage.removeItem('wb_demo_authenticated');
         window.wpStorage.removeItem('wp_demo_role');window.wpStorage.removeItem('wp_demo_staff_role');
         const landing=$('publicLanding'),login=$('loginScreen'),app=$('washpilotApp');
-        if(landing)landing.style.display='block';
-        if(login){login.hidden=true;login.style.display='none';}
+        const authRoute=!!(window.wpRouteIsWorkspace||window.wpRouteIsLogin);
+        if(authRoute){
+          // Protected app routes and /signin must never restore the embedded public homepage.
+          document.documentElement.classList.add('wp-auth-route');
+          document.body.classList.add('wp-login-route');
+          document.body.dataset.washpilotLoginOpen='1';
+          if(landing){landing.hidden=true;landing.style.setProperty('display','none','important');}
+          if(login){login.hidden=false;login.style.setProperty('display','grid','important');}
+        }else{
+          document.documentElement.classList.remove('wp-auth-route');
+          document.body.classList.remove('wp-login-route');
+          if(landing){landing.hidden=false;landing.style.display='block';}
+          if(login){login.hidden=true;login.style.display='none';}
+        }
         if(app){app.hidden=true;app.classList.add('auth-hidden');app.style.display='none';}
-        if((window.wpRouteIsWorkspace||window.wpRouteIsLogin)&&typeof window.wpShowLoginForRoute==='function')window.wpShowLoginForRoute();
+        if(authRoute&&typeof window.wpShowLoginForRoute==='function')window.wpShowLoginForRoute();
       }
     }catch(err){console.warn('WashPilot auth initialization:',err);}
     setAuthMode('account');
