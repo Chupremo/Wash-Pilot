@@ -45,6 +45,14 @@ async function main() {
     return worker.fetch(new Request("https://washpilot.shop" + path, { method }), env);
   }
 
+  const credentialUrl = await fetchPath("/login?email=test%40example.com&password=must-not-leak&next=%2Fdashboard");
+  assert.equal(credentialUrl.status, 302, "Login URLs containing credential parameters must be cleaned before serving HTML.");
+  assert.equal(credentialUrl.headers.get("location"), "https://washpilot.shop/login?next=%2Fdashboard", "The edge must remove credentials while preserving harmless route parameters.");
+
+  const signinCredentialUrl = await fetchPath("/signin?email=test%40example.com&password=must-not-leak");
+  assert.equal(signinCredentialUrl.status, 302, "Legacy sign-in URLs must also strip credentials before redirecting.");
+  assert.equal(signinCredentialUrl.headers.get("location"), "https://washpilot.shop/signin");
+
   const oldSignin = await fetchPath("/signin");
   assert.equal(oldSignin.status, 308, "The old /signin path should redirect once to /login.");
   assert.equal(oldSignin.headers.get("location"), "https://washpilot.shop/login");
