@@ -1552,6 +1552,11 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/washpilot-home.css?v=20261115-1">
 <script src="/washpilot-home-features.js?v=20261115-1" defer></script>
+  <style id="wp-single-signin-screen-fix">
+    body.wp-login-route #publicLanding{display:none!important}
+    body.wp-login-route #loginScreen{display:grid!important}
+    body.wp-login-route #washpilotApp{display:none!important}
+  </style>
 </head>
 <body class="wp-page-app">
 
@@ -4171,13 +4176,16 @@ async function submitPublicBooking(e){
   }
   function showLoginRoute(){
     const landing=document.getElementById('publicLanding');
-    if(landing)landing.style.display='none';
+    const login=document.getElementById('loginScreen');
     const app=document.getElementById('washpilotApp');
-    if(app){app.hidden=true;app.style.display='none';app.classList.add('auth-hidden');}
+    // /signin is an authentication screen, never a second copy of the public homepage.
     document.body.dataset.washpilotLoginOpen='1';
     document.body.classList.remove('wp-public-route');
     document.body.classList.add('wp-login-route');
-    window.wpShowLoginForRoute();
+    if(app){app.hidden=true;app.style.display='none';app.classList.add('auth-hidden');}
+    if(typeof window.wpShowLoginForRoute==='function')window.wpShowLoginForRoute();
+    if(landing){landing.hidden=true;landing.style.setProperty('display','none','important');}
+    if(login){login.hidden=false;login.style.setProperty('display','grid','important');}
     setTitle('Sign In','Sign in to your WashPilot carwash management workspace.');
   }
   function applyRoute(){
