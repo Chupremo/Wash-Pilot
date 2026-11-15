@@ -1,27 +1,30 @@
 const fs=require('node:fs'),assert=require('node:assert/strict'),vm=require('node:vm');
 const {JSDOM}=require('jsdom'),postcss=require('postcss');
 const homepage=fs.readFileSync('index.html','utf8');
-const homeAlias=fs.readFileSync('home.html','utf8');
 const app=fs.readFileSync('app.html','utf8');
-assert.equal(homepage,homeAlias,'The root homepage must be the exact uploaded file; /home.html remains an identical alias.');
+const config=JSON.parse(fs.readFileSync('vercel.json','utf8'));
 for(const token of ['WashPilot — Carwash Management Solutions & Pricing','id="scene"','id="lanes"','class="bento"','class="pricing"','class="closing"','id="dock"','three.min.js']){
   assert.ok(homepage.includes(token),'Uploaded homepage content missing: '+token);
 }
-for(const token of ['function applyRoute()','function dashboardPage()','function initRealAuth()','wpRouteIsWorkspace','washPilotBookingApi']){
-  assert.ok(app.includes(token),'Preserved application entry is missing: '+token);
+for(const token of ['function applyRoute()','function dashboardPage()','function newWashPage()','function initRealAuth()','wpRouteIsWorkspace','washPilotBookingApi']){
+  assert.ok(app.includes(token),'Integrated app is missing: '+token);
 }
-const config=JSON.parse(fs.readFileSync('vercel.json','utf8'));
 assert.ok(config.rewrites?.some(rule=>rule.source==='/:path+'&&rule.destination==='/app.html'),'Non-file application routes must fall back to app.html.');
-const sharedPages=['app','dashboard','pos','signin','signup','forgot','404'];
-for(const name of sharedPages){
-  const html=fs.readFileSync(name+'.html','utf8');
-  assert.match(html,/\/washpilot-design\.css\?v=/,'Shared app theme missing from '+name+'.html');
-  for(const script of new JSDOM(html).window.document.querySelectorAll('script:not([src])')){
-    new vm.Script(script.textContent,{filename:name+'.html:inline'});
-  }
+for(const [route,destination] of [['/signin','/app.html'],['/signup','/app.html'],['/dashboard','/app.html'],['/new-wash','/app.html']]){
+  assert.ok(config.rewrites.some(rule=>rule.source===route&&rule.destination===destination),'Canonical route is not integrated: '+route);
+}
+for(const name of ['home','dashboard','pos','signin','signup','forgot']){
+  assert.equal(fs.existsSync(name+'.html'),false,'Duplicate standalone page must not be deployed: '+name+'.html');
+}
+const appDom=new JSDOM(app).window.document;
+assert.equal(appDom.querySelectorAll('#publicLanding').length,1);
+assert.equal(appDom.querySelectorAll('#loginScreen').length,1);
+assert.equal(appDom.querySelectorAll('#washpilotApp').length,1);
+for(const script of appDom.querySelectorAll('script:not([src])')){
+  new vm.Script(script.textContent,{filename:'app.html:inline'});
 }
 postcss.parse(fs.readFileSync('washpilot-design.css','utf8'));
-console.log('PASS: exact uploaded homepage, app fallback, preserved app routes, shared app styles and CSS parsing.');
+console.log('PASS: single integrated app routes, no duplicate standalone pages, one public/login/workspace container, JavaScript and CSS parse.');
 
 const dom=new JSDOM('<!doctype html><body><button id="trigger">Add service</button><div class="field"><label>Name</label><input></div><nav class="nav"><button data-page="dashboard" class="active">Dashboard</button></nav><div class="table-wrap"><table></table></div><div id="toast"></div><div id="modalBackdrop" style="display:none"><div class="modal" id="modal"><h2>Add service</h2><button class="close">×</button><input id="name"><button id="save">Save</button></div></div></body>',{runScripts:'outside-only',pretendToBeVisual:true});
 const {window:w}=dom,d=w.document;
