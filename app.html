@@ -2119,9 +2119,7 @@ function dashboardPage(){
  const todayTx=state.transactions.filter(isToday);
  const validToday=todayTx.filter(t=>t.status!=='Cancelled');
  const sales=totalCollectedBetween(today(),today());
- const vehicles=validToday.length;
  const active=validToday.filter(t=>!['Completed','Cancelled'].includes(t.status));
- const completed=validToday.filter(t=>t.status==='Completed').length;
  const expenses=state.expenses.filter(e=>e.date===today()).reduce((sum,e)=>sum+e.amount,0);
  const now=new Date();
  const monday=new Date(now);monday.setHours(0,0,0,0);monday.setDate(monday.getDate()-((monday.getDay()+6)%7));
@@ -2143,9 +2141,6 @@ function dashboardPage(){
   <div class="wp-dashboard-intro"><div><span class="wp-dashboard-eyebrow">YOUR WORKSPACE</span><h1>Dashboard</h1><p>See today’s activity and keep your washes moving.</p></div><button class="btn wp-dashboard-start" type="button" onclick="go('newwash')">＋ New wash</button></div>
   <div id="wpDashboardBookingNotifications"></div>
   <section aria-labelledby="wpDashboardSales"><div class="wp-dashboard-section-head"><div><h2 id="wpDashboardSales">Sales over time</h2><p>Collected payments for each period</p></div></div><div class="grid wp-dashboard-periods">${stat('Today’s Sales',money(sales),'Collected today','₱','green')}${stat('Weekly Sales',money(weekSales),'Monday through today','↗')}${stat('Monthly Sales',money(monthSales),'First day of this month to today','▣','purple')}${stat('Yearly Sales',money(yearSales),'January 1 to today','▤','amber')}</div></section>
-  <section aria-labelledby="wpDashboardToday"><div class="wp-dashboard-section-head"><div><h2 id="wpDashboardToday">Today at a glance</h2><p>Sales include payments collected today. Vehicle counts are based on tickets registered today.</p></div></div>
-   <div class="grid stats wp-dashboard-stats">${stat('Sales collected',money(sales),'Payments received today','₱','green')}${stat('Vehicles registered',vehicles,'Tickets created today','▣')}${stat('In progress',active.length,'Today’s tickets still active','◷','amber')}${stat('Completed',completed,'Today’s tickets finished','✓','purple')}</div>
-  </section>
   <div class="wp-dashboard-main-grid">
    <section class="panel wp-dashboard-queue" aria-labelledby="wpDashboardQueue"><div class="panel-head"><div><h2 id="wpDashboardQueue">Vehicles in progress</h2><p>Active tickets registered today</p></div><button class="btn ghost small" type="button" onclick="go('queue')">Open queue →</button></div>${queue?`<div class="wp-dashboard-rows">${queue}</div>`:'<div class="wp-dashboard-empty"><strong>No active washes today</strong><span>When you create a wash ticket, it will appear here.</span></div>'}</section>
    <section class="panel wp-dashboard-guide" aria-labelledby="wpDashboardGuide"><div class="panel-head"><div><h2 id="wpDashboardGuide">Your daily flow</h2><p>Three simple steps for each vehicle</p></div></div><ol><li><span>1</span><div><strong>Create a wash</strong><small>Add the vehicle and choose a service.</small></div></li><li><span>2</span><div><strong>Update the queue</strong><small>Move the wash through each stage.</small></div></li><li><span>3</span><div><strong>Collect payment</strong><small>Record payment when the vehicle is ready.</small></div></li></ol></section>
@@ -3767,7 +3762,7 @@ async listPublicFacilities(){const {data,error}=await getClient().rpc('list_publ
    addStep(out,{page:'queue',section:'WASHER WORKSPACE',title:'Hand off when the wash is done',description:'After washing, send the vehicle to the next stage and let the supervisor know when it is ready for inspection. The cashier records payment only when the customer collects the vehicle.',purpose:'Wash progress and payment collection are separate responsibilities.',targets:['#content .panel']});
    return out;
   }
-  addStep(out,{page:'dashboard',section:'GETTING STARTED',title:'Your daily dashboard',description:'Sales shows payments collected today. The vehicle counts show tickets registered today, including those still in progress and those completed. Open the queue to update a wash.',purpose:'Start here each day to understand sales and workload at a glance.',targets:['#content .wp-dashboard-stats','#content .home-range-panel','#content .grid.stats']});
+  addStep(out,{page:'dashboard',section:'GETTING STARTED',title:'Your daily dashboard',description:'Sales over time shows collected payments for today, this week, this month and this year. Open the queue below to track vehicles currently in progress.',purpose:'Start here each day to understand sales and workload at a glance.',targets:['#content .wp-dashboard-periods','#content .wp-dashboard-queue','#content .grid.stats']});
   if(role==='cashier'){
    addStep(out,{page:'newwash',section:'REGISTER A VEHICLE',title:'Enter the vehicle details',description:'Enter the plate number, select the vehicle type, and confirm the vehicle size. WashPilot suggests a size from the type, but you can change it when a vehicle needs a different category.',purpose:'The size matters because each main wash service can have a different rate for Small, Medium, Large and XL vehicles.',targets:['#content .form-section:nth-of-type(1)']});
    addStep(out,{page:'newwash',section:'CHOOSE THE WASH',title:'Select a service and extras',description:'Choose the main wash service first. Add optional extras when the customer requests them. The summary on the right updates the amount due using the selected vehicle-size price.',purpose:'This makes sure the cashier starts with the correct service and amount.',targets:['#content .form-section:nth-of-type(2)','#content aside.panel']});
@@ -3813,7 +3808,7 @@ async listPublicFacilities(){const {data,error}=await getClient().rpc('list_publ
    add({page:'queue',section:'UPDATE STATUS',title:'Move the wash forward',description:'Update each vehicle: Waiting → Washing → Quality Check → Ready.',targets:['#content .easy-queue-row','#content .kanban','#content .panel']});
    return out;
   }
-  add({page:'dashboard',section:'DAILY OVERVIEW',title:'Start at the dashboard',description:'Check today’s sales and active washes, then tap New Wash to record a customer.',targets:['#content .wp-dashboard-stats','#content .easy-welcome','#content .grid.stats']});
+  add({page:'dashboard',section:'DAILY OVERVIEW',title:'Start at the dashboard',description:'Check today’s sales and active washes, then tap New Wash to record a customer.',targets:['#content .wp-dashboard-periods','#content .easy-welcome','#content .grid.stats']});
   if(role==='owner'||role==='supervisor'){
    add({page:'catalog',section:'SET UP SERVICES',title:'Add your wash services',description:'Open Services & Pricing, add a service name, set its vehicle-size prices, then save.',targets:['#content .panel','#content .table-wrap']});
   }
@@ -3973,7 +3968,7 @@ function renderPublicServiceBulletList(){
   '</div>'+
   mainServices.map(service=>{
    const inclusions=inclusionsFor(service);
-   const bullets=inclusions.length?'<ul style="margin:4px 0 0;padding-left:13px;list-style:disc;text-align:left;color:#cbd8e8!important;font-size:8px!important;font-weight:400;line-height:1.35;white-space:normal;">'+inclusions.map(item=>'<li style="display:list-item;margin:1px 0;padding:0;color:#cbd8e8!important;">'+esc(item)+'</li>').join('')+'</ul>':'';
+   const bullets=inclusions.length?'<ul style="margin:4px 0 0;padding-left:13px;list-style:disc;text-align:left;color:#cbd8e8!important;font-size:8px;font-weight:400;line-height:1.35;white-space:normal;">'+inclusions.map(item=>'<li style="display:list-item;margin:1px 0;padding:0;color:#cbd8e8!important;">'+esc(item)+'</li>').join('')+'</ul>':'';
    return '<div role="row" style="display:grid;grid-template-columns:'+columns+';width:100%;min-width:0;border-bottom:1px solid rgba(255,255,255,.15);">'+
     '<div role="rowheader" style="'+rowCell+'text-align:left;font-size:9px;font-weight:800;">'+esc(service.name)+bullets+'</div>'+
     sizes.map(size=>'<div role="cell" style="'+rowCell+'">'+priceCell(service,size)+'</div>').join('')+
