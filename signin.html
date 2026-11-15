@@ -3246,9 +3246,16 @@ function openRealWorkspace(user,business,subscription){
     try{
       const {data,error}=await getClient().auth.signInWithPassword({email,password});
       if(error)throw error;
-      await activateTrial(data.user||data.session?.user);
-    }catch(err){loginError(err&&err.message?err.message:'We could not sign you in.');}
-    finally{if(btn){btn.disabled=false;btn.innerHTML='Sign in <span aria-hidden="true">→</span>';}}
+      const user=data.user||data.session?.user;
+      if(!user)throw new Error('Supabase accepted the request but did not return an account session. Please sign in again.');
+      await activateTrial(user);
+      if(!window.wpRealWorkspaceActive&&!window.wpRealPlatformAdminActive)throw new Error('Your account was verified, but the WashPilot workspace did not finish opening. Please refresh and try again.');
+    }catch(err){
+      console.error('WashPilot account sign-in:',err);
+      loginError(err&&err.message?err.message:'We could not sign you in. Please try again.');
+    }finally{
+      if(btn){btn.disabled=false;btn.innerHTML='Sign in <span aria-hidden="true">→</span>';}
+    }
   };
   window.handleLogin=window.washPilotAccountLogin;
   const loginForm = $('loginForm');
