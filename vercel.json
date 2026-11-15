@@ -55,7 +55,7 @@
   "rewrites": [
     {
       "source": "/signin",
-      "destination": "/app.html"
+      "destination": "/signin.html"
     },
     {
       "source": "/signup",
