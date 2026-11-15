@@ -1553,12 +1553,26 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
 <link rel="stylesheet" href="/washpilot-home.css?v=20261115-1">
 <script src="/washpilot-home-features.js?v=20261115-1" defer></script>
   <style id="wp-single-signin-screen-fix">
-    body.wp-login-route #publicLanding{display:none!important}
-    body.wp-login-route #loginScreen{display:grid!important}
+    html.wp-auth-route #publicLanding,
+    body.wp-login-route #publicLanding{display:none!important;visibility:hidden!important;pointer-events:none!important}
+    html.wp-auth-route #loginScreen,
+    body.wp-login-route #loginScreen{display:grid!important;visibility:visible!important}
+    html.wp-auth-route #washpilotApp,
     body.wp-login-route #washpilotApp{display:none!important}
   </style>
 </head>
 <body class="wp-page-app">
+<script id="wp-auth-route-boot">
+(function(){
+  const path=String(location.pathname||'/').replace(/\/+$/,'').toLowerCase()||'/';
+  if(path==='/signin'||path==='/login'){
+    // Set this before the legacy public section is parsed to prevent a second homepage flash.
+    document.documentElement.classList.add('wp-auth-route');
+    document.body.classList.add('wp-login-route');
+    document.body.dataset.washpilotLoginOpen='1';
+  }
+})();
+</script>
 
 <section class="wp-public" id="publicLanding" aria-label="WashPilot subscription landing page">
   <header class="wp-site-nav wp-home-nav">
@@ -2992,6 +3006,8 @@ function togglePublicMenu(){
  if(menu){const open=menu.classList.toggle('wp-menu-open');document.querySelector('.wp-menu-toggle')?.setAttribute('aria-expanded',String(open));}
 }
 function showLoginScreen(){
+ document.documentElement.classList.add('wp-auth-route');
+ document.body.classList.add('wp-login-route');
  const landing=document.getElementById('publicLanding'),login=document.getElementById('loginScreen');
  if(landing)landing.style.display='none';
  if(login){login.hidden=false;login.style.display='grid';}
@@ -3001,6 +3017,8 @@ function showLoginScreen(){
  const user=document.getElementById('loginUsername');if(user)user.focus({preventScroll:true});
 }
 function showLandingPage(){
+ document.documentElement.classList.remove('wp-auth-route');
+ document.body.classList.remove('wp-login-route');
  const landing=document.getElementById('publicLanding'),login=document.getElementById('loginScreen');
  if(landing)landing.style.display='block';
  if(login){login.hidden=true;login.style.display='none';}
@@ -3837,6 +3855,7 @@ function filterPublicFacilities(value){
  grid.innerHTML=rows.length?rows.map(renderPublicFacilityCard).join(''):'<div class="wp-directory-empty">No registered facilities match that search yet.</div>';
 }
 function showPublicFacilityPage(slug,mode){
+ document.documentElement.classList.remove('wp-auth-route');
  const landing=document.getElementById('publicLanding');if(landing)landing.style.display='block';
  const main=document.getElementById('top');if(main)Array.from(main.children).forEach(el=>el.style.display=el.id==='wp-booking-public-view'?'':'none');
  const view=document.getElementById('wp-booking-public-view');if(view)view.style.display='block';
@@ -4146,6 +4165,7 @@ async function submitPublicBooking(e){
     document.body.dataset.washpilotLoginOpen='0';
   }
   function showPublicPage(slug){
+    document.documentElement.classList.remove('wp-auth-route');
     const landing=document.getElementById('publicLanding');
     hideWorkspace();
     if(landing)landing.style.display='block';
@@ -4175,6 +4195,7 @@ async function submitPublicBooking(e){
     document.querySelector('.wp-menu-toggle')?.setAttribute('aria-expanded','false');
   }
   function showLoginRoute(){
+    document.documentElement.classList.add('wp-auth-route');
     const landing=document.getElementById('publicLanding');
     const login=document.getElementById('loginScreen');
     const app=document.getElementById('washpilotApp');
