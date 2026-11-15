@@ -1574,7 +1574,7 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
       
       <div class="login-mobile-brand"><img class="brand-lockup" src="washpilot-logo.svg" alt="WashPilot Management Solutions" /></div>
       <div class="login-heading"><div class="login-welcome">WELCOME BACK</div><h2 id="wpLoginHeading">Sign in to your account</h2><p id="wpLoginDescription">Use your registered email address and password to access your WashPilot account.</p></div>
-      <form id="loginForm" autocomplete="on" onsubmit="handleLogin(event); return false;">
+      <form id="loginForm" autocomplete="on" onsubmit="window.washPilotAccountLogin(event); return false;">
         <div class="login-field"><label id="wpLoginIdentityLabel" for="loginUsername">Email address</label><input class="login-input" id="loginUsername" name="email" type="email" placeholder="you@yourbusiness.com" autocomplete="email" required></div>
         <div class="login-field"><label for="loginPassword">Password</label><div class="login-input-wrap"><input class="login-input has-toggle" id="loginPassword" name="password" type="password" placeholder="Enter your password" autocomplete="current-password" required><button class="login-toggle" type="button" onclick="toggleLoginPassword()" id="loginPasswordToggle">Show</button></div></div>
         <div class="wp-forgot-row" id="wpForgotRow"><button type="button" onclick="openForgotPassword()">Forgot password?</button></div>
@@ -2208,30 +2208,8 @@ function setLoginRole(role){
 }
 function setStaffDemoRole(){setLoginRole('business')}
 function handleLogin(e){
- if(e&&typeof e.preventDefault==='function')e.preventDefault();
- const ui=document.getElementById('loginUsername'),pi=document.getElementById('loginPassword'),error=document.getElementById('loginError');
- const u=(ui?.value||'').trim().toLowerCase(),p=pi?.value||'';
- if(u!=='owner'||p!==demoPassword()){
-  error.textContent='The username or password is incorrect. Please check the Owner demo credentials.';
-  error.classList.add('show');return;
- }
- try{
-  currentRole='business';currentStaffRole='owner';
-  window.wpStorage.setItem('wp_view_mode',viewMode);
-  window.wpStorage.setItem('wp_demo_authenticated','1');
-  window.wpStorage.setItem('wp_demo_role','business');
-  window.wpStorage.setItem('wp_demo_staff_role','owner');
-  currentPage='dashboard';
-  error.classList.remove('show');
-  document.getElementById('loginScreen').style.display='none';
-  document.getElementById('washpilotApp').classList.remove('auth-hidden');
-  renderNav();render();
- }catch(err){
-  setWashPilotAuthVisibility(false);
-  error.textContent='The Owner demo could not load. Please reload and try again.';
-  error.classList.add('show');
-  console.error('WashPilot owner demo login error:',err);
- }
+ // Compatibility alias only. All sign-ins use the registered Supabase account flow.
+ if(typeof window.washPilotAccountLogin==='function')return window.washPilotAccountLogin(e);
 }
 function setWashPilotAuthVisibility(authenticated){
  const login=document.getElementById('loginScreen');
@@ -3229,23 +3207,9 @@ function openRealWorkspace(user,business,subscription){
     if(window.wpRealWorkspaceActive||window.wpRealPlatformAdminActive){try{await getClient().auth.signOut();}catch(err){console.warn('WashPilot sign-out:',err);}window.wpRealWorkspaceActive=false;window.wpRealPlatformAdminActive=false;window.wpRealBusinessId=null;window.wpStorage.removeItem('wp_real_business_id');window.location.reload();return;}
     if(typeof previousDemoLogout==='function')previousDemoLogout();
   };
-  window.handleLogin=async function(e){
+  window.washPilotAccountLogin=async function(e){
     if(e&&e.preventDefault)e.preventDefault();
-    if(authMode==='demo'){
-      const u=($('loginUsername')?.value||'').trim().toLowerCase(),p=$('loginPassword')?.value||'';
-      loginError('');
-      const keys={owner:{u:'owner',p:typeof demoPassword==='function'?demoPassword():''}};
-      const k='owner',acc=keys[k];
-      if(!acc||u!==acc.u||p!==acc.p)return loginError('The username or password is incorrect. Please check the selected demo workspace.');
-      try{
-        currentRole='business';currentStaffRole='owner';
-        if(['cashier','washer'].includes(k))viewMode='easy';
-        window.wpStorage.setItem('wp_demo_authenticated','1');window.wpStorage.setItem('wp_demo_role',currentRole);window.wpStorage.setItem('wp_demo_staff_role',currentStaffRole);
-        currentPage=k==='admin'?'platform':k==='washer'?'queue':'dashboard';
-        setWashPilotAuthVisibility(true);renderNav();render();
-      }catch(err){loginError(err.message||'Could not open the demo workspace.');}
-      return;
-    }
+    // Production sign-in always uses Supabase registered accounts; demo credentials are disabled.
     const email=($('loginUsername')?.value||'').trim().toLowerCase(),password=$('loginPassword')?.value||'';
     if(!email||!password)return loginError('Enter your email address and password.');
     const btn=$('loginSubmitButton');if(btn){btn.disabled=true;btn.textContent='Signing in…';}
@@ -3257,6 +3221,7 @@ function openRealWorkspace(user,business,subscription){
     }catch(err){loginError(err&&err.message?err.message:'We could not sign you in.');}
     finally{if(btn){btn.disabled=false;btn.innerHTML='Sign in <span aria-hidden="true">→</span>';}}
   };
+  window.handleLogin=window.washPilotAccountLogin;
 
   window.washPilotBillingApi = {
     async listAdminTenants(adminUserId){
