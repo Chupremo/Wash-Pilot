@@ -6,9 +6,9 @@ const signin=fs.readFileSync('signin.html','utf8');
 const pages=fs.readFileSync('washpilot-pages.js','utf8');
 const config=JSON.parse(fs.readFileSync('vercel.json','utf8'));
 
-const signinLinks=home.split('href="/signin"').length-1;
-assert.ok(signinLinks>=2,'Desktop and mobile homepage navigation should both use /signin.');
-assert.ok(!home.includes('href="/login"'),'Homepage must not send sign-in clicks to /login.');
+const loginLinks=home.split('href="/login"').length-1;
+assert.ok(loginLinks>=2,'Desktop and mobile homepage navigation should both use /login.');
+assert.ok(!home.includes('href="/signin"'),'Homepage should use the canonical /login route, not the old /signin alias.');
 
 const redirect=(source,destination)=>config.redirects.some(x=>x.source===source&&x.destination===destination);
 const rewrite=(source,destination)=>config.rewrites.some(x=>x.source===source&&x.destination===destination);
@@ -24,7 +24,8 @@ assert.ok(redirect('/pos','/new-wash'),'Old /pos alias should redirect to the in
 assert.ok(redirect('/home.html','/'),'Old duplicate homepage URL should redirect to the root homepage.');
 assert.ok(!redirect('/app.html','/'),'The integrated app entry must not redirect away from internal rewrites.');
 
-assert.ok(rewrite('/signin','/signin.html'),'Canonical sign-in must serve the dedicated login-only document.');
+assert.ok(rewrite('/login','/signin.html'),'Canonical /login must serve the dedicated login-only document.');
+assert.ok(!rewrite('/signin','/signin.html'),'The old /signin alias must redirect instead of creating a second rewrite path.');
 assert.ok(rewrite('/signup','/app.html'),'Canonical sign-up should load the integrated application.');
 assert.ok(rewrite('/dashboard','/app.html'),'Canonical dashboard should load the integrated application.');
 assert.ok(rewrite('/new-wash','/app.html'),'Canonical POS should load the integrated application.');
