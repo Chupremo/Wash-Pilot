@@ -11,7 +11,7 @@ async function main() {
 
   const workerFirst = new Set(config.assets.run_worker_first);
   const routes = [
-    "/signin", "/signup",
+    "/signin", "/login", "/signup",
     "/vendo-management", "/dashboard", "/new-wash", "/service-queue",
     "/transactions", "/customers", "/booking", "/bookings", "/facility-listing",
     "/services-pricing", "/add-on-analytics", "/employees", "/expenses",
@@ -44,10 +44,14 @@ async function main() {
     return worker.fetch(new Request("https://washpilot.shop" + path, { method }), env);
   }
 
-  const signinBefore = calls.length;
-  const signinResponse = await fetchPath("/signin");
-  assert.equal(signinResponse.status, 200, "Sign-in route should serve successfully.");
-  assert.equal(calls[signinBefore].path, "/signin.html", "Sign-in must load the dedicated auth-only HTML, not the shared landing shell.");
+  const oldSignin = await fetchPath("/signin");
+  assert.equal(oldSignin.status, 308, "The old /signin path should redirect once to /login.");
+  assert.equal(oldSignin.headers.get("location"), "https://washpilot.shop/login");
+
+  const loginBefore = calls.length;
+  const loginResponse = await fetchPath("/login");
+  assert.equal(loginResponse.status, 200, "Canonical /login should serve successfully.");
+  assert.equal(calls[loginBefore].path, "/signin.html", "Canonical /login must load the dedicated auth-only HTML, not the shared landing shell.");
 
   const directSigninFile = await fetchPath("/signin.html");
   assert.equal(directSigninFile.status, 200, "The sign-in HTML file should be served directly.");
@@ -82,7 +86,7 @@ async function main() {
   assert.equal(homepage.status, 200);
   assert.equal(calls.at(-1).path, "/", "The redesigned homepage must keep serving index.html.");
 
-  console.log("PASS: Cloudflare serves a dedicated sign-in page without a redirect loop, routes the remaining app through one app.html, keeps the new homepage/assets, and redirects old duplicate URLs.");
+  console.log("PASS: Cloudflare serves a dedicated login page without a redirect loop, routes the remaining app through one app.html, keeps the new homepage/assets, and redirects old duplicate URLs.");
 }
 
 main().catch(error => {
