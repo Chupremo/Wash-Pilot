@@ -78,6 +78,7 @@
       "/facility/*",
       "/book/*",
       "/login",
+      "/login/*",
       "/signin.html",
       "/signup.html",
       "/forgot",
