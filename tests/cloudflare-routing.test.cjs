@@ -8,6 +8,7 @@ async function main() {
   assert.equal(config.main, "./worker.mjs");
   assert.equal(config.assets.binding, "ASSETS");
   assert.equal(config.assets.not_found_handling, "single-page-application");
+  assert.equal(config.assets.html_handling, "none", "Cloudflare must preserve .html asset paths used by the dedicated login document.");
 
   const workerFirst = new Set(config.assets.run_worker_first);
   const routes = [
