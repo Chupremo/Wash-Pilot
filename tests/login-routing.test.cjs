@@ -2,6 +2,7 @@ const fs=require('node:fs');
 const assert=require('node:assert/strict');
 const home=fs.readFileSync('index.html','utf8');
 const app=fs.readFileSync('app.html','utf8');
+const signin=fs.readFileSync('signin.html','utf8');
 const pages=fs.readFileSync('washpilot-pages.js','utf8');
 const config=JSON.parse(fs.readFileSync('vercel.json','utf8'));
 
@@ -23,12 +24,12 @@ assert.ok(redirect('/pos','/new-wash'),'Old /pos alias should redirect to the in
 assert.ok(redirect('/home.html','/'),'Old duplicate homepage URL should redirect to the root homepage.');
 assert.ok(!redirect('/app.html','/'),'The integrated app entry must not redirect away from internal rewrites.');
 
-assert.ok(rewrite('/signin','/app.html'),'Canonical sign-in should load the integrated application.');
+assert.ok(rewrite('/signin','/signin.html'),'Canonical sign-in must serve the dedicated login-only document.');
 assert.ok(rewrite('/signup','/app.html'),'Canonical sign-up should load the integrated application.');
 assert.ok(rewrite('/dashboard','/app.html'),'Canonical dashboard should load the integrated application.');
 assert.ok(rewrite('/new-wash','/app.html'),'Canonical POS should load the integrated application.');
 
-for(const file of ['home.html','signin.html','signup.html','forgot.html','dashboard.html','pos.html']){
+for(const file of ['home.html','signup.html','forgot.html','dashboard.html','pos.html']){
   assert.equal(fs.existsSync(file),false,'Legacy standalone page must not be deployed at the root: '+file);
 }
 
@@ -44,6 +45,11 @@ assert.ok(app.includes('function dashboardPage(){'),'Dashboard must remain insid
 assert.ok(app.includes('function newWashPage(){'),'POS must remain inside the integrated application.');
 assert.ok(pages.includes(": '/dashboard';"),'Authenticated users must be sent to the integrated dashboard.');
 assert.ok(!pages.includes("'/dashboard.html'"),'Shared page helper must not route users to the standalone dashboard.');
+assert.equal((signin.match(/<section class="wp-public" id="publicLanding"/g)||[]).length,0,'Dedicated sign-in document must not contain the second public landing page.');
+assert.equal((signin.match(/id="loginScreen"/g)||[]).length,1,'Dedicated sign-in document must contain exactly one login screen.');
+assert.equal((signin.match(/id="washpilotApp"/g)||[]).length,1,'Dedicated sign-in document must keep the integrated app available after authentication.');
+assert.ok(signin.includes('auth.signInWithPassword({email,password})'),'Dedicated sign-in document must retain real Supabase authentication.');
+assert.ok(signin.includes('href="/">← Back to website</a>'),'Dedicated sign-in page must return directly to the canonical homepage.');
 assert.ok(app.includes("if(path==='/login'||path==='/signin'){"),'Integrated app must handle its canonical sign-in route.');
 assert.ok(app.includes('html.wp-auth-route #publicLanding,'),'The auth-only route CSS must be independent of late body route initialization.');
 assert.ok(app.includes("document.documentElement.classList.add('wp-auth-route');"),'Sign-in must establish its auth-only marker.');
