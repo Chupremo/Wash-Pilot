@@ -35,6 +35,18 @@ assert.match(html, /data-label="In progress" data-value="1"/);
 assert.match(html, /data-label="Completed" data-value="1"/);
 assert.doesNotMatch(html, /Average per vehicle/);
 assert.match(html, /id="wpDashboardBookingNotifications"/);
+assert.match(html, /id="wpDashboardSales"/);
+assert.ok(html.indexOf('id="wpDashboardSales"') < html.indexOf('id="wpDashboardToday"'), 'Sales over time should be the first dashboard summary section.');
+assert.ok(html.indexOf('id="wpDashboardSales"') < html.indexOf('id="wpDashboardQueue"'), 'Sales over time should appear above the live queue.');
+for (const page of ['app.html', 'signin.html']) {
+  const pageSource = fs.readFileSync(require('node:path').join(__dirname, '..', page), 'utf8');
+  const start = pageSource.indexOf('function dashboardPage(){');
+  const end = pageSource.indexOf('\nfunction paymentBreakdown(', start);
+  assert.ok(start >= 0 && end > start, page + ' must contain the dashboard renderer');
+  const dashboardSource = pageSource.slice(start, end);
+  assert.ok(dashboardSource.indexOf('id="wpDashboardSales"') < dashboardSource.indexOf('id="wpDashboardToday"'), page + ' should show Sales over time ahead of Today at a glance');
+}
+
 assert.match(html, /<subscription>/);
 const queue=html.slice(html.indexOf('id="wpDashboardQueue"'), html.indexOf('id="wpDashboardGuide"'));
 assert.match(queue, /ACTIVE/);
