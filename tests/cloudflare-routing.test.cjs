@@ -25,6 +25,7 @@ async function main() {
     assert.ok(workerFirst.has(route), "Cloudflare must invoke the Worker first for " + route);
     assert.ok(workerFirst.has(route + "/*"), "Cloudflare must invoke the Worker first for nested route " + route);
   }
+  assert.ok(workerFirst.has("/signin.html"), "Cloudflare should serve the sign-in HTML as a static asset.");
   assert.ok(workerFirst.has("/facility/*"));
   assert.ok(workerFirst.has("/book/*"));
 
@@ -47,6 +48,10 @@ async function main() {
   const signinResponse = await fetchPath("/signin");
   assert.equal(signinResponse.status, 200, "Sign-in route should serve successfully.");
   assert.equal(calls[signinBefore].path, "/signin.html", "Sign-in must load the dedicated auth-only HTML, not the shared landing shell.");
+
+  const directSigninFile = await fetchPath("/signin.html");
+  assert.equal(directSigninFile.status, 200, "The sign-in HTML file should be served directly.");
+  assert.equal(calls.at(-1).path, "/signin.html", "The sign-in HTML asset must not redirect back to /signin.");
 
   for (const path of ["/signup", "/dashboard", "/new-wash", "/service-queue", "/services-pricing", "/platform/overview", "/features", "/businesses", "/booking", "/facility/my-carwash", "/book/my-carwash?slot=10%3A00"]) {
     const before = calls.length;
@@ -77,7 +82,7 @@ async function main() {
   assert.equal(homepage.status, 200);
   assert.equal(calls.at(-1).path, "/", "The redesigned homepage must keep serving index.html.");
 
-  console.log("PASS: Cloudflare serves a dedicated sign-in page, routes the remaining app through one app.html, keeps the new homepage/assets, and redirects old duplicate URLs.");
+  console.log("PASS: Cloudflare serves a dedicated sign-in page without a redirect loop, routes the remaining app through one app.html, keeps the new homepage/assets, and redirects old duplicate URLs.");
 }
 
 main().catch(error => {
