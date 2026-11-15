@@ -14,7 +14,7 @@ const redirect=(source,destination)=>config.redirects.some(x=>x.source===source&
 const rewrite=(source,destination)=>config.rewrites.some(x=>x.source===source&&x.destination===destination);
 
 assert.ok(redirect('/login','/signin'),'Old /login URL should redirect to the canonical sign-in route.');
-assert.ok(redirect('/signin.html','/signin'),'Legacy sign-in URL should redirect to the integrated sign-in.');
+assert.ok(!redirect('/signin.html','/signin'),'The dedicated sign-in HTML must not redirect back to /signin or it creates a rewrite loop.');
 assert.ok(redirect('/signup.html','/signup'),'Legacy sign-up URL should redirect to the integrated sign-up.');
 assert.ok(redirect('/forgot','/signin'),'Legacy forgot-password URL should return to the unified sign-in.');
 assert.ok(redirect('/forgot.html','/signin'),'Legacy forgot-password file URL should return to the unified sign-in.');
