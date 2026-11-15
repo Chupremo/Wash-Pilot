@@ -29,14 +29,15 @@ context.totalCollectedBetween=(a,b)=>context.paidTransactionsBetween(a,b).reduce
 vm.createContext(context);
 vm.runInContext(source.slice(start,end),context);
 let html=context.dashboardPage();
-assert.match(html, /data-label="Sales collected" data-value="₱300"/);
-assert.match(html, /data-label="Vehicles registered" data-value="2"/);
-assert.match(html, /data-label="In progress" data-value="1"/);
-assert.match(html, /data-label="Completed" data-value="1"/);
+for (const label of ['Today’s Sales','Weekly Sales','Monthly Sales','Yearly Sales']) assert.ok(html.includes('data-label="'+label+'"'), label+' must remain available');
+assert.match(html, /data-label="Today’s Sales" data-value="₱300"/);
+assert.doesNotMatch(html, /Today at a glance|id="wpDashboardToday"/, 'Duplicate daily overview must not render');
+const dashboardCss=fs.readFileSync(require('node:path').join(__dirname,'../washpilot-design.css'),'utf8');
+assert.ok(dashboardCss.includes('.wp-page-app .wp-dashboard-periods{grid-template-columns:repeat(4,minmax(0,1fr))}'), 'Four sales cards must share a desktop row');
 assert.doesNotMatch(html, /Average per vehicle/);
 assert.match(html, /id="wpDashboardBookingNotifications"/);
 assert.match(html, /id="wpDashboardSales"/);
-assert.ok(html.indexOf('id="wpDashboardSales"') < html.indexOf('id="wpDashboardToday"'), 'Sales over time should be the first dashboard summary section.');
+assert.ok(html.indexOf('id="wpDashboardSales"') < html.indexOf('id="wpDashboardQueue"'), 'Sales over time should be the first dashboard summary section.');
 assert.ok(html.indexOf('id="wpDashboardSales"') < html.indexOf('id="wpDashboardQueue"'), 'Sales over time should appear above the live queue.');
 for (const page of ['app.html', 'signin.html']) {
   const pageSource = fs.readFileSync(require('node:path').join(__dirname, '..', page), 'utf8');
@@ -44,7 +45,7 @@ for (const page of ['app.html', 'signin.html']) {
   const end = pageSource.indexOf('\nfunction paymentBreakdown(', start);
   assert.ok(start >= 0 && end > start, page + ' must contain the dashboard renderer');
   const dashboardSource = pageSource.slice(start, end);
-  assert.ok(dashboardSource.indexOf('id="wpDashboardSales"') < dashboardSource.indexOf('id="wpDashboardToday"'), page + ' should show Sales over time ahead of Today at a glance');
+  assert.ok(!dashboardSource.includes('wpDashboardToday'), page + ' should not include the duplicate Today at a glance section');
 }
 
 assert.match(html, /<subscription>/);

@@ -371,9 +371,10 @@ img{max-width:100%}
 .wp-page-app .wp-dashboard-guide strong,.wp-page-app .wp-dashboard-guide small{display:block}
 .wp-page-app .wp-dashboard-guide strong{font-size:13px;color:#17243a}
 .wp-page-app .wp-dashboard-guide small{font-size:12px;line-height:1.5;color:#596a80;margin-top:3px}
-.wp-page-app .wp-dashboard-periods{grid-template-columns:repeat(3,minmax(0,1fr))}
+.wp-page-app .wp-dashboard-periods{grid-template-columns:repeat(4,minmax(0,1fr))}
 .wp-page-app .wp-dashboard-recent .table-wrap{margin:0}
 .wp-page-app .wp-dashboard-details{align-items:start}
+@media(min-width:761px) and (max-width:1100px){.wp-page-app .wp-dashboard-periods{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:900px){.wp-page-app .wp-dashboard-main-grid{grid-template-columns:1fr}}
 @media(max-width:760px){
  .wp-page-app .wp-dashboard{gap:18px}
@@ -1256,4 +1257,25 @@ body.wp-page-app .wp-public .wp-payment-instructions {
   background:#fff8e8!important;
   border:1px solid #f1d58e!important;
   color:#34445a!important;
+}
+
+
+/* Public facility listing: larger readable labels on desktop only.
+   Mobile compact pricing intentionally stays unchanged. */
+@media(min-width:901px){
+ #wpPublicFacilityContent .wp-facility-details-top{padding:32px!important}
+ #wpPublicFacilityContent .wp-facility-details-top .wp-summary-topline{font-size:13px;letter-spacing:.08em}
+ #wpPublicFacilityContent .wp-facility-details-top h3{font-size:28px}
+ #wpPublicFacilityContent .wp-facility-details-top .wp-summary-address{font-size:16px!important}
+ #wpPublicFacilityContent .wp-facility-details-top .wp-summary-hours{font-size:15px}
+ #wpPublicFacilityContent .wp-facility-details-top .wp-summary-hours b{font-size:19px}
+ #wpPublicFacilityContent .wp-facility-details-top .wp-summary-price{font-size:26px}
+ #wpPublicFacilityContent .wp-facility-details-top #wpPublicServiceList .wp-summary-compact-pricing [role="columnheader"]{font-size:14px!important;line-height:1.4!important;padding:14px 12px!important}
+ #wpPublicFacilityContent .wp-facility-details-top #wpPublicServiceList .wp-summary-compact-pricing [role="rowheader"]{font-size:16px!important;line-height:1.45!important;padding:17px 12px!important}
+ #wpPublicFacilityContent .wp-facility-details-top #wpPublicServiceList .wp-summary-compact-pricing [role="cell"]{font-size:16px!important;line-height:1.45!important;padding:17px 12px!important;font-weight:750}
+ #wpPublicFacilityContent .wp-facility-details-top #wpPublicServiceList .wp-summary-compact-pricing [role="rowheader"] ul{font-size:14px!important;line-height:1.6!important;margin-top:7px!important;padding-left:20px!important}
+ #wpPublicFacilityContent .wp-facility-details-top #wpPublicServiceList .wp-summary-compact-pricing [role="rowheader"] li{margin:3px 0!important}
+ #wpPublicFacilityContent .wp-facility-details-top .wp-summary-footnote{font-size:14px!important;line-height:1.6}
+ #wpPublicFacilityContent .wp-facility-details-top .wp-summary-payment>b{font-size:17px}
+ #wpPublicFacilityContent .wp-facility-details-top .wp-summary-payment p{font-size:15px!important;line-height:1.65}
 }
