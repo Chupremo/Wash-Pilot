@@ -50,6 +50,8 @@ assert.ok(app.includes("document.documentElement.classList.add('wp-auth-route');
 assert.ok(app.includes('<script id="wp-auth-route-boot">'),'Sign-in route must set the auth-only marker before the embedded public landing is parsed.');
 assert.ok(app.indexOf('<script id="wp-auth-route-boot">')<app.indexOf('<section class="wp-public" id="publicLanding"'),'Early auth route guard must precede the secondary public landing.');
 assert.ok(app.includes("document.documentElement.classList.remove('wp-auth-route');"),'Public routes must clear the auth-only marker when navigating away from sign-in.');
+assert.ok(app.includes('const authRoute=!!(window.wpRouteIsWorkspace||window.wpRouteIsLogin);'),'The no-session initializer must identify sign-in and protected app routes before showing public content.');
+assert.ok(app.includes("if(authRoute){")&&app.includes("if(authRoute&&typeof window.wpShowLoginForRoute==='function')"),'Unauthenticated protected routes must show login without reopening the embedded landing page.');
 assert.ok(app.includes("if(landing){landing.hidden=true;landing.style.setProperty('display','none','important');}"),'Sign-in route must forcibly hide the secondary public landing view.');
 assert.ok(app.includes("if(login){login.hidden=false;login.style.setProperty('display','grid','important');}"),'Sign-in route must show the actual login form.');
 
