@@ -2,6 +2,11 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "redirects": [
     {
+      "source": "/signin",
+      "destination": "/login",
+      "permanent": false
+    },
+    {
       "source": "/index.html",
       "destination": "/",
       "permanent": false
@@ -9,11 +14,6 @@
     {
       "source": "/home.html",
       "destination": "/",
-      "permanent": false
-    },
-    {
-      "source": "/login",
-      "destination": "/signin",
       "permanent": false
     },
     {
@@ -49,7 +49,7 @@
   ],
   "rewrites": [
     {
-      "source": "/signin",
+      "source": "/login",
       "destination": "/signin.html"
     },
     {
