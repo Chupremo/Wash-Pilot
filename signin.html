@@ -3564,7 +3564,7 @@ async listPublicFacilities(){const {data,error}=await getClient().rpc('list_publ
     }
     setAuthMode('account');
     if(bootstrapError){
-      const path=String(location.pathname||'/').replace(/\\/+$/,'').toLowerCase()||'/';
+      const path=String(location.pathname||'/').replace(/\/+$/,'').toLowerCase()||'/';
       const protectedPaths=['/vendo-management','/dashboard','/new-wash','/service-queue','/transactions','/customers','/bookings','/booking','/facility-listing','/services-pricing','/add-on-analytics','/employees','/expenses','/reports','/inventory','/branches','/loyalty-packages','/service-recipes','/shift-reconciliation','/subscription-billing','/business-management','/platform/overview','/platform/businesses','/platform/billing-revenue','/login','/signin'];
       if(protectedPaths.includes(path)&&!window.wpRealWorkspaceActive&&!window.wpRealPlatformAdminActive){
         const landing=$('publicLanding'),login=$('loginScreen'),app=$('washpilotApp');

@@ -1,6 +1,6 @@
 const fs=require('node:fs');
 const vm=require('node:vm');
-const inputs=['index.html','app.html'];
+const inputs=['index.html','app.html','signin.html'];
 let scriptCount=0;
 for(const name of inputs){
   const html=fs.readFileSync(name,'utf8');
@@ -12,4 +12,4 @@ for(const name of inputs){
   });
 }
 new vm.Script(fs.readFileSync('washpilot-home-features.js','utf8'),{filename:'washpilot-home-features.js'});
-console.log('PASS: parsed '+scriptCount+' inline JavaScript blocks across homepage and unified application, plus the homepage feature runtime.');
+console.log('PASS: parsed '+scriptCount+' inline JavaScript blocks across homepage, unified application and dedicated sign-in page, plus the homepage feature runtime.');
