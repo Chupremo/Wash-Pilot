@@ -3111,19 +3111,24 @@ window.submitTrialSignup=async function(e){
     if(businessError)throw new Error('Your business was found, but its workspace could not be loaded: '+businessError.message);
     const {data:subscription,error:subscriptionError}=await sb.from('subscriptions').select('plan_code,status,trial_starts_at,trial_ends_at,current_period_ends_at').eq('business_id',businessId).single();
     if(subscriptionError)throw new Error('Your business is available, but its subscription could not be loaded: '+subscriptionError.message);
+    // Open the POS workspace immediately after the account and subscription are verified.
+    // Facility catalogue hydration is deliberately non-blocking: a slow booking API must
+    // never leave the owner stuck on "Signing in…" after authentication has succeeded.
     openRealWorkspace(user,business,subscription);
     if(window.washPilotBookingApi){
-      try{
-        const localServices=typeof window.wpReadWorkspaceServices==='function'?window.wpReadWorkspaceServices():[];
-        let databaseServices=await window.washPilotBookingApi.getMyServices(businessId);
-        // Existing facility services are the source of truth for both POS and public booking.
-        // Migrate local-only catalogues only when no facility services exist yet.
-        if(!databaseServices.length&&localServices.length){
-          await window.washPilotBookingApi.syncServices(businessId,localServices);
-          databaseServices=await window.washPilotBookingApi.getMyServices(businessId);
-        }
-        if(databaseServices.length||!localServices.length)window.wpReplaceWorkspaceServices?.(databaseServices);
-      }catch(syncError){console.warn('Facility catalogue hydration deferred:',syncError.message||syncError);}
+      (async()=>{
+        try{
+          const localServices=typeof window.wpReadWorkspaceServices==='function'?window.wpReadWorkspaceServices():[];
+          let databaseServices=await window.washPilotBookingApi.getMyServices(businessId);
+          // Existing facility services are the source of truth for both POS and public booking.
+          // Migrate local-only catalogues only when no facility services exist yet.
+          if(!databaseServices.length&&localServices.length){
+            await window.washPilotBookingApi.syncServices(businessId,localServices);
+            databaseServices=await window.washPilotBookingApi.getMyServices(businessId);
+          }
+          if(databaseServices.length||!localServices.length)window.wpReplaceWorkspaceServices?.(databaseServices);
+        }catch(syncError){console.warn('Facility catalogue hydration deferred:',syncError.message||syncError);}
+      })();
     }
   }
   function removeDemoFixturesFromWorkspace(workspace){
