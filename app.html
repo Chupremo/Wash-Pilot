@@ -3622,7 +3622,7 @@ async listPublicFacilities(){const {data,error}=await getClient().rpc('list_publ
           '/platform/billing-revenue':'platformBilling'
         };
         const initialRequestedPage=initialPageByPath[initialPath]||null;
-        const routeNeedsWorkspace=!!initialRequestedPage||initialPath==='/login'||initialPath==='/signup';
+        const routeNeedsWorkspace=!!initialRequestedPage||initialPath==='/login'||initialPath==='/signin'||initialPath==='/signup';
         if(initialRequestedPage)window.wpRequestedRoutePage=initialRequestedPage;
         if(routeNeedsWorkspace)await activateTrial(data.session.user);
         else window.wpPublicSessionUser=data.session.user;
@@ -4113,7 +4113,7 @@ async function submitPublicBooking(e){
   let requestedAppPage = pageForCurrentPath();
   window.wpRequestedRoutePage=requestedAppPage||null;
   window.wpRouteIsWorkspace=!!requestedAppPage;
-  window.wpRouteIsLogin=normalize(location.pathname)==='/login';
+  window.wpRouteIsLogin=['/login','/signin'].includes(normalize(location.pathname));
   const isAuthenticated = () => !!(
     document.body.classList.contains('washpilot-authenticated') ||
     window.wpRealWorkspaceActive ||
@@ -4210,7 +4210,7 @@ async function submitPublicBooking(e){
       }
       return;
     }
-    if(path==='/login'){
+    if(path==='/login'||path==='/signin'){
       window.wpRequestedRoutePage=null;
       if(isAuthenticated()){
         requestedAppPage='dashboard';
@@ -4284,7 +4284,7 @@ async function submitPublicBooking(e){
     window.showLoginScreen=function(){
       requestedAppPage=null;
       window.wpRouteIsWorkspace=false;window.wpRouteIsLogin=true;
-      setPath('/login',false);
+      setPath('/signin',false);
       return originalShowLogin.apply(this,arguments);
     };
   }
@@ -4297,7 +4297,7 @@ async function submitPublicBooking(e){
     };
   }
 
-  const routePaths=new Set(['/','/features','/business','/businesses','/how-it-works','/pricing','/about','/faq','/contact','/login','/signup','/booking',...Object.values(pagePaths)]);
+  const routePaths=new Set(['/','/features','/business','/businesses','/how-it-works','/pricing','/about','/faq','/contact','/login','/signin','/signup','/booking',...Object.values(pagePaths)]);
   document.addEventListener('click',function(event){
     if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
     const anchor=event.target.closest&&event.target.closest('a[href]');

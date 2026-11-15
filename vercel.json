@@ -3,23 +3,23 @@
   "redirects": [
     {
       "source": "/signin.html",
-      "destination": "/login",
+      "destination": "/signin",
+      "permanent": false
+    },
+    {
+      "source": "/login",
+      "destination": "/signin",
       "permanent": false
     },
     {
       "source": "/dashboard.html",
       "destination": "/dashboard",
       "permanent": false
-    },
-    {
-      "source": "/signin",
-      "destination": "/login",
-      "permanent": false
     }
   ],
   "rewrites": [
     {
-      "source": "/login",
+      "source": "/signin",
       "destination": "/app.html"
     },
     {
