@@ -3337,7 +3337,7 @@ window.submitTrialSignup=async function(e){
 }
 function showAuthenticatedWorkspaceUI(){
   const routePaths={vendo:'/vendo-management',dashboard:'/dashboard',newwash:'/new-wash',queue:'/service-queue',transactions:'/transactions',customers:'/customers',bookings:'/bookings',listing:'/facility-listing',catalog:'/services-pricing',addons:'/add-on-analytics',employees:'/employees',expenses:'/expenses',reports:'/reports',inventory:'/inventory',branches:'/branches',loyalty:'/loyalty-packages',recipes:'/service-recipes',reconcile:'/shift-reconciliation',subscription:'/subscription-billing',managementHub:'/business-management',platform:'/platform/overview',tenants:'/platform/businesses',platformBilling:'/platform/billing-revenue'};
-  const page=window.wpRequestedRoutePage||'dashboard';
+  const page=window.wpRealPlatformAdminActive?'platform':(window.wpRequestedRoutePage||'dashboard');
   const destination=routePaths[page]||'/dashboard';
   window.wpRequestedRoutePage=routePaths[page]?page:'dashboard';
   window.wpRouteIsWorkspace=true;window.wpRouteIsLogin=false;
