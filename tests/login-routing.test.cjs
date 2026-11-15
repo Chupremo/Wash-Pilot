@@ -52,6 +52,14 @@ assert.ok(signin.includes("loginForm.addEventListener('submit'"),'Dedicated sign
 assert.ok(signin.includes('function cleanCredentialsFromUrl()'),'Dedicated sign-in page must remove credentials from auth query strings.');
 assert.ok(!signin.includes('onsubmit="window.washPilotAccountLogin(event); return false;"'),'Dedicated sign-in page must not rely on an inline login submit handler.');
 
+assert.ok(app.includes("loginForm.addEventListener('submit'"),'Integrated app sign-in must bind the form submit event explicitly.');
+assert.ok(app.includes('function cleanCredentialsFromUrl()'),'Integrated app must remove credentials from auth query strings.');
+assert.ok(!app.includes("if(authMode==='demo'){"),'Integrated app production sign-in must not expose the legacy Owner demo branch.');
+assert.ok(!app.includes('onsubmit="handleLogin(event); return false;"'),'Integrated app must not rely on the legacy inline login submit handler.');
+assert.ok(signin.includes("loginForm.addEventListener('submit'"),'Dedicated sign-in page must bind the form submit event explicitly.');
+assert.ok(signin.includes('function cleanCredentialsFromUrl()'),'Dedicated sign-in page must remove credentials from auth query strings.');
+assert.ok(!signin.includes('onsubmit="window.washPilotAccountLogin(event); return false;"'),'Dedicated sign-in page must not rely on an inline login submit handler.');
+
 assert.ok(app.includes('function dashboardPage(){'),'Dashboard must remain inside the integrated application.');
 assert.ok(app.includes('function newWashPage(){'),'POS must remain inside the integrated application.');
 assert.ok(pages.includes(": '/dashboard';"),'Authenticated users must be sent to the integrated dashboard.');
