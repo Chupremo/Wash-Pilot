@@ -25,5 +25,7 @@ jobs:
         run: node tests/login-routing.test.cjs
       - name: Parse all inline and homepage JavaScript
         run: node tests/inline-js-syntax.test.cjs
+      - name: Verify Cloudflare route dispatch
+        run: node tests/cloudflare-routing.test.cjs
       - name: Check homepage feature runtime syntax
         run: node --check washpilot-home-features.js

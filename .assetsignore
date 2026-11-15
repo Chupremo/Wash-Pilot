@@ -1,0 +1,6 @@
+worker.mjs
+wrangler.jsonc
+.assetsignore
+.github/
+docs/
+tests/
