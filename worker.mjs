@@ -36,7 +36,7 @@ const APP_ROUTES = new Set([
 ]);
 
 const LEGACY_REDIRECTS = new Map([
-  ["/login", "/signin"],
+  ["/signin", "/login"],
   ["/signup.html", "/signup"],
   ["/forgot", "/signin"],
   ["/forgot.html", "/signin"],
@@ -74,7 +74,7 @@ export default {
 
     // The canonical sign-in route has its own auth-only document. It contains the existing
     // Supabase login/workspace code but no embedded public landing-page markup.
-    if (path === "/signin") {
+    if (path === "/login") {
       const signinUrl = new URL(url);
       signinUrl.pathname = "/signin.html";
       return env.ASSETS.fetch(new Request(signinUrl, request));
