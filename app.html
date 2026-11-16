@@ -3301,36 +3301,57 @@ async function loadMyBillingRequests(){
   el.innerHTML=rows.length?'<div class="table-wrap"><table><thead><tr><th>Request</th><th>Plan</th><th>Amount</th><th>Method</th><th>Submitted</th><th>Status</th><th>Admin note</th></tr></thead><tbody>'+rows.map(r=>'<tr><td><b>'+esc(r.request_type==='renewal'?'Premium renewal':r.request_type==='upgrade'?'Premium request':'Payment request')+'</b></td><td>'+esc(planName(planRank(r.plan_code)))+'</td><td>'+money(r.amount)+'</td><td>'+esc(r.payment_method||'—')+'</td><td>'+dateLabel(String(r.submitted_at).slice(0,10))+'</td><td>'+statusPill(String(r.status).toUpperCase())+'</td><td>'+esc(r.reviewer_note||'—')+'</td></tr>').join('')+'</tbody></table></div>':'<div class="empty">No payment or renewal requests yet.</div>';
  }catch(err){el.innerHTML='<div class="empty">Payment request history is unavailable: '+esc(err.message)+'</div>';}
 }
-let wpPlatformPosRows=[],wpPlatformPosError='',wpPlatformPosLoading=false,wpPlatformPosLoaded=false,wpPlatformPosRange=30;
+let wpPlatformPosRows=[],wpPlatformBookingRows=[],wpPlatformPosError='',wpPlatformPosLoading=false,wpPlatformPosLoaded=false,wpPlatformPosRange='monthly';
 async function refreshPlatformPosUsage(){
  if(!window.wpRealPlatformAdminActive||!window.washPilotBillingApi?.listAdminPosUsage||wpPlatformPosLoading)return;
  wpPlatformPosLoading=true;wpPlatformPosError='';
- try{wpPlatformPosRows=await window.washPilotBillingApi.listAdminPosUsage();wpPlatformPosLoaded=true}
+ try{const result=await window.washPilotBillingApi.listAdminPosUsage();wpPlatformPosRows=result.pos;wpPlatformBookingRows=result.bookings;wpPlatformPosLoaded=true}
  catch(err){wpPlatformPosError=err?.message||String(err);wpPlatformPosLoaded=false}
  finally{wpPlatformPosLoading=false;if(currentRole==='platform')render()}
 }
 function platformPosUsagePanel(){
- const cutoff=isoAgo(wpPlatformPosRange-1),ts=platformData.tenants||[],byBusiness=new Map();
- const rows=wpPlatformPosRows.filter(r=>String(r.transaction_date)>=cutoff);
- for(const r of rows){
-  let b=byBusiness.get(r.business_id);
-  if(!b){b={receipts:0,paid:0,revenue:0,days:new Set(),last:''};byBusiness.set(r.business_id,b)}
-  b.receipts++;b.days.add(r.transaction_date);if(r.transaction_date>b.last)b.last=r.transaction_date;
-  if(r.financial_status==='Paid'){b.revenue+=Number(r.total_php||0);b.paid++}
+ const end=today();
+ let start=end;
+ if(wpPlatformPosRange==='weekly'){
+  const weekday=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Manila',weekday:'short'}).format(new Date(end+'T12:00:00+08:00'));
+  start=isoAgo(({Mon:0,Tue:1,Wed:2,Thu:3,Fri:4,Sat:5,Sun:6})[weekday]||0);
+ }else if(wpPlatformPosRange==='monthly')start=end.slice(0,7)+'-01';
+ else if(wpPlatformPosRange==='yearly')start=end.slice(0,4)+'-01-01';
+ const ts=platformData.tenants||[],byBusiness=new Map();
+ function item(id){if(!byBusiness.has(id))byBusiness.set(id,{posRevenue:0,posPaid:0,onlineRevenue:0,onlinePaid:0,activityDays:new Set(),last:'',posSeen:false});return byBusiness.get(id)}
+ for(const r of wpPlatformPosRows){
+  if(r.transaction_date<start||r.transaction_date>end)continue;
+  const b=item(r.business_id);b.posSeen=true;
+  b.activityDays.add(r.transaction_date);if(r.transaction_date>b.last)b.last=r.transaction_date;
+  if(r.financial_status==='Paid'){b.posRevenue+=Number(r.total_php||0);b.posPaid++}
  }
- const revenue=[...byBusiness.values()].reduce((v,b)=>v+b.revenue,0);
- const paid=[...byBusiness.values()].reduce((v,b)=>v+b.paid,0);
- const range='<select aria-label="POS reporting period" onchange="wpPlatformPosRange=Number(this.value);render()" style="max-width:150px">'+[7,30,90].map(n=>'<option value="'+n+'" '+(wpPlatformPosRange===n?'selected':'')+'>Last '+n+' days</option>').join('')+'</select>';
- const businesses=ts.map(t=>({t,m:byBusiness.get(t.id)})).sort((a,b)=>(b.m?.revenue||0)-(a.m?.revenue||0));
- const body=businesses.length?'<div class="table-wrap"><table><thead><tr><th>Business</th><th>Paid POS sales</th><th>Paid receipts</th><th>POS activity days</th><th>Last receipt</th><th>Usage status</th></tr></thead><tbody>'+businesses.map(({t,m})=>'<tr><td><b>'+esc(t.name)+'</b></td><td class="amount">'+money(m?.revenue||0)+'</td><td>'+(m?.paid||0)+'</td><td>'+(m?.days.size||0)+'</td><td>'+(m?.last?dateLabel(m.last):'—')+'</td><td>'+(!m?'Awaiting owner sync':m.days.size>=Math.max(3,Math.ceil(wpPlatformPosRange/7))?'Active':'Low activity')+'</td></tr>').join('')+'</tbody></table></div>':'<div class="empty">No registered businesses found.</div>';
- return '<section class="panel" style="margin-top:15px"><div class="panel-head"><div><h3>POS Usage & Revenue Monitor</h3><p class="subtle">Owner-reported walk-in POS activity · not verified bank deposits</p></div><div class="actions">'+range+'<button class="btn ghost small" onclick="refreshPlatformPosUsage()">↻ Refresh POS</button></div></div>'+
- (wpPlatformPosError?'<div role="alert" class="inline-note">Unable to load POS data: '+esc(wpPlatformPosError)+'</div>':'')+
- '<div class="grid stats">'+stat('Reported POS sales',money(revenue),'Paid receipts only','₱','green')+
- stat('Paid POS transactions',paid,'Across all businesses','▤')+
- stat('Businesses using POS',byBusiness.size,'At least one synced receipt','▣','purple')+
- stat('Businesses without synced data',Math.max(0,ts.length-byBusiness.size),'No synced receipts in this range','◷','amber')+'</div>'+
- (!wpPlatformPosLoaded?'<div class="inline-note">POS reporting has not loaded yet. Refresh POS to retry.</div>':'')+body+
- '<p class="subtle" style="margin-top:12px;line-height:1.6">Does not include online bookings or WashPilot subscription payments. Refunded, voided and unpaid tickets are excluded from sales. Previously stored receipts sync when owners sign in. The figures are self-reported and must not automatically qualify businesses for rewards.</p></section>';
+ for(const r of wpPlatformBookingRows){
+  if(!r.payment_verified_at||r.payment_status!=='verified'||['cancelled','refunded','rejected'].includes(String(r.status||'').toLowerCase()))continue;
+  const paymentDay=dateKey(new Date(r.payment_verified_at));
+  if(paymentDay<start||paymentDay>end)continue;
+  const b=item(r.business_id);
+  b.onlineRevenue+=Number(r.price_php||0);b.onlinePaid++;
+  b.activityDays.add(paymentDay);if(paymentDay>b.last)b.last=paymentDay;
+ }
+ const values=[...byBusiness.values()],pos=values.reduce((n,b)=>n+b.posRevenue,0),online=values.reduce((n,b)=>n+b.onlineRevenue,0);
+ const receipts=values.reduce((n,b)=>n+b.posPaid+b.onlinePaid,0);
+ const range='<select aria-label="Super Admin sales reporting period" onchange="wpPlatformPosRange=this.value;render()">'+
+  [['today','Today'],['weekly','Weekly'],['monthly','Monthly'],['yearly','Yearly']].map(x=>'<option value="'+x[0]+'" '+(wpPlatformPosRange===x[0]?'selected':'')+'>'+x[1]+'</option>').join('')+'</select>';
+ const businesses=ts.map(t=>({t,m:byBusiness.get(t.id)})).sort((a,b)=>((b.m?.posRevenue||0)+(b.m?.onlineRevenue||0))-((a.m?.posRevenue||0)+(a.m?.onlineRevenue||0)));
+ const body=businesses.length?'<div class="table-wrap"><table><thead><tr><th>Business</th><th>POS sales</th><th>Online sales</th><th>Total collected</th><th>Paid transactions</th><th>Last payment</th><th>Reporting</th></tr></thead><tbody>'+
+ businesses.map(({t,m})=>{
+  const synced=!!m?.posSeen,hasOnline=!!m?.onlinePaid;
+  const status=!synced&&!hasOnline?'No central receipts':!synced?'Online only · POS not synced':'Reporting';
+  return '<tr><td><b>'+esc(t.name)+'</b></td><td class="amount">'+(synced?money(m.posRevenue):'—')+'</td><td class="amount">'+money(m?.onlineRevenue||0)+'</td><td class="amount"><b>'+money((m?.posRevenue||0)+(m?.onlineRevenue||0))+'</b></td><td>'+((m?.posPaid||0)+(m?.onlinePaid||0))+'</td><td>'+(m?.last?dateLabel(m.last):'—')+'</td><td>'+esc(status)+'</td></tr>';
+ }).join('')+'</tbody></table></div>':'<div class="empty">No registered businesses found.</div>';
+ return '<section class="panel" style="margin-top:15px"><div class="panel-head"><div><h3>POS & Online Booking Revenue Monitor</h3><p class="subtle">Collected POS payments + verified online bookings · payment dates in Philippine time</p></div><div class="actions">'+range+'<button type="button" class="btn ghost small" onclick="refreshPlatformPosUsage()">↻ Refresh sales</button></div></div>'+
+ (wpPlatformPosError?'<div role="alert" class="inline-note">Could not refresh revenue records: '+esc(wpPlatformPosError)+'</div>':'')+
+ '<div class="grid stats">'+stat('Total collected',money(pos+online),'Recorded POS + verified online bookings','₱','green')+
+ stat('POS sales',money(pos),'Paid, centrally synced POS receipts','▤')+
+ stat('Online booking sales',money(online),'Verified payments only','✓','purple')+
+ stat('Paid transactions',receipts,'Combined paid receipts','◷','amber')+'</div>'+
+ (!wpPlatformPosLoaded?'<div class="inline-note">Reporting not loaded. Sales figures may be incomplete; refresh to retry.</div>':'')+
+ body+'<p class="subtle" style="margin-top:12px;line-height:1.6">Missing POS records are shown as unavailable, not proof of zero sales. Online sales come directly from verified Supabase bookings. POS sales remain business-reported until all transaction creation and payment updates are stored server-side. Unpaid, refunded and cancelled records are excluded. Subscription payments are separate. No rewards should be based on incomplete reports.</p></section>';
 }
 function platformDashboard(){
  const ts=Array.isArray(platformData.tenants)?platformData.tenants:[];
@@ -4022,11 +4043,23 @@ window.wpFinishAuthenticatedWorkspace=showAuthenticatedWorkspaceUI;
     },
     async listAdminPosUsage(){
       if(!window.wpRealPlatformAdminActive)throw new Error('Super Admin access required.');
-      const sb=getClient(),cutoff=new Date(Date.now()-90*86400000).toISOString().slice(0,10),rows=[];
-      for(let i=0;i<20000;i+=1000){
-       const {data,error}=await sb.from('pos_usage_receipts').select('business_id,receipt_id,transaction_date,total_php,financial_status,last_synced_at').gte('transaction_date',cutoff).order('transaction_date',{ascending:false}).order('receipt_id',{ascending:true}).range(i,i+999);
-       if(error)throw error;rows.push(...(data||[]));if(!data||data.length<1000)break;
-      }return rows;
+      const sb=getClient();
+      // Pull entire current calendar year so Today/Weekly/Monthly/Yearly use the same source.
+      const cutoff=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Manila',year:'numeric',month:'2-digit',day:'2-digit'}).slice(0,4)+'-01-01';
+      async function load(table,fields,filterColumn){
+        const rows=[],batchSize=1000;
+        for(let offset=0;offset<100000;offset+=batchSize){
+          let query=sb.from(table).select(fields).gte(filterColumn,cutoff).order(filterColumn,{ascending:false}).range(offset,offset+batchSize-1);
+          const {data,error}=await query;if(error)throw error;
+          rows.push(...(data||[]));if(!data||data.length<batchSize)return rows;
+        }
+        throw new Error('Reporting limit reached; narrow the data query before showing totals.');
+      }
+      const [pos,bookings]=await Promise.all([
+        load('pos_usage_receipts','business_id,receipt_id,transaction_date,total_php,financial_status,last_synced_at','transaction_date'),
+        load('facility_bookings','id,business_id,booking_code,price_php,payment_status,payment_verified_at,status','payment_verified_at')
+      ]);
+      return {pos,bookings};
     },
     async listAdminTenants(adminUserId){
       if(!adminUserId)throw new Error('The platform administrator session is missing.');
