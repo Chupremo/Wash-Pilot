@@ -17,6 +17,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Verify Facebook Messenger link previews
+        run: node tests/social-preview.test.cjs
       - name: Verify all authenticated navigation role initializations
         run: node tests/auth-nav-initialization.test.cjs
       - name: Verify sidebar and sign-in/out controls
