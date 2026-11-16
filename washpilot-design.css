@@ -1279,3 +1279,32 @@ body.wp-page-app .wp-public .wp-payment-instructions {
  #wpPublicFacilityContent .wp-facility-details-top .wp-summary-payment>b{font-size:17px}
  #wpPublicFacilityContent .wp-facility-details-top .wp-summary-payment p{font-size:15px!important;line-height:1.65}
 }
+
+
+/* WP Management Solutions — responsive light/dark logo rules */
+.wp-page-app .wp-site-brand,.wp-public .wp-site-brand,#publicLanding .wp-site-brand{display:flex;align-items:center;flex:0 1 174px;width:174px;max-width:174px;min-width:0;overflow:visible;white-space:normal}
+.wp-page-app .wp-site-brand img,.wp-public .wp-site-brand img,#publicLanding .wp-site-brand img{display:block;width:174px;max-width:100%;height:auto;max-height:90px;flex:0 1 174px;object-fit:contain;object-position:left center;background:transparent!important;border:0!important;border-radius:0!important;padding:0!important}
+.wp-page-app .wp-site-brand>span,.wp-public .wp-site-brand>span,#publicLanding .wp-site-brand>span{display:none!important}
+#publicLanding .wp-site-nav.wp-home-nav{min-height:92px!important}
+.wp-page-app .sidebar-brand-row .brand{display:block!important;min-width:0;max-width:100%;padding:0 2px!important}
+.wp-page-app .sidebar-brand-row .brand .brand-lockup{display:block!important;width:100%!important;max-width:205px!important;height:auto!important;max-height:none!important;object-fit:contain!important;object-position:left center!important;padding:0!important;background:transparent!important;border-radius:0!important}
+.wp-page-app .sidebar-brand-row .brand>span{display:none!important}
+.wp-page-app .login-brand .brand-lockup{width:min(100%,265px)!important;max-height:145px!important;height:auto!important;object-fit:contain!important;object-position:left center!important;background:transparent!important;padding:0!important;border-radius:0!important}
+.wp-page-app .login-mobile-brand .brand-lockup{width:min(100%,208px)!important;height:auto!important;max-height:115px!important;background:transparent!important;object-fit:contain!important;padding:0!important;border-radius:0!important}
+.wp-page-app .topbar-brand-icon{width:90px!important;min-width:0;flex:0 0 90px!important;height:50px!important;object-fit:contain!important;object-position:center!important;border-radius:0!important}
+.wp-page-app .wp-signup-brand img{width:min(100%,200px)!important;height:auto!important;max-height:110px!important;object-fit:contain!important;background:transparent!important;border-radius:0!important}
+.wp-page-app .wp-trial-brand img{width:195px!important;max-width:48%!important;height:auto!important;max-height:110px!important;object-fit:contain!important;background:transparent!important;border-radius:0!important}
+.wp-page-app .wp-footer-brand img{width:188px!important;max-width:100%;height:auto!important;object-fit:contain!important;border-radius:0!important}
+.wp-page-app .receipt-brand{width:min(100%,180px)!important;height:auto!important;max-width:75%!important;object-fit:contain!important;background:transparent!important;border-radius:0!important}
+@media(max-width:760px){
+ .wp-page-app .wp-site-brand,.wp-public .wp-site-brand,#publicLanding .wp-site-brand{width:153px;max-width:153px;flex:0 1 153px}
+ .wp-page-app .wp-site-brand img,.wp-public .wp-site-brand img,#publicLanding .wp-site-brand img{width:153px;max-width:100%;height:auto;max-height:82px;flex:0 1 153px}
+ #publicLanding .wp-site-nav.wp-home-nav{min-height:84px!important;gap:9px}
+ .wp-page-app .topbar-brand-icon{display:block!important;width:78px!important;flex-basis:78px!important;height:43px!important}
+}
+@media(max-width:380px){
+ .wp-page-app .wp-site-brand,.wp-public .wp-site-brand,#publicLanding .wp-site-brand{width:129px;max-width:129px;flex:0 1 129px}
+ .wp-page-app .wp-site-brand img,.wp-public .wp-site-brand img,#publicLanding .wp-site-brand img{width:129px;max-width:100%;flex:0 1 129px}
+ #publicLanding .wp-site-nav.wp-home-nav{gap:6px;padding-left:9px!important;padding-right:9px!important}
+ .wp-page-app .topbar-brand-icon{width:70px!important;flex-basis:70px!important;height:40px!important}
+}
