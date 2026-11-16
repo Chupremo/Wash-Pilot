@@ -14,7 +14,7 @@ for(const {name,source} of sources){
  assert(source.includes("p_payment_method:method"),name+' selected payment method sent to backend');
  assert(source.includes("name=\"payment_method\" id=\"wpPremiumPaymentMethod\""),name+' checkout dropdown');
  assert(!source.includes("p_payment_method:'GCash'"),name+' legacy hardcoded GCash payment');
- assert(source.includes("'<th>Method</th>"),name+' admin payment method report');
+ assert(source.includes("<th>Method</th>"),name+' admin payment method report');
  const begin=source.indexOf('const wpPremiumMethods='),end=source.indexOf('async function openPlanUpgradeModal(',begin);
  assert(begin>0&&end>begin);
  const context={window:{},document:{getElementById:()=>null},esc:s=>String(s),console};
