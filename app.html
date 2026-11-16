@@ -2052,20 +2052,63 @@ function wpBookingPaymentToTransaction(b){
   status:({pending:'Pending',confirmed:'Confirmed',completed:'Completed'})[String(b.status||'').toLowerCase()]||'Pending',
   financialStatus:'Paid',paidAt:verifiedAt,paymentDate:paidDate,employee:'Online booking',notes:b.notes||'',source:'online_booking'};
 }
+const wpOwnerPosReceipts={businessId:null,rows:[],loadedAt:0,error:'',request:null};
+function posRevenueProjection(r){
+ const paid=r.financial_status==='Paid';
+ return {id:String(r.receipt_id),date:String(r.transaction_date),paymentDate:String(r.transaction_date),
+  plate:'POS receipt',vehicle:'Saved on another device',main:'POS transaction',
+  mainPrice:Number(r.total_php||0),addons:[],total:Number(r.total_php||0),
+  payment:paid?'POS payment':'Not collected',financialStatus:r.financial_status,
+  status:r.wash_status||'Completed',source:'pos_synced',employee:'—'};
+}
 function reportTransactions(){
  const local=Array.isArray(state.transactions)?state.transactions:[];
  if(!window.wpRealWorkspaceActive||!window.wpRealBusinessId||window.wpTourSandboxActive)return local;
- if(wpBookingPayments.businessId!==window.wpRealBusinessId)return local;
  const seen=new Set(local.flatMap(t=>[String(t.bookingId||''),String(t.id||'')]).filter(Boolean));
- const online=(wpBookingPayments.rows||[]).filter(b=>String(b.payment_status||'verified').toLowerCase()==='verified' && b.payment_verified_at && !['cancelled','refunded','rejected'].includes(String(b.status||'').toLowerCase()))
-  .filter(b=>!seen.has(String(b.id))&&!seen.has(String(b.booking_code)))
-  .map(wpBookingPaymentToTransaction);
- return local.concat(online);
+ // Keep the local detail record when available; central POS fills in records
+ // created on other devices. Each receipt ID is counted at most once.
+ const remote=wpOwnerPosReceipts.businessId===window.wpRealBusinessId
+  ?wpOwnerPosReceipts.rows.filter(r=>!seen.has(String(r.receipt_id))).map(posRevenueProjection):[];
+ const all=local.concat(remote);
+ const known=new Set(all.flatMap(t=>[String(t.bookingId||''),String(t.id||'')]).filter(Boolean));
+ const online=wpBookingPayments.businessId===window.wpRealBusinessId
+  ?(wpBookingPayments.rows||[]).filter(b=>String(b.payment_status||'verified').toLowerCase()==='verified' && b.payment_verified_at && !['cancelled','refunded','rejected'].includes(String(b.status||'').toLowerCase()))
+   .filter(b=>!known.has(String(b.id))&&!known.has(String(b.booking_code))).map(wpBookingPaymentToTransaction):[];
+ return all.concat(online);
 }
 function bookingSalesNotice(){
  if(!window.wpRealWorkspaceActive)return '';
- if(wpBookingPayments.error)return '<div class="muted-box" role="alert" style="margin:12px 0;border-left:3px solid #d97706"><b>Online booking sales could not refresh.</b><p class="subtle" style="margin:4px 0 0">This report may be incomplete. Check the connection and refresh the page. '+esc(wpBookingPayments.error)+'</p></div>';
- return '';
+ const problems=[];
+ if(wpBookingPayments.error)problems.push('Online booking sales could not refresh: '+wpBookingPayments.error);
+ if(wpOwnerPosReceipts.error)problems.push('Central POS receipts could not refresh: '+wpOwnerPosReceipts.error);
+ const ready=wpBookingPayments.businessId===window.wpRealBusinessId&&wpOwnerPosReceipts.businessId===window.wpRealBusinessId&&wpBookingPayments.loadedAt&&wpOwnerPosReceipts.loadedAt;
+ if(!problems.length&&!ready)return '<div class="inline-note" role="status" style="margin:10px 0">Loading POS and verified online booking sales. Totals may be incomplete.</div>';
+ return problems.length?'<div class="muted-box" role="alert" style="margin:12px 0;border-left:3px solid #d97706"><b>Sales reconciliation incomplete.</b><p class="subtle" style="margin:4px 0 0">'+problems.map(esc).join(' · ')+'</p></div>':'';
+}
+async function refreshOwnerPosReceipts(force=false){
+ const businessId=window.wpRealBusinessId;
+ if(!window.wpRealWorkspaceActive||!businessId||window.wpTourSandboxActive||!window.washPilotBillingApi?.getMyPosReceipts)return [];
+ if(wpOwnerPosReceipts.businessId!==businessId){wpOwnerPosReceipts.businessId=businessId;wpOwnerPosReceipts.rows=[];wpOwnerPosReceipts.loadedAt=0;wpOwnerPosReceipts.error='';wpOwnerPosReceipts.request=null;}
+ if(wpOwnerPosReceipts.request)return wpOwnerPosReceipts.request;
+ if(!force&&wpOwnerPosReceipts.loadedAt&&Date.now()-wpOwnerPosReceipts.loadedAt<15000)return wpOwnerPosReceipts.rows;
+ const request=(async()=>{
+  try{
+   const rows=await window.washPilotBillingApi.getMyPosReceipts(businessId);
+   if(businessId!==window.wpRealBusinessId)return [];
+   wpOwnerPosReceipts.rows=Array.isArray(rows)?rows:[];wpOwnerPosReceipts.error='';wpOwnerPosReceipts.loadedAt=Date.now();
+   if(['dashboard','transactions','reports'].includes(currentPage)&&typeof render==='function')render();
+   return wpOwnerPosReceipts.rows;
+  }catch(err){
+   if(businessId===window.wpRealBusinessId){wpOwnerPosReceipts.error=err?.message||String(err);wpOwnerPosReceipts.loadedAt=Date.now();}
+   console.warn('Central POS receipts could not refresh:',err);
+   return [];
+  }finally{if(wpOwnerPosReceipts.request===request)wpOwnerPosReceipts.request=null;}
+ })();
+ wpOwnerPosReceipts.request=request;
+ return request;
+}
+async function refreshOwnerRevenue(force=false){
+ await Promise.all([refreshBookingPayments(force),refreshOwnerPosReceipts(force)]);
 }
 async function refreshBookingPayments(force=false){
  const businessId=window.wpRealBusinessId;
@@ -2355,7 +2398,7 @@ async function loadOnlineReservationQueue(force=false){
 function cycleStatus(id){let t=state.transactions.find(x=>x.id===id);if(!t)return;t.status=({Waiting:'Washing',Washing:'Completed',Completed:'Completed'})[t.status]||'Waiting';save();render();toast(`${t.plate} marked ${t.status}.`)}
 function transactionTable(list,showActions=true){
  if(!list.length)return '<div class="empty">No transactions found.</div>';
- return `<div class="table-wrap"><table><thead><tr><th>Receipt</th><th>Date</th><th>Vehicle</th><th>Service</th><th>Add-ons</th><th>Payment</th><th>Status</th><th>Total</th>${showActions?'<th></th>':''}</tr></thead><tbody>${list.map(t=>`<tr><td><b>${esc(t.id)}</b>${t.source==='online_booking'?'<br><small class="subtle">ONLINE BOOKING</small>':''}</td><td>${dateLabel(t.date)}</td><td><b>${esc(t.plate||'ONLINE')}</b><br><span class="subtle">${esc(t.vehicle||'')}</span></td><td>${esc(t.main)}</td><td>${(t.addons||[]).length?esc(t.addons.map(a=>a.name).join(', ')):'—'}</td><td>${esc(t.payment||'Not collected')}</td><td>${statusPill(t.status)}</td><td class="amount">${money(t.total)}</td>${showActions?(t.source==='online_booking'?'<td><small class="subtle">Managed in Bookings</small></td>':`<td><button class="btn ghost small" onclick="viewTransaction('${t.id}')">View</button></td>`):''}</tr>`).join('')}</tbody></table></div>`}
+ return `<div class="table-wrap"><table><thead><tr><th>Receipt</th><th>Date</th><th>Vehicle</th><th>Service</th><th>Add-ons</th><th>Payment</th><th>Status</th><th>Total</th>${showActions?'<th></th>':''}</tr></thead><tbody>${list.map(t=>`<tr><td><b>${esc(t.id)}</b>${t.source==='online_booking'?'<br><small class="subtle">ONLINE BOOKING</small>':t.source==='pos_synced'?'<br><small class="subtle">SYNCED POS</small>':''}</td><td>${dateLabel(t.date)}</td><td><b>${esc(t.plate||'ONLINE')}</b><br><span class="subtle">${esc(t.vehicle||'')}</span></td><td>${esc(t.main)}</td><td>${(t.addons||[]).length?esc(t.addons.map(a=>a.name).join(', ')):'—'}</td><td>${esc(t.payment||'Not collected')}</td><td>${statusPill(t.status)}</td><td class="amount">${money(t.total)}</td>${showActions?(t.source==='online_booking'?'<td><small class="subtle">Managed in Bookings</small></td>':t.source==='pos_synced'?'<td><small class="subtle">Central POS record</small></td>':`<td><button class="btn ghost small" onclick="viewTransaction('${t.id}')">View</button></td>`):''}</tr>`).join('')}</tbody></table></div>`}
 function transactionPeriodBounds(period=transactionPeriod){
  const end=today(),year=end.slice(0,4),month=end.slice(0,7);
  let start=end;
@@ -2395,10 +2438,10 @@ function transactionsPage(){
  const all=transactionPeriodRows();
  const list=all.filter(t=>[t.plate,t.id,t.main,...(t.addons||[]).map(a=>a.name)].join(' ').toLowerCase().includes(transactionSearch.toLowerCase()));
  const period=transactionPeriodBounds();
- const incomplete=window.wpRealWorkspaceActive&&wpBookingPayments.businessId!==window.wpRealBusinessId;
+ const incomplete=window.wpRealWorkspaceActive&&(!wpBookingPayments.loadedAt||!wpOwnerPosReceipts.loadedAt||wpBookingPayments.businessId!==window.wpRealBusinessId||wpOwnerPosReceipts.businessId!==window.wpRealBusinessId);
  return `${pageHead('Transactions','Paid sales use payment collection date (Philippine time). Includes POS and verified online bookings.',`<button class="btn" onclick="go('newwash')">＋ New Wash</button>`)}
- <section class="panel" style="margin-bottom:14px"><div class="toolbar">${transactionPeriodTabs()}<span class="subtle">${dateLabel(period.start)} – ${dateLabel(period.end)}</span><button class="btn ghost small" type="button" onclick="refreshBookingPayments(true)">↻ Refresh booking sales</button></div>
- ${bookingSalesNotice()}${incomplete?'<div class="inline-note">Loading verified online booking payments. Figures may be incomplete until loading finishes.</div>':''}
+ <section class="panel" style="margin-bottom:14px"><div class="toolbar">${transactionPeriodTabs()}<span class="subtle">${dateLabel(period.start)} – ${dateLabel(period.end)}</span><button class="btn ghost small" type="button" onclick="refreshOwnerRevenue(true)">↻ Refresh sales</button></div>
+ ${bookingSalesNotice()}${incomplete?'<div class="inline-note">Loading central POS and verified online booking payments. Figures may be incomplete until loading finishes.</div>':''}
  ${transactionPeriodKpis(all)}
  <p class="subtle" style="margin:9px 0 0">Revenue counts collected POS payments and verified online payments once per receipt. Future bookings are counted when their payment is verified, not on the scheduled wash date. Unpaid and refunded tickets remain in the transaction list but are excluded from revenue.</p></section>
  ${posUsageSyncNotice()}
@@ -2549,6 +2592,7 @@ window.wpSyncPosUsage=async function(){
  total_php:Math.max(0,Number(t.total||0)),financial_status:t.financialStatus==='Refunded'?'Refunded':t.status==='Cancelled'?'Void':isPaymentCollected(t)?'Paid':'Unpaid',wash_status:String(t.status||'Waiting')}));
  try{
   await window.washPilotBillingApi.syncPosUsage(businessId,rows);
+  refreshOwnerPosReceipts(true);
   window.wpPosUsageSyncError='';window.wpPosLastSyncedAt=new Date().toISOString();window.wpPosLastSyncedCount=rows.length;wpPosRetryAttempt=0;
  }catch(err){
   window.wpPosUsageSyncError=err?.message||String(err);
@@ -3165,8 +3209,8 @@ function startBookingNotificationMonitor(){
  wpPendingBookingVerificationCount=0;
  wpBookingNotificationInitialized=false;
  refreshBookingNotificationCount();
- refreshBookingPayments(true);
- wpBookingNotificationTimer=window.setInterval(()=>{refreshBookingNotificationCount();refreshBookingPayments(true);if(currentPage==='queue')loadOnlineReservationQueue(true);},20000);
+ refreshOwnerRevenue(true);
+ wpBookingNotificationTimer=window.setInterval(()=>{refreshBookingNotificationCount();refreshOwnerRevenue(true);if(currentPage==='queue')loadOnlineReservationQueue(true);},20000);
 }
 function stopBookingNotificationMonitor(){
  if(wpBookingNotificationTimer)window.clearInterval(wpBookingNotificationTimer);
@@ -4035,6 +4079,20 @@ window.wpFinishAuthenticatedWorkspace=showAuthenticatedWorkspaceUI;
       return {endsAt,subscription};
     },
 
+    async getMyPosReceipts(businessId){
+      const id=businessId||window.wpRealBusinessId;
+      if(!id||id!==window.wpRealBusinessId)throw new Error('Your business workspace is not ready.');
+      const sb=getClient(),rows=[],batchSize=500;
+      for(let offset=0;offset<100000;offset+=batchSize){
+       const {data,error}=await sb.from('pos_usage_receipts')
+         .select('receipt_id,transaction_date,total_php,financial_status,wash_status,last_synced_at')
+         .eq('business_id',id).order('transaction_date',{ascending:false})
+         .order('receipt_id',{ascending:true}).range(offset,offset+batchSize-1);
+       if(error)throw error;
+       rows.push(...(data||[]));if(!data||data.length<batchSize)return rows;
+      }
+      throw new Error('POS reporting limit exceeded; cannot calculate a complete total.');
+    },
     async syncPosUsage(businessId,rows){
       if(!businessId||businessId!==window.wpRealBusinessId)throw new Error('Business session is not ready.');
       const sb=getClient();
