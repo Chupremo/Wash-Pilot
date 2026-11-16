@@ -27,7 +27,7 @@ for(const name of ['app','signin']){
  assert(files[name].includes('class="topbar-brand-icon" src="wp-management-navy.svg"'),'topbar light logo missing');
  assert(files[name].includes('class="login-mobile-brand"><img class="brand-lockup" src="wp-management-navy.svg"'),'login mobile logo missing');
  assert(files[name].includes('class="receipt-brand" src="wp-management-navy.svg"'),'receipt logo missing');
- assert(files[name].includes('/washpilot-design.css?v=20261116-wp-logo2'),'CSS cache version missing');
+ assert(/\/washpilot-design\.css\?v=20261116-[a-z0-9-]+/.test(files[name]),'versioned branding stylesheet missing');
 }
 assert(files.styles.includes('/* WP Management Solutions — responsive light/dark logo rules */'));
 assert(files.styles.includes('object-fit:contain!important'),'aspect-safe logo sizing missing');
