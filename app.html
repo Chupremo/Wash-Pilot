@@ -2355,7 +2355,7 @@ function cycleStatus(id){let t=state.transactions.find(x=>x.id===id);if(!t)retur
 function transactionTable(list,showActions=true){
  if(!list.length)return '<div class="empty">No transactions found.</div>';
  return `<div class="table-wrap"><table><thead><tr><th>Receipt</th><th>Date</th><th>Vehicle</th><th>Service</th><th>Add-ons</th><th>Payment</th><th>Status</th><th>Total</th>${showActions?'<th></th>':''}</tr></thead><tbody>${list.map(t=>`<tr><td><b>${esc(t.id)}</b>${t.source==='online_booking'?'<br><small class="subtle">ONLINE BOOKING</small>':''}</td><td>${dateLabel(t.date)}</td><td><b>${esc(t.plate||'ONLINE')}</b><br><span class="subtle">${esc(t.vehicle||'')}</span></td><td>${esc(t.main)}</td><td>${(t.addons||[]).length?esc(t.addons.map(a=>a.name).join(', ')):'—'}</td><td>${esc(t.payment||'Not collected')}</td><td>${statusPill(t.status)}</td><td class="amount">${money(t.total)}</td>${showActions?(t.source==='online_booking'?'<td><small class="subtle">Managed in Bookings</small></td>':`<td><button class="btn ghost small" onclick="viewTransaction('${t.id}')">View</button></td>`):''}</tr>`).join('')}</tbody></table></div>`}
-function transactionsPage(){let list=reportTransactions().filter(t=>[t.plate,t.id,t.main,...(t.addons||[]).map(a=>a.name)].join(' ').toLowerCase().includes(transactionSearch.toLowerCase()));return `${pageHead('Transactions','POS receipts and verified online booking payments.',`<button class="btn" onclick="go('newwash')">＋ New Wash</button>`)}${dailyKpiStrip()}<section class="panel"><div class="toolbar"><input class="search" style="max-width:320px" placeholder="Search plate, receipt or service..." value="${esc(transactionSearch)}" oninput="transactionSearch=this.value;render()"><span class="subtle">${list.length} records</span><button class="btn ghost small" onclick="exportTransactions()">↓ Export CSV</button></div>${transactionTable(list)}</section>`}
+function transactionsPage(){let list=reportTransactions().filter(t=>[t.plate,t.id,t.main,...(t.addons||[]).map(a=>a.name)].join(' ').toLowerCase().includes(transactionSearch.toLowerCase()));return `${pageHead('Transactions','POS receipts and verified online booking payments.',`<button class="btn" onclick="go('newwash')">＋ New Wash</button>`)}${dailyKpiStrip()}${posUsageSyncNotice()}<section class="panel"><div class="toolbar"><input class="search" style="max-width:320px" placeholder="Search plate, receipt or service..." value="${esc(transactionSearch)}" oninput="transactionSearch=this.value;render()"><span class="subtle">${list.length} records</span><button class="btn ghost small" onclick="exportTransactions()">↓ Export CSV</button></div>${transactionTable(list)}</section>`}
 function viewTransaction(id){let t=state.transactions.find(x=>x.id===id);if(t)openReceipt(t)}
 function catalogPriceCells(s){if(s.type!=='main')return `<td class="amount">${money(s.price)}</td>`;return ['Small','Medium','Large','XL'].map(size=>`<td class="amount">${money(servicePriceForSize(s,size))}</td>`).join('')}
 function catalogPage(){
@@ -2483,10 +2483,26 @@ window.wpSyncPosUsage=async function(){
  const rows=(state.transactions||[]).filter(t=>t?.id&&t.source!=='online_booking'&&!/^WP-100[0-4]$/.test(String(t.id))).map(t=>({
  business_id:businessId,receipt_id:String(t.id),transaction_date:paymentDateOf(t)||ticketDateOf(t)||today(),
  total_php:Math.max(0,Number(t.total||0)),financial_status:t.financialStatus==='Refunded'?'Refunded':t.status==='Cancelled'?'Void':isPaymentCollected(t)?'Paid':'Unpaid',wash_status:String(t.status||'Waiting')}));
- try{await window.washPilotBillingApi.syncPosUsage(businessId,rows);window.wpPosUsageSyncError=''}
+ try{await window.washPilotBillingApi.syncPosUsage(businessId,rows);window.wpPosUsageSyncError='';window.wpPosLastSyncedAt=new Date().toISOString();window.wpPosLastSyncedCount=rows.length;}
  catch(err){window.wpPosUsageSyncError=err?.message||String(err);console.warn('POS sync failed:',err)}
  finally{wpPosSyncBusy=false;if(wpPosDirty)schedulePosUsageSync()}
 };
+async function syncPosUsageNow(){
+ if(!window.wpRealWorkspaceActive){toast('Sign in to your business account to sync POS receipts.');return}
+ if(wpPosSyncBusy){toast('POS sync is already running.');return}
+ await window.wpSyncPosUsage();
+ if(window.wpPosUsageSyncError)toast('POS sync failed: '+window.wpPosUsageSyncError);
+ else toast('POS reporting synced: '+Number(window.wpPosLastSyncedCount||0)+' receipt(s).');
+ if(currentPage==='transactions')render();
+}
+function posUsageSyncNotice(){
+ if(!window.wpRealWorkspaceActive)return '';
+ return '<div class="inline-note" style="margin-bottom:12px"><b>Super Admin POS reporting</b> · '+
+ (window.wpPosUsageSyncError?'<span role="alert">Sync failed: '+esc(window.wpPosUsageSyncError)+'</span>':
+ window.wpPosLastSyncedAt?'Last successful sync: '+esc(new Date(window.wpPosLastSyncedAt).toLocaleString('en-PH'))+' · '+Number(window.wpPosLastSyncedCount||0)+' receipts':
+ 'Not synced yet on this device')+
+ ' <button type="button" class="btn ghost small" onclick="syncPosUsageNow()" style="margin-left:8px">Sync POS receipts</button></div>';
+}
 function demoPassword(){return window.wpStorage.getItem('wp_demo_password')||window.wpStorage.getItem('wb_demo_password')||''}
 function setLoginRole(role){
  // Login is for registered accounts. Never prefill demo owner credentials.
@@ -3229,13 +3245,13 @@ function platformPosUsagePanel(){
  const paid=[...byBusiness.values()].reduce((v,b)=>v+b.paid,0);
  const range='<select aria-label="POS reporting period" onchange="wpPlatformPosRange=Number(this.value);render()" style="max-width:150px">'+[7,30,90].map(n=>'<option value="'+n+'" '+(wpPlatformPosRange===n?'selected':'')+'>Last '+n+' days</option>').join('')+'</select>';
  const businesses=ts.map(t=>({t,m:byBusiness.get(t.id)})).sort((a,b)=>(b.m?.revenue||0)-(a.m?.revenue||0));
- const body=businesses.length?'<div class="table-wrap"><table><thead><tr><th>Business</th><th>Paid POS sales</th><th>Paid receipts</th><th>POS activity days</th><th>Last receipt</th><th>Usage status</th></tr></thead><tbody>'+businesses.map(({t,m})=>'<tr><td><b>'+esc(t.name)+'</b></td><td class="amount">'+money(m?.revenue||0)+'</td><td>'+(m?.paid||0)+'</td><td>'+(m?.days.size||0)+'</td><td>'+(m?.last?dateLabel(m.last):'—')+'</td><td>'+(!m?'No synced data':m.days.size>=Math.max(3,Math.ceil(wpPlatformPosRange/7))?'Active':'Low activity')+'</td></tr>').join('')+'</tbody></table></div>':'<div class="empty">No registered businesses found.</div>';
+ const body=businesses.length?'<div class="table-wrap"><table><thead><tr><th>Business</th><th>Paid POS sales</th><th>Paid receipts</th><th>POS activity days</th><th>Last receipt</th><th>Usage status</th></tr></thead><tbody>'+businesses.map(({t,m})=>'<tr><td><b>'+esc(t.name)+'</b></td><td class="amount">'+money(m?.revenue||0)+'</td><td>'+(m?.paid||0)+'</td><td>'+(m?.days.size||0)+'</td><td>'+(m?.last?dateLabel(m.last):'—')+'</td><td>'+(!m?'Awaiting owner sync':m.days.size>=Math.max(3,Math.ceil(wpPlatformPosRange/7))?'Active':'Low activity')+'</td></tr>').join('')+'</tbody></table></div>':'<div class="empty">No registered businesses found.</div>';
  return '<section class="panel" style="margin-top:15px"><div class="panel-head"><div><h3>POS Usage & Revenue Monitor</h3><p class="subtle">Owner-reported walk-in POS activity · not verified bank deposits</p></div><div class="actions">'+range+'<button class="btn ghost small" onclick="refreshPlatformPosUsage()">↻ Refresh POS</button></div></div>'+
  (wpPlatformPosError?'<div role="alert" class="inline-note">Unable to load POS data: '+esc(wpPlatformPosError)+'</div>':'')+
  '<div class="grid stats">'+stat('Reported POS sales',money(revenue),'Paid receipts only','₱','green')+
  stat('Paid POS transactions',paid,'Across all businesses','▤')+
  stat('Businesses using POS',byBusiness.size,'At least one synced receipt','▣','purple')+
- stat('Businesses without activity',Math.max(0,ts.length-byBusiness.size),'No synced receipts in this range','◷','amber')+'</div>'+
+ stat('Businesses without synced data',Math.max(0,ts.length-byBusiness.size),'No synced receipts in this range','◷','amber')+'</div>'+
  (!wpPlatformPosLoaded?'<div class="inline-note">POS reporting has not loaded yet. Refresh POS to retry.</div>':'')+body+
  '<p class="subtle" style="margin-top:12px;line-height:1.6">Does not include online bookings or WashPilot subscription payments. Refunded, voided and unpaid tickets are excluded from sales. Previously stored receipts sync when owners sign in. The figures are self-reported and must not automatically qualify businesses for rewards.</p></section>';
 }
