@@ -1595,10 +1595,10 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
 @media(max-width:600px){.wp-billing-fields,.wp-payment-method-info{grid-template-columns:1fr}.wp-payment-method-info img{width:180px;height:180px}}
 
 </style>
-<link rel="stylesheet" href="/washpilot-design.css?v=20261116-wp-logo2">
+<link rel="stylesheet" href="/washpilot-design.css?v=20261116-fullsidebar-logout1">
 <script src="/washpilot-accessibility.js?v=20261117" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/washpilot-home.css?v=20261115-1">
+<link rel="stylesheet" href="/washpilot-home.css?v=20261116-login-1">
 <script src="/washpilot-home-features.js?v=20261115-1" defer></script>
   <style id="wp-single-signin-screen-fix">
     html.wp-auth-route #publicLanding,
@@ -1626,9 +1626,9 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
   <header class="wp-site-nav wp-home-nav">
     <a class="wp-site-brand" href="/" aria-label="WashPilot home"><img src="wp-management-white.svg" alt=""><span>WashPilot<small>CARWASH MANAGEMENT</small></span></a>
     <nav class="wp-site-links" id="publicNavigation" aria-label="Main navigation">
-      <a href="#wp-features">Features</a><a href="/businesses">Businesses</a><a href="#wp-home-demo">How it works</a><a href="#wp-pricing">Pricing</a><a href="#wp-about">About</a><a href="#wp-faq">FAQ</a><a href="#wp-contact">Contact</a>
+      <a href="#wp-features">Features</a><a href="/businesses">Businesses</a><a href="#wp-home-demo">How it works</a><a href="#wp-pricing">Pricing</a><a href="#wp-about">About</a><a href="#wp-faq">FAQ</a><a href="#wp-contact">Contact</a><button class="wp-public-mobile-login" type="button" onclick="showLoginScreen()">Log in</button>
     </nav>
-    <div class="wp-nav-actions"><button class="wp-home-signin" type="button" onclick="showLoginScreen()">Sign in</button><a class="wp-nav-cta" href="/signup">Start free</a><button class="wp-menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="publicNavigation" onclick="togglePublicMenu()">☰</button></div>
+    <div class="wp-nav-actions"><button class="wp-home-signin" type="button" onclick="showLoginScreen()">Log in</button><a class="wp-nav-cta" href="/signup">Start free</a><button class="wp-menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="publicNavigation" onclick="togglePublicMenu()">☰</button></div>
   </header>
 
   <main id="top">
@@ -1832,7 +1832,7 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
 <main class="main">
 <header class="topbar">
   <div class="topbar-left" style="display:flex;align-items:center;gap:10px"><button class="mobile-menu" type="button" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false" onclick="toggleSidebar()">☰</button><img class="topbar-brand-icon" src="wp-management-navy.svg" alt="WashPilot" /><div class="crumb" id="crumb">Dashboard<small id="crumbSub">Welcome back! Here's your business overview.</small></div></div>
-  <div class="top-actions"><button class="pill wp-tour-launch" id="wpTourLaunch" type="button" onclick="openWashPilotTourChooser()" title="Choose a guided walkthrough">▶ Guide</button><button class="avatar" type="button" onclick="logoutDemo()" title="Sign out" aria-label="Sign out">BO</button></div>
+  <div class="top-actions"><button class="pill wp-tour-launch" id="wpTourLaunch" type="button" onclick="openWashPilotTourChooser()" title="Choose a guided walkthrough">▶ Guide</button><button class="wp-topbar-logout" type="button" onclick="window.logoutDemo()" title="Log out of WashPilot" aria-label="Log out of WashPilot"><svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg><span>Log out</span></button></div>
 </header>
 <div class="content" id="content"></div>
 </main>

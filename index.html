@@ -251,6 +251,11 @@ footer{background:#030d1f;color:var(--muted);padding-block:36px;font-size:.97rem
 footer .foot img{display:block;width:180px!important;height:auto!important;max-height:100px;object-fit:contain}
 @media(max-width:520px){.nav{padding-left:14px;gap:8px}.nav .logo img{width:131px!important;max-height:69px}}
 
+
+/* Visible Log in action in the public desktop navigation */
+.nav-cta .signin{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:8px 18px;border:1px solid rgba(255,255,255,.3);border-radius:999px;background:rgba(255,255,255,.07);color:#fff;text-decoration:none;font-weight:700;white-space:nowrap;transition:background .2s,border-color .2s}
+.nav-cta .signin:hover{background:rgba(255,255,255,.17);border-color:rgba(255,255,255,.6)}
+@media(max-width:900px){.nav-cta .signin{display:none}}
 </style>
 </head>
 <body>
@@ -270,7 +275,7 @@ footer .foot img{display:block;width:180px!important;height:auto!important;max-h
       </ul>
     </nav>
     <div class="nav-cta">
-      <a class="signin" href="/login">Sign in</a>
+      <a class="signin" href="/login">Log in</a>
       <a class="btn btn-sign" href="/signup">Start free</a>
       <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="sheet" aria-label="Open menu"><span></span></button>
     </div>
@@ -289,7 +294,7 @@ footer .foot img{display:block;width:180px!important;height:auto!important;max-h
     </nav>
     <div class="sheet-actions">
       <a class="btn btn-sign" href="/signup">Create a free account</a>
-      <a class="btn btn-glass" href="/login">Sign in</a>
+      <a class="btn btn-glass" href="/login">Log in</a>
       <a class="btn btn-glass" href="https://www.facebook.com/share/1A7fsQu9Wt/?mibextid=wwXIfr" target="_blank" rel="noopener">Contact support on Facebook</a>
     </div>
   </div>

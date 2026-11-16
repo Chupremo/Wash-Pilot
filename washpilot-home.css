@@ -592,3 +592,9 @@
   #publicLanding .wp-home-3d-fallback { opacity:1!important; }
   #publicLanding #wp-home-scene { display:none!important; }
 }
+
+
+/* Explicit Log in in the collapsed public navigation */
+#publicLanding .wp-public-mobile-login{display:none;align-items:center;justify-content:center;min-height:46px;border:1px solid rgba(255,255,255,.24);border-radius:11px;padding:10px 14px;background:rgba(255,255,255,.07);color:#fff;text-align:center;font-size:14px;font-weight:750;cursor:pointer}
+#publicLanding .wp-public-mobile-login:hover{background:rgba(255,255,255,.15)}
+@media(max-width:900px){#publicLanding .wp-site-links.wp-menu-open .wp-public-mobile-login{display:flex}}
