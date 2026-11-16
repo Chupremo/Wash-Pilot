@@ -2274,6 +2274,30 @@ function subscriptionStatusBanner(){
  return '<section class="wp-client-subscription-banner is-free"><div class="wp-client-subscription-main"><span class="wp-client-subscription-kicker">FREE PLAN</span><b>Free forever</b><small>Core carwash operations · No expiry</small></div><div class="wp-client-subscription-action"><span>Unlock Premium for ₱499 / 30 days</span><button class="btn" onclick="openPlanUpgradeModal(\'premium\')">Get Premium →</button></div></section>';
 }
 function vendoPage(){return `<section class="panel"><span class="badge">Coming soon</span><h1>WashPilot Smart Vendo</h1><p>Connect compatible coin-operated carwash machines to your workspace when hardware integration becomes available.</p><h2>Planned capabilities</h2><ul><li>Registered devices and installation status</li><li>Coin transactions, usage and machine revenue</li><li>Connectivity and maintenance alerts</li><li>Service settings for each machine</li></ul><p>No machines are connected. Retrofitting existing machines will require compatible hardware adapters for each manufacturer.</p></section>`;}
+function dashboardRevenueSummary(){
+ const start=today().slice(0,7)+'-01',end=today();
+ const paid=paidTransactionsBetween(start,end);
+ const pos=paid.filter(t=>t.source!=='online_booking');
+ const online=paid.filter(t=>t.source==='online_booking');
+ const posTotal=totalSales(pos),onlineTotal=totalSales(online);
+ return '<section class="panel" aria-label="Monthly sales breakdown" style="margin-bottom:16px">'+
+ '<div class="panel-head"><div><h2>Where your sales come from</h2><p>This month · POS receipts and verified online-booking payments</p></div>'+
+ '<button class="btn ghost small" type="button" onclick="refreshOwnerRevenue(true)">↻ Refresh sales</button></div>'+
+ '<div class="grid three">'+
+ stat('POS sales',money(posTotal),pos.length+' paid POS transaction(s)','▤')+
+ stat('Online booking sales',money(onlineTotal),online.length+' verified booking payment(s)','✓','purple')+
+ stat('Total collected',money(posTotal+onlineTotal),'POS + online payments','₱','green')+
+ '</div><p class="subtle" style="margin:10px 0 0">Online bookings count on their payment verification date, even when the appointment is scheduled for another day. Unpaid, cancelled and refunded payments are not added. Each receipt counts only once.</p></section>';
+}
+function dashboardRecentTransactions(){
+ const recent=reportTransactions().filter(t=>isPaymentCollected(t)).slice()
+  .sort((a,b)=>{
+   const ad=String(a.paidAt||a.createdAt||a.paymentDate||a.date||'');
+   const bd=String(b.paidAt||b.createdAt||b.paymentDate||b.date||'');
+   return bd.localeCompare(ad);
+  }).slice(0,10);
+ return transactionTable(recent,false);
+}
 function dashboardPage(){
  if(viewMode==='easy')return easyDashboardPage();
  const todayTx=state.transactions.filter(isToday);
@@ -2295,7 +2319,7 @@ function dashboardPage(){
   return {label:d.toLocaleDateString('en-US',{weekday:'short'}),value:totalCollectedBetween(key,key)};
  });
  const max=Math.max(1,...days.map(d=>d.value));
- const recent=reportTransactions().slice().sort((a,b)=>String(transactionPeriodDate(b)||b.date).localeCompare(String(transactionPeriodDate(a)||a.date))).slice(0,5);
+ // Recent paid POS receipts and verified online booking payments share the same ledger.
  const queue=active.slice(0,4).map(t=>`<div class="wp-dashboard-row"><div class="wp-dashboard-row-main"><strong>${esc(t.plate)}</strong><span>${esc(t.vehicle)} · ${esc(t.main)}</span></div>${statusPill(t.status)}</div>`).join('');
  return `<div class="wp-dashboard">
   <div class="wp-dashboard-intro"><div><span class="wp-dashboard-eyebrow">YOUR WORKSPACE</span><h1>Dashboard</h1><p>See today’s activity and keep your washes moving.</p></div><button class="btn wp-dashboard-start" type="button" onclick="go('newwash')">＋ New wash</button></div>
@@ -2303,11 +2327,12 @@ function dashboardPage(){
   ${bookingSalesNotice()}
   ${subscriptionStatusBanner()}
   <section aria-labelledby="wpDashboardSales"><div class="wp-dashboard-section-head"><div><h2 id="wpDashboardSales">Sales over time</h2><p>Collected payments for each period</p></div></div><div class="grid wp-dashboard-periods">${stat('Today’s Sales',money(sales),'Collected today','₱','green')}${stat('Weekly Sales',money(weekSales),'Monday through today','↗')}${stat('Monthly Sales',money(monthSales),'First day of this month to today','▣','purple')}${stat('Yearly Sales',money(yearSales),'January 1 to today','▤','amber')}</div></section>
+  ${dashboardRevenueSummary()}
   <div class="wp-dashboard-main-grid">
    <section class="panel wp-dashboard-queue" aria-labelledby="wpDashboardQueue"><div class="panel-head"><div><h2 id="wpDashboardQueue">Vehicles in progress</h2><p>Active tickets registered today</p></div><button class="btn ghost small" type="button" onclick="go('queue')">Open queue →</button></div>${queue?`<div class="wp-dashboard-rows">${queue}</div>`:'<div class="wp-dashboard-empty"><strong>No active washes today</strong><span>When you create a wash ticket, it will appear here.</span></div>'}</section>
    <section class="panel wp-dashboard-guide" aria-labelledby="wpDashboardGuide"><div class="panel-head"><div><h2 id="wpDashboardGuide">Your daily flow</h2><p>Three simple steps for each vehicle</p></div></div><ol><li><span>1</span><div><strong>Create a wash</strong><small>Add the vehicle and choose a service.</small></div></li><li><span>2</span><div><strong>Update the queue</strong><small>Move the wash through each stage.</small></div></li><li><span>3</span><div><strong>Collect payment</strong><small>Record payment when the vehicle is ready.</small></div></li></ol></section>
   </div>
-  <section class="panel wp-dashboard-recent" aria-labelledby="wpDashboardRecent"><div class="panel-head"><div><h2 id="wpDashboardRecent">Recent transactions</h2><p>Your latest wash tickets</p></div><button class="btn ghost small" type="button" onclick="go('transactions')">View all →</button></div>${transactionTable(recent,false)}</section>
+  <section class="panel wp-dashboard-recent" aria-labelledby="wpDashboardRecent"><div class="panel-head"><div><h2 id="wpDashboardRecent">Recent transactions</h2><p>Latest collected POS payments and verified online bookings</p></div><button class="btn ghost small" type="button" onclick="go('transactions')">View all →</button></div>${dashboardRecentTransactions()}</section>
   <div class="grid two wp-dashboard-details"><section class="panel"><div class="panel-head"><h2>Daily sales</h2><span class="subtle">Last 7 days</span></div><div class="chart" aria-label="Daily sales for the last seven days">${days.map(d=>`<div class="bar-wrap" aria-label="${esc(d.label)}: ${money(d.value)}"><div class="bar" title="${money(d.value)}" style="height:${Math.max(3,d.value/max*78)}%"></div><span class="bar-label">${d.label}</span></div>`).join('')}</div></section>
    <section class="panel"><div class="panel-head"><h2>Payment breakdown</h2><span class="subtle">Today</span></div>${paymentBreakdown(paidTransactionsBetween(today(),today()))}<div class="divider"></div>${planRank(effectivePlan())>=2?`<div class="panel-head"><h2>Daily expenses</h2><strong>${money(expenses)}</strong></div><div class="muted-box"><div style="display:flex;justify-content:space-between;font-size:11px"><span>Estimated net earnings</span><b style="color:var(--green)">${money(sales-expenses)}</b></div><small class="subtle">Gross sales less recorded expenses. Not a full accounting profit calculation.</small></div>`:`<div class="muted-box"><b>Want to track expenses and estimated earnings?</b><p class="subtle">Upgrade to Premium for ₱499 / 30 days to record operating costs and see estimated net earnings.</p><button class="btn small" onclick="setPlan('premium')">Preview Premium</button></div>`}</section></div>
  </div>`;
