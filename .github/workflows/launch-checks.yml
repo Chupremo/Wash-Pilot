@@ -17,6 +17,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Verify all authenticated navigation role initializations
+        run: node tests/auth-nav-initialization.test.cjs
       - name: Verify sidebar and sign-in/out controls
         run: node tests/sidebar-auth-actions.test.cjs
       - name: Verify online booking sales
