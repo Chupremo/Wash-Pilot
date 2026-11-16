@@ -27,7 +27,7 @@ for(const file of ['app.html','signin.html']){
    querySelectorAll(selector){if(selector==='.nav button[data-page]')return[navBtn];if(selector==='[data-mobile-page]')return[mobileBtn];return[]},
    createElement:()=>element(),hasLogout:true
   },
-  effectivePlan:()=> 'premium',allowed:()=>true,minPlan:()=> 'basic',planName:()=> 'Free',console
+  effectivePlan:()=> 'premium',allowed:()=>true,canAccessRolePage:()=>true,minPlan:()=> 'basic',planName:()=> 'Free',console
  };
  vm.createContext(context);
  vm.runInContext(script,context);
