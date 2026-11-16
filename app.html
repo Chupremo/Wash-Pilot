@@ -1546,6 +1546,31 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
 }
 @media(max-width:360px){.wp-facility-progress-step{font-size:8px}.wp-facility-progress-step b{width:20px;height:20px}.wp-facility-days{gap:6px}.wp-facility-days label{font-size:10px;padding:9px 7px}}
 
+
+/* Unified online booking / walk-in service queue */
+.wp-queue-datebar{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.wp-queue-datebar>div:first-child{display:grid;gap:5px}
+.wp-queue-datebar>div:first-child b{font-size:15px;color:#172c4b}
+.wp-queue-datebar>div:first-child small{font-size:12px;color:#66758d;line-height:1.4}
+.wp-queue-dateactions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.wp-queue-dateactions label{font-size:12px;font-weight:700;color:#314969}
+.wp-queue-dateactions input{padding:9px 10px;border:1px solid #cbd5e1;border-radius:9px;color:#1e293b;background:#fff;min-height:44px}
+.wp-queue-badges{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:7px}
+.wp-queue-origin,.wp-queue-walkin,.wp-queue-slot,.wp-queue-payment{display:inline-flex;align-items:center;border-radius:7px;font-weight:750;font-size:10px;padding:4px 7px;line-height:1.4}
+.wp-queue-origin{color:#1e40af;background:#dbeafe}
+.wp-queue-walkin{color:#475569;background:#f1f5f9}
+.wp-queue-slot{color:#1d4ed8;background:#eff6ff;border:1px solid #bfdbfe;font-variant-numeric:tabular-nums}
+.wp-queue-payment{margin-top:4px}
+.wp-queue-payment.pending{color:#92400e;background:#fef3c7}
+.wp-queue-payment.paid{color:#166534;background:#dcfce7}
+.wp-unified-queue-row .queue-info{min-width:0;flex:1}
+.wp-unified-queue-row .queue-info small{display:block;margin-top:4px;overflow-wrap:anywhere}
+.wp-unified-kanban-card small{display:block;line-height:1.5;margin-top:4px;overflow-wrap:anywhere}
+.wp-queue-service{display:block;font-size:12px;line-height:1.4;margin:5px 0;color:#243b5b}
+.wp-queue-card-actions{margin-top:12px}
+.wp-unified-kanban-card .wp-queue-card-actions button{min-height:38px;white-space:normal}
+@media(max-width:700px){.wp-queue-datebar{align-items:stretch}.wp-queue-dateactions{width:100%}.wp-unified-queue-row{flex-wrap:wrap}.wp-unified-queue-row .queue-info{flex-basis:55%}.wp-queue-dateactions input{flex:1;min-width:130px}}
+
 </style>
 <link rel="stylesheet" href="/washpilot-design.css?v=20261115-sandbox-sync2">
 <script src="/washpilot-accessibility.js?v=20261117" defer></script>
@@ -2204,22 +2229,36 @@ function queuePage(){
   reservedSection+
   '<section class="panel"><div class="panel-head"><h3>Walk-in vehicles today</h3><span class="subtle">Use Update to change the status</span></div><div class="queue-list">'+(list.map(queueHtml).join('')||'<div class="empty">No walk-in vehicles in the queue yet.</div>')+'</div></section>';
 }
-async function loadOnlineReservationQueue(){
- const el=document.getElementById('wpOnlineReservationQueue');
- if(!el||!window.wpRealWorkspaceActive||!window.washPilotBookingApi)return;
- try{
-  const rows=await window.washPilotBookingApi.getConfirmedQueueBookings();
-  if(!rows.length){el.innerHTML='<div class="wp-online-queue-empty">No confirmed online reservations yet. Confirmed and paid bookings will appear here automatically.</div>';return;}
-  el.innerHTML='<div class="wp-reserved-queue-list">'+rows.map(b=>{
-   const date=dateLabel(b.booking_date),time=wpFormatClock(b.start_time)+' – '+wpFormatClock(b.end_time);
-   const vehicle=(b.vehicle_size||'Vehicle')+(b.vehicle_plate?' · '+b.vehicle_plate:'');
-   return '<article class="wp-reserved-queue-item"><div class="wp-reserved-time"><strong>'+esc(wpFormatClock(b.start_time))+'</strong><span>'+esc(date)+'</span><small>'+esc(wpFormatClock(b.end_time))+' end</small></div><div class="wp-reserved-details"><div class="wp-reserved-heading"><b>'+esc(b.customer_name)+'</b><span class="wp-reserved-status">RESERVED</span></div><p>'+esc(b.service_name)+' · '+esc(vehicle)+'</p><small>'+esc(b.booking_code)+' · '+esc(b.customer_phone)+'</small>'+(b.notes?'<small class="wp-reserved-note">Note: '+esc(b.notes)+'</small>':'')+'</div><div class="wp-reserved-value"><b>'+money(b.price_php)+'</b><small>Paid online · '+esc(b.payment_method==='gcash'?'GCash':'Bank transfer')+'</small></div></article>';
-  }).join('')+'</div>';
- }catch(err){
-  console.warn('Online reservation queue could not load:',err&&err.message?err.message:err);
-  el.innerHTML='<div class="wp-online-queue-empty error">Confirmed online reservations could not be loaded. Refresh to try again.</div>';
+async function loadOnlineReservationQueue(force=false){
+ if(currentPage!=='queue'||!window.wpRealWorkspaceActive||window.wpTourSandboxActive||!window.wpRealBusinessId||!window.washPilotBookingApi?.getQueueBookings)return [];
+ const businessId=window.wpRealBusinessId,date=wpServiceQueueState.date;
+ if(wpServiceQueueState.businessId!==businessId){
+  wpServiceQueueState.businessId=businessId;wpServiceQueueState.rows=[];wpServiceQueueState.loadedAt=0;wpServiceQueueState.error='';wpServiceQueueState.request=null;
  }
+ if(wpServiceQueueState.request&&wpServiceQueueState.request.businessId===businessId&&wpServiceQueueState.request.date===date)return wpServiceQueueState.request.promise;
+ if(!force&&wpServiceQueueState.loadedAt&&Date.now()-wpServiceQueueState.loadedAt<15000)return wpServiceQueueState.rows;
+ const promise=(async()=>{
+  try{
+   const rows=await window.washPilotBookingApi.getQueueBookings(date);
+   if(window.wpRealBusinessId!==businessId||wpServiceQueueState.date!==date)return [];
+   wpServiceQueueState.rows=Array.isArray(rows)?rows:[];wpServiceQueueState.loadedAt=Date.now();wpServiceQueueState.error='';
+   if(currentPage==='queue')render();
+   return wpServiceQueueState.rows;
+  }catch(err){
+   if(window.wpRealBusinessId===businessId&&wpServiceQueueState.date===date){
+    wpServiceQueueState.error=err?.message||'Could not load online bookings';wpServiceQueueState.loadedAt=Date.now();
+    if(currentPage==='queue')render();
+   }
+   console.warn('Service queue could not refresh:',err);
+   return [];
+  }finally{
+   if(wpServiceQueueState.request?.promise===promise)wpServiceQueueState.request=null;
+  }
+ })();
+ wpServiceQueueState.request={businessId,date,promise};
+ return promise;
 }
+
 function cycleStatus(id){let t=state.transactions.find(x=>x.id===id);if(!t)return;t.status=({Waiting:'Washing',Washing:'Completed',Completed:'Completed'})[t.status]||'Waiting';save();render();toast(`${t.plate} marked ${t.status}.`)}
 function transactionTable(list,showActions=true){
  if(!list.length)return '<div class="empty">No transactions found.</div>';
@@ -2509,13 +2548,115 @@ function easyDashboardPage(){
  ${activeNow.slice(0,5).map(t=>`<div class="easy-queue-row"><span class="plate">${esc(t.plate)}</span><div class="queue-info"><b>${esc(t.vehicle)} · ${esc(t.main)}</b><small>${esc(t.employee||'Awaiting assignment')}</small></div>${statusPill(t.status)}</div>`).join('')||'<div class="empty">No active vehicles. Start a new wash when a customer arrives.</div>'}</section>
  <section class="panel"><div class="panel-head"><h3>Quick actions</h3></div><div class="hub-grid" style="grid-template-columns:1fr 1fr"><button class="hub-tile" onclick="go('newwash')"><span class="hub-icon">＋</span><span><b>New Wash</b><small>Register a vehicle and payment</small></span></button><button class="hub-tile" onclick="go('transactions')"><span class="hub-icon">▤</span><span><b>Transactions</b><small>Find sales and receipts</small></span></button><button class="hub-tile" onclick="go('customers')"><span class="hub-icon">♙</span><span><b>Customers</b><small>Look up vehicles and history</small></span></button>${canAccessRolePage('managementHub')?`<button class="hub-tile" onclick="go('managementHub')"><span class="hub-icon">⚙</span><span><b>More Tools</b><small>Services, staff and settings</small></span></button>`:''}</div></section></div>`;
 }
-function easyQueuePage(){
- const list=state.transactions.filter(t=>isToday(t)&&!['Cancelled','Completed'].includes(t.status));
- return `${pageHead('Service Queue','A simple list of every vehicle still at your carwash.',currentStaffRole!=='washer'?`<button class="btn" onclick="go('newwash')">＋ New Wash</button>`:'')}
- <div class="grid stats">${stat('Waiting',list.filter(t=>t.status==='Waiting').length,'Ready to start','◷','amber')}${stat('Washing',list.filter(t=>t.status==='Washing').length,'Currently in service','⚙')}${stat('Quality Check',list.filter(t=>t.status==='Quality Check').length,'Final inspection','✓','purple')}${stat('Ready',list.filter(t=>t.status==='Ready').length,'Customer pickup','↗','green')}</div>
- <section class="panel"><div class="panel-head"><h3>Vehicles in progress</h3><span class="subtle">Tap one action to update its status</span></div>${list.map(t=>`<div class="easy-queue-row"><span class="plate">${esc(t.plate)}</span><div class="queue-info"><b>${esc(t.vehicle)} · ${esc(t.main)}</b><small>${esc(t.employee||'Unassigned')} · ${money(t.total)}</small></div>${statusPill(t.status)}${(currentStaffRole==='washer'&&['Quality Check','Ready'].includes(t.status))?'':`<button class="btn small" onclick="cycleStatus('${t.id}')">${t.status==='Waiting'?'Start wash':t.status==='Washing'?'Send to quality check':t.status==='Quality Check'?'Mark ready':'Collect payment'}</button>`}</div>`).join('')||'<div class="empty">No vehicles in the queue right now.</div>'}</section>
- ${currentStaffRole==='washer'?'':'<section class="panel" style="margin-top:14px"><div class="panel-head"><h3>Need the full board?</h3><button class="btn ghost small" onclick="setViewMode(\'advanced\')">Open Advanced Mode</button></div><p class="subtle">Advanced Mode shows all five workflow columns and additional queue controls.</p></section>'}`;
+
+/* Online reservations appear in the same service workflow as walk-ins.
+   The booking row is the canonical record; no duplicate POS sale is created. */
+const wpServiceQueueState={date:today(),businessId:null,rows:[],loadedAt:0,error:'',request:null};
+function wpBookingAsQueueTicket(b){
+ const bookingStatus=String(b.status||'pending').toLowerCase();
+ const status=bookingStatus==='completed'?'Completed':(['Waiting','Washing','Quality Check','Ready','Completed'].includes(b.queue_status)?b.queue_status:'Waiting');
+ return {
+  id:'online:'+b.id,bookingId:String(b.id),bookingCode:String(b.booking_code||''),source:'online_booking',
+  date:String(b.booking_date||''),scheduledStart:String(b.start_time||''),scheduledEnd:String(b.end_time||''),
+  plate:b.vehicle_plate||'NO PLATE',vehicle:b.vehicle_size||'Vehicle',
+  customer:b.customer_name||'Online customer',customerPhone:b.customer_phone||'',customerEmail:b.customer_email||'',
+  main:b.service_name||'Booked service',total:Number(b.price_php||0),status,
+  bookingStatus,paymentStatus:String(b.payment_status||''),paymentMethod:String(b.payment_method||''),
+  notes:b.notes||'',addons:Array.isArray(b.selected_addons)?b.selected_addons:[]
+ };
 }
+function wpServiceQueueRows(){
+ const date=wpServiceQueueState.date;
+ const local=(state.transactions||[]).filter(t=>ticketDateOf(t)===date&&t.status!=='Cancelled');
+ if(!window.wpRealWorkspaceActive||window.wpTourSandboxActive||wpServiceQueueState.businessId!==window.wpRealBusinessId)return local;
+ const seen=new Set(local.flatMap(t=>[String(t.bookingId||''),String(t.id||'')].filter(Boolean)));
+ const online=wpServiceQueueState.rows.filter(b=>!seen.has(String(b.id))&&!seen.has(String(b.booking_code))).map(wpBookingAsQueueTicket);
+ return local.concat(online).sort((a,b)=>{
+  const aSlot=a.source==='online_booking'?String(a.scheduledStart).slice(0,5):String(a.time||'');
+  const bSlot=b.source==='online_booking'?String(b.scheduledStart).slice(0,5):String(b.time||'');
+  return aSlot.localeCompare(bSlot);
+ });
+}
+function wpSetServiceQueueDate(value){
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(String(value||'')))return;
+ wpServiceQueueState.date=value;wpServiceQueueState.loadedAt=0;wpServiceQueueState.rows=[];
+ wpServiceQueueState.error='';render();
+}
+function wpQueueSourceBadges(t){
+ if(t.source!=='online_booking')return '<span class="wp-queue-walkin">WALK-IN</span>';
+ const slot=wpFormatClock(t.scheduledStart)+' – '+wpFormatClock(t.scheduledEnd);
+ return '<span class="wp-queue-origin">ONLINE BOOKING</span><span class="wp-queue-slot">'+esc(slot)+'</span>';
+}
+function wpQueuePaymentLabel(t){
+ if(t.source!=='online_booking')return '';
+ if(t.bookingStatus==='completed')return '<span class="wp-queue-payment paid">Paid · Completed</span>';
+ if(t.paymentStatus!=='verified')return '<span class="wp-queue-payment pending">Payment awaiting verification</span>';
+ if(t.bookingStatus!=='confirmed')return '<span class="wp-queue-payment pending">Paid · Awaiting booking confirmation</span>';
+ return '<span class="wp-queue-payment paid">Paid · Confirmed</span>';
+}
+function wpQueueAction(t){
+ if(t.source!=='online_booking'){
+  if(currentStaffRole==='washer'&&['Quality Check','Ready'].includes(t.status))return '';
+  const label=t.status==='Waiting'?'Start wash':t.status==='Washing'?'Send to quality check':t.status==='Quality Check'?'Mark ready':'Collect payment';
+  return t.status==='Completed'?'<span class="status Completed">Completed</span>':'<button class="btn small" type="button" onclick="cycleStatus(\''+esc(t.id)+'\')">'+label+'</button>';
+ }
+ if(t.status==='Completed')return '<span class="status Completed">Completed</span>';
+ if(t.bookingStatus!=='confirmed'||t.paymentStatus!=='verified'){
+  return currentStaffRole==='owner'||currentStaffRole==='supervisor'
+   ?'<button class="btn ghost small" type="button" onclick="go(\'bookings\')">Review booking</button>'
+   :'<small class="subtle">Awaiting confirmation</small>';
+ }
+ if(currentStaffRole==='washer'&&['Quality Check','Ready'].includes(t.status))return '';
+ const next=nextWashStatus(t.status);
+ const label=next==='Washing'?'Start wash':next==='Quality Check'?'Quality check':next==='Ready'?'Mark ready':'Complete job';
+ return '<button class="btn small" type="button" onclick="wpAdvanceOnlineQueue(\''+esc(t.bookingId)+'\',\''+esc(next)+'\')">'+label+'</button>';
+}
+function wpQueueDetails(t){
+ if(t.source!=='online_booking')return '<small>'+esc(t.employee||'Unassigned')+' · '+money(t.total)+'</small>';
+ return '<small>'+esc(t.customer)+' · '+esc(t.customerPhone)+' · '+esc(t.bookingCode)+'</small>'+
+  (t.addons.length?'<small>Add-ons: '+esc(t.addons.map(a=>typeof a==='string'?a:(a.name||'Add-on')).join(', '))+'</small>':'')+
+  (t.notes?'<small>Notes: '+esc(t.notes)+'</small>':'')+
+  '<small>'+money(t.total)+'</small>'+wpQueuePaymentLabel(t);
+}
+function wpServiceQueueDateHeader(){
+ const date=wpServiceQueueState.date;
+ return '<section class="panel wp-queue-datebar"><div><b>Service schedule</b><small>Online bookings appear as soon as submitted. Select a day to view upcoming jobs.</small></div>'+
+  '<div class="wp-queue-dateactions"><label for="wpQueueBookingDate">Booked date</label><input id="wpQueueBookingDate" aria-label="Service queue date" type="date" value="'+esc(date)+'" onchange="wpSetServiceQueueDate(this.value)">'+
+  '<button class="btn ghost small" type="button" onclick="wpSetServiceQueueDate(today())">Today</button>'+
+  '<button class="btn ghost small" type="button" onclick="loadOnlineReservationQueue(true)">Refresh</button></div></section>';
+}
+function wpServiceQueueNotice(){
+ if(!window.wpRealWorkspaceActive||window.wpTourSandboxActive)return '';
+ if(wpServiceQueueState.error)return '<div class="wp-online-queue-empty error" role="alert">Unable to load online bookings. '+esc(wpServiceQueueState.error)+'</div>';
+ if(wpServiceQueueState.businessId!==window.wpRealBusinessId||!wpServiceQueueState.loadedAt)return '<p class="subtle" role="status">Loading online bookings…</p>';
+ return '';
+}
+async function wpAdvanceOnlineQueue(bookingId,nextStatus){
+ try{
+  if(!window.wpRealWorkspaceActive)throw new Error('Sign in to manage this booking.');
+  await window.washPilotBookingApi.advanceOnlineQueue(bookingId,nextStatus);
+  toast('Online booking moved to '+nextStatus+'.');
+  await loadOnlineReservationQueue(true);
+  if(nextStatus==='Completed')await refreshBookingPayments(true);
+ }catch(err){toast(err?.message||'Could not update the booking.');}
+}
+
+function easyQueuePage(){
+ const rows=wpServiceQueueRows().filter(t=>t.status!=='Completed');
+ const counts=Object.fromEntries(['Waiting','Washing','Quality Check','Ready'].map(s=>[s,rows.filter(t=>t.status===s).length]));
+ return pageHead('Service Queue','Walk-ins and online bookings in one live list.',currentStaffRole!=='washer'?'<button class="btn" onclick="go(\'newwash\')">＋ New Wash</button>':'')+
+  wpServiceQueueDateHeader()+
+  '<div class="grid stats">'+
+   stat('Waiting',counts.Waiting,'Awaiting service','◷','amber')+
+   stat('Washing',counts.Washing,'Currently in service','⚙')+
+   stat('Quality Check',counts['Quality Check'],'Final inspection','✓','purple')+
+   stat('Ready',counts.Ready,'Customer pickup','↗','green')+'</div>'+
+  wpServiceQueueNotice()+
+  '<section class="panel"><div class="panel-head"><h3>Waiting & active jobs · '+esc(dateLabel(wpServiceQueueState.date))+'</h3><span class="subtle">Sorted by booked time</span></div>'+
+  (rows.map(t=>'<article class="easy-queue-row wp-unified-queue-row"><span class="plate">'+esc(t.plate)+'</span><div class="queue-info"><div class="wp-queue-badges">'+wpQueueSourceBadges(t)+'</div><b>'+esc(t.vehicle)+' · '+esc(t.main)+'</b>'+wpQueueDetails(t)+'</div>'+statusPill(t.status)+wpQueueAction(t)+'</article>').join('')||'<div class="empty">No jobs scheduled for this day.</div>')+'</section>'+
+  (currentStaffRole==='washer'?'':'<section class="panel" style="margin-top:14px"><div class="panel-head"><h3>Need the full board?</h3><button class="btn ghost small" onclick="setViewMode(\'advanced\')">Open Advanced Mode</button></div></section>');
+}
+
 function managementHubPage(){
  const sections=[
   ['Daily business setup',[['catalog','Services & Pricing','Set your wash services, prices and times','◇'],['employees','Employees','Manage your team and roles','♧'],['subscription','Subscription & Billing','View your WashPilot plan','▣']]],
@@ -2545,26 +2686,28 @@ function setMobileWorkflowStage(stage,button){
 function queuePage(){
  if(viewMode==='easy')return easyQueuePage();
  const stages=['Waiting','Washing','Quality Check','Ready','Completed'];
- const todayRows=state.transactions.filter(t=>isToday(t)&&t.status!=='Cancelled');
- const active=todayRows.filter(t=>!['Completed','Cancelled'].includes(t.status));
+ const todayRows=wpServiceQueueRows();
  const counts=Object.fromEntries(stages.map(stage=>[stage,todayRows.filter(t=>t.status===stage).length]));
  const firstStage=stages.find(stage=>counts[stage]>0)||'Waiting';
- const reservedSection=window.wpRealWorkspaceActive
-  ?'<section class="panel wp-online-queue-panel"><div class="panel-head"><div><h3>Reserved Online Bookings</h3><span class="subtle">Confirmed customer bookings with payment verified. These time slots are reserved.</span></div><button class="btn ghost small" type="button" onclick="loadOnlineReservationQueue()">Refresh</button></div><div id="wpOnlineReservationQueue"><div class="empty">Loading confirmed reservations…</div></div></section>'
-  :'';
- const stageTabs='<div class="wp-workflow-stage-tabs" role="group" aria-label="Filter wash workflow by stage">'+stages.map(stage=>'<button type="button" aria-pressed="'+(stage===firstStage)+'" class="'+(stage===firstStage?'active':'')+'" onclick="setMobileWorkflowStage(\''+stage+'\',this)"><span>'+stage+'</span><b>'+counts[stage]+'</b></button>').join('')+'</div>';
+ const stageTabs='<div class="wp-workflow-stage-tabs" role="group" aria-label="Filter service workflow by stage">'+
+  stages.map(stage=>'<button type="button" aria-pressed="'+(stage===firstStage)+'" class="'+(stage===firstStage?'active':'')+'" onclick="setMobileWorkflowStage(\''+stage+'\',this)"><span>'+stage+'</span><b>'+counts[stage]+'</b></button>').join('')+'</div>';
  const board='<div class="kanban">'+stages.map(stage=>{
   const rows=todayRows.filter(t=>t.status===stage);
   return '<div class="kanban-col '+(stage===firstStage?'is-mobile-active':'')+'" data-stage="'+stage+'"><div class="kanban-head"><span>'+stage+'</span><span class="badge">'+rows.length+'</span></div>'+
-   (rows.map(t=>'<article class="kanban-card"><div class="wp-workflow-card-top"><b>'+esc(t.plate)+' · '+esc(t.vehicle)+'</b>'+statusPill(t.status)+'</div><small>'+esc(t.main)+'<br>'+esc(t.employee||'Unassigned')+' · '+money(t.total)+'</small>'+
-    (stage==='Ready'?'<button class="btn ghost small" type="button" onclick="openReadyNotificationModal(\''+t.id+'\')">Notify customer</button><button class="btn small" type="button" onclick="cycleStatus(\''+t.id+'\')">Collect payment</button>':stage!=='Completed'?'<button class="btn small" type="button" onclick="cycleStatus(\''+t.id+'\')">'+(nextWashStatus(stage)==='Completed'?'Collect payment':'Move to '+nextWashStatus(stage))+'</button>':'<span class="status Completed">Completed</span>')+'</article>').join('')||'<div class="subtle wp-workflow-empty">No vehicles in this stage.</div>')+'</div>';
+   (rows.map(t=>'<article class="kanban-card wp-unified-kanban-card"><div class="wp-queue-badges">'+wpQueueSourceBadges(t)+'</div><div class="wp-workflow-card-top"><b>'+esc(t.plate)+' · '+esc(t.vehicle)+'</b>'+statusPill(t.status)+'</div><strong class="wp-queue-service">'+esc(t.main)+'</strong>'+wpQueueDetails(t)+'<div class="wp-queue-card-actions">'+wpQueueAction(t)+'</div></article>').join('')||'<div class="subtle wp-workflow-empty">No jobs in this stage.</div>')+'</div>';
  }).join('')+'</div>';
  const log='<section class="panel wp-workflow-log"><div class="panel-head"><h3>Customer notification log</h3><span class="subtle">Local records · no messages are sent from this log</span></div>'+
   ((state.notifications||[]).slice(0,5).map(n=>'<div class="recipe-row"><div><b>'+esc(n.customer||n.plate)+' · '+esc(n.channel)+'</b><br><small>'+dateLabel(n.date)+' · '+esc(n.phone)+' · '+esc(n.message)+'</small></div><span class="status Completed">'+esc(n.status)+'</span></div>').join('')||'<div class="empty">No ready notifications yet.</div>')+'</section>';
- return pageHead('Live Service Board','Move every vehicle through washing, quality inspection and customer pickup.',currentStaffRole!=='washer'?'<button class="btn" onclick="go(\'newwash\')">＋ New Wash</button>':'')+
-  '<div class="grid stats">'+stat('Waiting',counts.Waiting,'Awaiting service','◷','amber')+stat('Washing',counts.Washing,'Currently being serviced','⚙')+stat('Quality Check',counts['Quality Check'],'Inspection stage','✓','purple')+stat('Ready for Pickup',counts.Ready,'Notify customer to collect','↗','green')+'</div>'+
-  reservedSection+'<section class="panel wp-workflow-panel"><div class="panel-head"><div><h3>Today’s wash workflow</h3><span class="subtle">'+active.length+' active · '+counts.Completed+' completed today</span></div></div>'+stageTabs+board+'</section>'+log;
+ return pageHead('Service Queue','Online bookings automatically join the queue alongside walk-ins.',currentStaffRole!=='washer'?'<button class="btn" onclick="go(\'newwash\')">＋ New Wash</button>':'')+
+  wpServiceQueueDateHeader()+
+  '<div class="grid stats">'+stat('Waiting',counts.Waiting,'Awaiting service','◷','amber')+
+   stat('Washing',counts.Washing,'Currently being serviced','⚙')+
+   stat('Quality Check',counts['Quality Check'],'Inspection stage','✓','purple')+
+   stat('Ready for Pickup',counts.Ready,'Notify customer to collect','↗','green')+'</div>'+
+  wpServiceQueueNotice()+
+  '<section class="panel wp-workflow-panel"><div class="panel-head"><div><h3>Service queue · '+esc(dateLabel(wpServiceQueueState.date))+'</h3><span class="subtle">'+todayRows.length+' scheduled jobs · '+counts.Completed+' completed</span></div></div>'+stageTabs+board+'</section>'+log;
 }
+
 function openWashTicket(t){openModal(`<div class="modal-head"><h2>Wash ticket created</h2><button class="close" onclick="closeModal()">×</button></div><div class="receipt"><p>WASH SERVICE TICKET · UNPAID</p><div class="receipt-row"><span>Ticket</span><b>${t.id}</b></div><div class="receipt-row"><span>Vehicle</span><b>${esc(t.plate)} · ${esc(t.vehicle)}</b></div><div class="receipt-row"><span>Service</span><b>${esc(t.main)}</b></div><div class="receipt-row"><span>Total due at pickup</span><b>${money(t.total)}</b></div><div class="inline-note">Payment will be collected after the wash is complete and the vehicle is ready for pickup.</div></div><div class="modal-actions actions" style="justify-content:flex-end;margin-top:14px"><button class="btn" onclick="closeModal();go('queue')">View service queue</button><button class="btn ghost" onclick="closeModal()">Close</button></div>`)}
 function openCollectPaymentModal(id){let t=state.transactions.find(x=>x.id===id);if(!t||t.financialStatus==='Paid'){toast('This ticket is already paid.');return}openModal(`<div class="modal-head"><h2>Collect payment at pickup</h2><button class="close" onclick="closeModal()">×</button></div><div class="summary"><div class="summary-line"><span>Vehicle</span><b>${esc(t.plate)} · ${esc(t.vehicle)}</b></div><div class="summary-line"><span>Service</span><b>${esc(t.main)}</b></div><div class="summary-total"><span>Amount due</span><strong>${money(t.total)}</strong></div></div><form onsubmit="confirmCollectPayment(event,'${t.id}')" style="margin-top:16px"><div class="field"><label>Payment method *</label><select name="payment" required><option value="">Choose payment method</option><option>Cash</option><option>GCash</option><option>Maya</option><option>Card</option><option>Other</option></select></div><div class="actions" style="justify-content:flex-end;margin-top:16px"><button type="button" class="btn ghost" onclick="closeModal()">Not yet</button><button class="btn success">Confirm payment received</button></div></form>`)}
 function confirmCollectPayment(e,id){e.preventDefault();let t=state.transactions.find(x=>x.id===id),method=new FormData(e.target).get('payment');if(!t||!method)return;if(t.financialStatus==='Paid'){toast('Payment already recorded.');closeModal();return}t.payment=method;t.financialStatus='Paid';t.paidAt=new Date().toISOString();t.paymentDate=today();t.status='Completed';t.completedAt=t.completedAt||new Date().toISOString();let c=ensureCustomerForTx(t);c.spent=(c.spent||0)+Number(t.total||0);c.lastVisit=t.date;if(t.employee&&t.employee!=='Unassigned'){let emp=state.employees.find(x=>x.name===t.employee);if(emp)emp.sales=(emp.sales||0)+Number(t.total||0)}awardLoyalty(t);consumeInventory(t);save();closeModal();render();toast(`Payment of ${money(t.total)} received for ${t.plate}.`)}
@@ -2740,7 +2883,7 @@ function startBookingNotificationMonitor(){
  wpBookingNotificationInitialized=false;
  refreshBookingNotificationCount();
  refreshBookingPayments(true);
- wpBookingNotificationTimer=window.setInterval(()=>{refreshBookingNotificationCount();refreshBookingPayments(true);},20000);
+ wpBookingNotificationTimer=window.setInterval(()=>{refreshBookingNotificationCount();refreshBookingPayments(true);if(currentPage==='queue')loadOnlineReservationQueue(true);},20000);
 }
 function stopBookingNotificationMonitor(){
  if(wpBookingNotificationTimer)window.clearInterval(wpBookingNotificationTimer);
@@ -2772,7 +2915,7 @@ async function loadFacilityBookings(){
  }catch(err){el.innerHTML='<div class="empty">Could not load bookings: '+esc(err.message||err)+'</div>';}
 }
 async function verifyFacilityBookingPayment(id,status){try{await window.washPilotBookingApi.setPaymentStatus(id,status);toast(status==='verified'?'Payment verified. You can now confirm this booking.':'Payment proof rejected; the slot has been released.');await loadFacilityBookings();await refreshBookingNotificationCount();await refreshBookingPayments(true);}catch(err){alert(err.message||'Could not update payment status.');}}
-async function changeFacilityBookingStatus(id,status){try{await window.washPilotBookingApi.setBookingStatus(id,status);toast('Booking updated.');await loadFacilityBookings();await refreshBookingNotificationCount();await refreshBookingPayments(true);}catch(err){alert(err.message||'Could not update booking.');}}
+async function changeFacilityBookingStatus(id,status){try{await window.washPilotBookingApi.setBookingStatus(id,status);toast('Booking updated.');await loadFacilityBookings();await refreshBookingNotificationCount();await refreshBookingPayments(true);wpServiceQueueState.loadedAt=0;}catch(err){alert(err.message||'Could not update booking.');}}
 
 function subscriptionPage(){
  if(!window.wpRealWorkspaceActive)return pageHead('Subscription & Billing','Sign in with a registered business account to manage billing.')+'<section class="panel"><div class="empty">Live subscription management is available to registered business accounts.</div></section>';
@@ -3633,13 +3776,17 @@ async getMyServices(businessId){
         .eq('business_id',window.wpRealBusinessId).eq('status','pending').eq('payment_status','awaiting_verification');
       if(error)throw error;return Number(count||0);
     },
-    async getConfirmedQueueBookings(){
-      const localToday=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Manila',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+    async getQueueBookings(date){
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date||'')))throw new Error('Choose a valid queue date.');
       const {data,error}=await getClient().from('facility_bookings')
-        .select('id,booking_code,customer_name,customer_phone,service_name,vehicle_size,vehicle_plate,booking_date,start_time,end_time,price_php,payment_method,payment_status,status,notes')
-        .eq('business_id',window.wpRealBusinessId).eq('status','confirmed')
-        .gte('booking_date',localToday).order('booking_date',{ascending:true}).order('start_time',{ascending:true}).limit(200);
+        .select('id,booking_code,customer_name,customer_phone,customer_email,service_name,vehicle_size,vehicle_plate,booking_date,start_time,end_time,price_php,payment_method,payment_status,status,queue_status,notes,selected_addons')
+        .eq('business_id',window.wpRealBusinessId).eq('booking_date',date)
+        .in('status',['pending','confirmed','completed']).order('start_time',{ascending:true}).limit(500);
       if(error)throw error;return data||[];
+    },
+    async advanceOnlineQueue(bookingId,nextStatus){
+      const {error}=await getClient().rpc('advance_facility_booking_queue',{p_booking_id:bookingId,p_next_status:nextStatus});
+      if(error)throw error;return true;
     },
     async setBookingStatus(id,status){const {error}=await getClient().rpc('set_facility_booking_status',{p_booking_id:id,p_status:status});if(error)throw error;return true;},
     async setPaymentStatus(id,status){const {error}=await getClient().rpc('set_facility_booking_payment_status',{p_booking_id:id,p_status:status});if(error)throw error;return true;},
