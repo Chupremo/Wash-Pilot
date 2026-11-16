@@ -1,0 +1,32 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const dir=path.resolve(__dirname,'..');
+const sources=Object.fromEntries(['app.html','signin.html','index.html','washpilot-design.css','washpilot-home.css'].map(f=>[f,fs.readFileSync(path.join(dir,f),'utf8')]));
+for(const file of ['app.html','signin.html']){
+ const s=sources[file];
+ assert(s.includes('class="wp-topbar-logout"'),file+' new logout control');
+ assert(s.includes('onclick="window.logoutDemo()"'),file+' secure existing logout flow');
+ assert(s.includes('aria-label="Log out of WashPilot"'),file+' accessible label');
+ assert(!s.includes('aria-label="Sign out">BO</button>'),file+' old initials must be removed');
+ assert(!s.includes('class="avatar" type="button" onclick="logoutDemo()"'),file+' old avatar must be removed');
+ assert(s.includes('/washpilot-design.css?v=20261116-fullsidebar-logout1'),file+' cache invalidation');
+ assert(s.includes('window.logoutDemo=async function(){'),file+' existing secure auth signout preserved');
+ assert(s.includes('getClient().auth.signOut()'),file+' real Supabase signout preserved');
+ assert(s.includes('class="sidebar" id="sidebar"'),file+' original navigation preserved');
+ assert(s.includes('id="primaryNav"'),file+' owner menu preserved');
+ assert(s.includes('id="platformNav"'),file+' platform admin menu preserved');
+}
+const app=sources['app.html'],index=sources['index.html'],css=sources['washpilot-design.css'],homecss=sources['washpilot-home.css'];
+assert(app.includes('class="wp-home-signin" type="button" onclick="showLoginScreen()">Log in</button>'),'public login must use real login screen');
+assert(app.includes('class="wp-public-mobile-login" type="button" onclick="showLoginScreen()">Log in</button>'),'mobile public login action');
+assert(index.includes('class="signin" href="/login">Log in</a>'),'index desktop login');
+assert(index.includes('class="btn btn-glass" href="/login">Log in</a>'),'index mobile login');
+assert(css.includes('#washpilotApp.app>.sidebar'),'full-viewport sidebar scoped to app');
+assert(css.includes('height:100dvh!important'),'sidebar viewport height');
+assert(css.includes('position:sticky!important'),'desktop sidebar sticky');
+assert(css.includes('overflow-y:auto!important'),'sidebar independent scrolling');
+assert(css.includes('@media(max-width:760px)'),'mobile menu rule');
+assert(css.includes('.wp-topbar-logout:focus-visible'),'logout keyboard focus');
+assert(css.includes('min-height:44px'),'accessible action target');
+assert(homecss.includes('#publicLanding .wp-public-mobile-login'),'public mobile login styles');
+assert(app.includes('/washpilot-home.css?v=20261116-login-1'),'mobile login CSS cache invalidation');
+console.log('PASS: full-height desktop/mobile sidebar, independently scrolling menus, accessible Log out (no BO), secure Supabase logout kept, public Log in desktop/mobile.');
