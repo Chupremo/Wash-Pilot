@@ -19,6 +19,8 @@ jobs:
           node-version: 22
       - name: Verify online booking sales
         run: node tests/booking-payments.test.cjs
+      - name: Verify WP Management Solutions branding
+        run: node tests/wp-branding.test.cjs
       - name: Verify owner self-service trial
         run: node tests/owner-self-trial.test.cjs
       - name: Verify unified online service queue
