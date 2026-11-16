@@ -2366,7 +2366,12 @@ function renderNav(){
  const sidePlan=document.getElementById('sidePlan'),sideText=document.getElementById('sidePlanText');
  sidePlan.textContent=isPlatform?'PLATFORM ADMIN':isOwner?(activePlan==='premium'?'PREMIUM PLAN':'FREE PLAN'):currentStaffRole.toUpperCase();
  sideText.textContent=isPlatform?'Central control for all customer businesses.':isOwner?(activePlan==='premium'?'Premium access · ₱499 per 30 days.':'Free forever · Core carwash operations.'):currentStaffRole==='washer'?'Assigned vehicles and service progress.':currentStaffRole==='cashier'?'New washes, payments and customer records.':'Team operations and daily oversight.';
- document.querySelector('.top-actions .avatar').textContent=isPlatform?'SA':isOwner?'BO':currentStaffRole==='supervisor'?'SU':currentStaffRole==='cashier'?'CA':'WA';
+ const signOutButton=document.querySelector('.top-actions .wp-topbar-logout');
+ if(signOutButton){
+  const label=isPlatform?'Log out of WashPilot Super Admin':'Log out of WashPilot';
+  signOutButton.title=label;
+  signOutButton.setAttribute('aria-label',label);
+ }
  document.querySelectorAll('.nav button[data-page]').forEach(b=>{
   const page=b.dataset.page,allowedRole=canAccessRolePage(page),locked=!isPlatform&&(isOwner||isSupervisor)&&!allowed(page)&&!['managementHub','subscription'].includes(page);
   b.style.display=allowedRole&&!locked?'flex':'none';b.classList.toggle('active',page===currentPage);
