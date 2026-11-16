@@ -19,6 +19,8 @@ jobs:
           node-version: 22
       - name: Verify online booking sales
         run: node tests/booking-payments.test.cjs
+      - name: Verify unified online service queue
+        run: node tests/online-service-queue.test.cjs
       - name: Verify dashboard summaries
         run: node tests/dashboard-overview.test.cjs
       - name: Verify canonical sign-in and dashboard routes
