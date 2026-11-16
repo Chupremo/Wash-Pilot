@@ -2475,7 +2475,23 @@ function ensureDemoState(){
 function loadState(){try{let d=window.wpStorage.getItem('washpilot_demo_data')||window.wpStorage.getItem('washboss_demo_data');return d?JSON.parse(d):structuredClone(initial)}catch(e){return structuredClone(initial)}}
 function save(){if(window.wpRealWorkspaceActive&&window.wpRealBusinessId){window.wpStorage.setItem('wp_real_workspace_data_'+window.wpRealBusinessId,JSON.stringify(state));window.wpStorage.setItem('wp_real_workspace_plan_'+window.wpRealBusinessId,currentPlan);schedulePosUsageSync();return;}window.wpStorage.setItem('washpilot_demo_data',JSON.stringify(state));window.wpStorage.setItem('wp_plan',currentPlan);}
 let wpPosSyncTimer,wpPosSyncBusy=false,wpPosDirty=false;
-function schedulePosUsageSync(){if(!window.wpRealWorkspaceActive||!window.wpRealBusinessId||window.wpTourSandboxActive)return;wpPosDirty=true;clearTimeout(wpPosSyncTimer);wpPosSyncTimer=setTimeout(()=>window.wpSyncPosUsage?.(),1200)}
+function schedulePosUsageSync(){
+ if(!window.wpRealWorkspaceActive||!window.wpRealBusinessId||window.wpTourSandboxActive)return;
+ wpPosDirty=true;clearTimeout(wpPosSyncTimer);
+ wpPosSyncTimer=setTimeout(()=>window.wpSyncPosUsage?.(),350);
+}
+let wpPosRetryAttempt=0;
+function wpPosAutoRetry(){
+ if(!window.wpRealWorkspaceActive||!window.wpRealBusinessId||window.wpTourSandboxActive)return;
+ // Reconcile all locally retained POS tickets; server-side upsert prevents duplicates.
+ schedulePosUsageSync();
+}
+if(typeof window!=='undefined'){
+ window.addEventListener('online',wpPosAutoRetry);
+ window.addEventListener('focus',wpPosAutoRetry);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)wpPosAutoRetry()});
+ setInterval(()=>{if(document.visibilityState!=='hidden')wpPosAutoRetry()},60000);
+}
 window.wpSyncPosUsage=async function(){
  if(!window.wpRealWorkspaceActive||!window.wpRealBusinessId||window.wpTourSandboxActive||!window.washPilotBillingApi?.syncPosUsage)return;
  if(wpPosSyncBusy){wpPosDirty=true;return}wpPosDirty=false;wpPosSyncBusy=true;
@@ -2483,9 +2499,22 @@ window.wpSyncPosUsage=async function(){
  const rows=(state.transactions||[]).filter(t=>t?.id&&t.source!=='online_booking'&&!/^WP-100[0-4]$/.test(String(t.id))).map(t=>({
  business_id:businessId,receipt_id:String(t.id),transaction_date:paymentDateOf(t)||ticketDateOf(t)||today(),
  total_php:Math.max(0,Number(t.total||0)),financial_status:t.financialStatus==='Refunded'?'Refunded':t.status==='Cancelled'?'Void':isPaymentCollected(t)?'Paid':'Unpaid',wash_status:String(t.status||'Waiting')}));
- try{await window.washPilotBillingApi.syncPosUsage(businessId,rows);window.wpPosUsageSyncError='';window.wpPosLastSyncedAt=new Date().toISOString();window.wpPosLastSyncedCount=rows.length;}
- catch(err){window.wpPosUsageSyncError=err?.message||String(err);console.warn('POS sync failed:',err)}
- finally{wpPosSyncBusy=false;if(wpPosDirty)schedulePosUsageSync()}
+ try{
+  await window.washPilotBillingApi.syncPosUsage(businessId,rows);
+  window.wpPosUsageSyncError='';window.wpPosLastSyncedAt=new Date().toISOString();window.wpPosLastSyncedCount=rows.length;wpPosRetryAttempt=0;
+ }catch(err){
+  window.wpPosUsageSyncError=err?.message||String(err);
+  console.warn('Automatic POS sync failed, will retry:',err);
+  wpPosDirty=true;
+  wpPosRetryAttempt=Math.min(wpPosRetryAttempt+1,6);
+ }finally{
+  wpPosSyncBusy=false;
+  if(wpPosDirty){
+   const delay=window.wpPosUsageSyncError?Math.min(60000,2000*Math.pow(2,wpPosRetryAttempt)):350;
+   clearTimeout(wpPosSyncTimer);
+   wpPosSyncTimer=setTimeout(()=>window.wpSyncPosUsage?.(),delay);
+  }
+ }
 };
 async function syncPosUsageNow(){
  if(!window.wpRealWorkspaceActive){toast('Sign in to your business account to sync POS receipts.');return}
@@ -2500,8 +2529,8 @@ function posUsageSyncNotice(){
  return '<div class="inline-note" style="margin-bottom:12px"><b>Super Admin POS reporting</b> · '+
  (window.wpPosUsageSyncError?'<span role="alert">Sync failed: '+esc(window.wpPosUsageSyncError)+'</span>':
  window.wpPosLastSyncedAt?'Last successful sync: '+esc(new Date(window.wpPosLastSyncedAt).toLocaleString('en-PH'))+' · '+Number(window.wpPosLastSyncedCount||0)+' receipts':
- 'Not synced yet on this device')+
- ' <button type="button" class="btn ghost small" onclick="syncPosUsageNow()" style="margin-left:8px">Sync POS receipts</button></div>';
+ 'Automatic sync pending')+
+ ' <span class="subtle" style="margin-left:8px">Automatic reporting enabled</span></div>';
 }
 function demoPassword(){return window.wpStorage.getItem('wp_demo_password')||window.wpStorage.getItem('wb_demo_password')||''}
 function setLoginRole(role){
