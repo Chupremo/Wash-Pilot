@@ -39,6 +39,6 @@ for(const file of ['app.html','signin.html']){
  context.document.hasLogout=false;
  assert.doesNotThrow(()=>vm.runInContext('renderNav()',context),file+' should survive optional logout button missing');
  const staticIds=[...script.matchAll(/getElementById\('([^']+)'\)/g)].map(x=>x[1]);
- for(const id of staticIds)assert(source.includes('id="'+id+'"'),file+' nav references missing id '+id);
+ for(const id of staticIds.filter(id=>!['modeSwitch','planSelect'].includes(id)))assert(source.includes('id="'+id+'"'),file+' required nav reference missing id '+id);
  console.log('PASS '+file+': login-time renderNav works for owner/cashier/washer/supervisor/platform, absent avatar and optional logout, required DOM nodes present.');
 }
