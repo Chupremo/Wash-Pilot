@@ -1,0 +1,39 @@
+name: Generate WashPilot branded social preview
+on:
+  push:
+    branches:
+      - feature/social-preview-share-cards
+    paths:
+      - "scripts/generate-social-card.cjs"
+      - "wp-management-white.svg"
+      - ".github/workflows/generate-social-preview.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out social preview branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install rendering dependency in temporary directory
+        run: npm install --prefix /tmp/washpilot-social-deps --no-save --no-package-lock sharp@0.34.3
+      - name: Generate 1200 x 630 PNG
+        run: NODE_PATH=/tmp/washpilot-social-deps/node_modules node scripts/generate-social-card.cjs
+      - name: Commit preview image to source branch
+        run: |
+          git add washpilot-social-preview.png
+          if git diff --cached --quiet; then
+            echo "Preview image is already up to date."
+          else
+            git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "Generate branded WashPilot link preview image"
+            git push origin HEAD:feature/social-preview-share-cards
+          fi
