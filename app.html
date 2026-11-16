@@ -1571,6 +1571,15 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
 .wp-unified-kanban-card .wp-queue-card-actions button{min-height:38px;white-space:normal}
 @media(max-width:700px){.wp-queue-datebar{align-items:stretch}.wp-queue-dateactions{width:100%}.wp-unified-queue-row{flex-wrap:wrap}.wp-unified-queue-row .queue-info{flex-basis:55%}.wp-queue-dateactions input{flex:1;min-width:130px}}
 
+
+.wp-self-trial-card{display:flex;gap:22px;align-items:center;justify-content:space-between;padding:22px 24px;margin:12px 0 18px;border:1px solid #a4c3fb;border-radius:16px;background:#eff6ff;box-shadow:0 8px 22px -18px #1d4ed8}
+.wp-self-trial-copy{flex:1;min-width:0}.wp-self-trial-eyebrow{display:block;font-size:10px;letter-spacing:.11em;font-weight:850;color:#1d4ed8;margin-bottom:9px}
+.wp-self-trial-copy h2{font-size:19px;line-height:1.25;margin:0 0 8px;color:#142c52}.wp-self-trial-copy p{margin:0;max-width:680px;color:#445674;font-size:12px;line-height:1.65}
+.wp-self-trial-actions{display:flex;flex-direction:column;align-items:center;gap:7px;flex:0 0 auto}.wp-self-trial-button{min-height:44px;white-space:normal;text-align:center}
+.wp-self-trial-actions small{font-size:10px;color:#557092}.wp-trial-confirm-points{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+.wp-trial-confirm-points span{background:#ecfdf5;color:#166534;padding:8px 10px;border-radius:8px;font-size:12px;font-weight:750}
+@media(max-width:720px){.wp-self-trial-card{flex-direction:column;align-items:stretch;padding:18px}.wp-self-trial-actions{align-items:stretch}.wp-self-trial-button{width:100%}}
+
 </style>
 <link rel="stylesheet" href="/washpilot-design.css?v=20261115-sandbox-sync2">
 <script src="/washpilot-accessibility.js?v=20261117" defer></script>
@@ -2066,7 +2075,7 @@ function premiumPeriodExpired(sub){
 function effectivePlan(){
  if(window.wpRealWorkspaceActive){
   const sub=window.wpRealSubscription||{};
-  return premiumPeriodExpired(sub)?'basic':normalizePlan(sub.plan_code||'basic');
+  return (sub.status==='expired'||sub.status==='suspended'||(sub.status==='trialing'&&Date.parse(sub.trial_ends_at||'')<=Date.now())||premiumPeriodExpired(sub))?'basic':normalizePlan(sub.plan_code||'basic');
  }
  return normalizePlan(currentPlan);
 }
@@ -2121,22 +2130,72 @@ function lockedPage(){
    ${isRegistered?'<p class="subtle" style="margin-top:14px">Registered workspaces cannot unlock paid features by switching a demo setting. Access changes only when the subscription on your account is updated.</p>':''}
  </section>`;
 }
+
+function wpOwnerTrialEligible(){
+ const s=window.wpRealSubscription||{},b=window.wpRealBusiness||{};
+ return !!window.wpRealWorkspaceActive&&!!window.wpRealBusinessId
+  &&currentRole==='business'&&currentStaffRole==='owner'&&b.status==='active'
+  &&normalizePlan(s.plan_code)==='basic'&&s.status==='active'
+  &&!s.trial_starts_at&&!s.trial_ends_at&&!s.admin_trial_enabled;
+}
+function wpTrialPeriod(){
+ const s=window.wpRealSubscription||{};
+ return s.status==='trialing'&&normalizePlan(s.plan_code)==='premium'
+  &&!!s.trial_ends_at&&Date.parse(s.trial_ends_at)>Date.now();
+}
+function wpTrialDateText(raw){
+ const d=new Date(raw||'');
+ return Number.isNaN(d.getTime())?'Not available':d.toLocaleString('en-PH',{timeZone:'Asia/Manila',month:'long',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
+}
+function wpTrialOfferCard(){
+ if(!wpOwnerTrialEligible())return '';
+ return '<section class="wp-self-trial-card" aria-label="Activate free Premium trial">'+
+ '<div class="wp-self-trial-copy"><span class="wp-self-trial-eyebrow">7-DAY FREE PREMIUM TRIAL</span>'+
+ '<h2>Try every WashPilot Premium feature, free for 7 days.</h2>'+
+ '<p>Turn on online bookings, employee tools, inventory and reporting. No payment required, no automatic charges. One trial per business.</p>'+
+ '</div><div class="wp-self-trial-actions"><button class="btn wp-self-trial-button" type="button" onclick="openOwnerTrialModal()">Start my 7-day trial</button><small>Starts immediately when activated.</small></div></section>';
+}
+function openOwnerTrialModal(){
+ if(!wpOwnerTrialEligible()){toast('This business is not eligible for a new trial.');return;}
+ openModal('<div class="modal-head"><h2>Activate 7 days of Premium free</h2><button class="close" type="button" onclick="closeModal()">×</button></div>'+
+ '<p class="subtle" style="line-height:1.65">Your free trial starts immediately. All Premium tools unlock for seven days. No payment details are needed. At expiry, Premium features are put on hold until you purchase a plan; your records are retained.</p>'+
+ '<div class="wp-trial-confirm-points"><span>✓ ₱0 today</span><span>✓ No automatic renewal</span><span>✓ Once per business</span></div>'+
+ '<div class="actions" style="justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:20px"><button class="btn ghost" type="button" onclick="closeModal()">Not now</button><button id="wpActivateTrialButton" class="btn" type="button" onclick="activateOwnerPremiumTrial()">Activate free trial</button></div>');
+}
+async function activateOwnerPremiumTrial(){
+ if(!wpOwnerTrialEligible()){toast('This business is not eligible for a new trial.');return;}
+ const button=document.getElementById('wpActivateTrialButton');
+ if(button){button.disabled=true;button.textContent='Activating…';}
+ try{
+  const businessId=window.wpRealBusinessId;
+  const result=await window.washPilotBillingApi.startOwnerTrial(businessId);
+  if(window.wpRealBusinessId!==businessId)throw new Error('Your workspace changed. Please sign in again.');
+  window.wpRealSubscription=result.subscription;
+  currentPlan=normalizePlan(result.subscription.plan_code);
+  window.wpStorage.setItem('wp_real_workspace_plan_'+businessId,currentPlan);
+  closeModal();renderNav();render();toast('Premium trial activated — enjoy all features for 7 days!');
+ }catch(err){
+  alert(err?.message||'Trial activation could not be completed.');
+  if(button){button.disabled=false;button.textContent='Activate free trial';}
+ }
+}
 function subscriptionStatusBanner(){
  if(!window.wpRealWorkspaceActive||currentRole==='platform')return '';
- const sub=window.wpRealSubscription||{},rawEnd=sub.current_period_ends_at||sub.next_due_at;
+ const s=window.wpRealSubscription||{},trial=wpTrialPeriod();
+ const rawEnd=trial?s.trial_ends_at:(s.current_period_ends_at||s.next_due_at);
  const end=rawEnd?new Date(rawEnd):null,valid=!!(end&&!Number.isNaN(end.getTime()));
  const days=valid?Math.max(0,Math.ceil((end.getTime()-Date.now())/86400000)):null;
- const expired=sub.status==='expired'||(valid&&end.getTime()<=Date.now());
- const premium=normalizePlan(sub.plan_code)==='premium'&&!expired;
- const endLabel=valid?end.toLocaleDateString('en-PH',{month:'long',day:'numeric',year:'numeric'}):'No expiry date';
- if(premium){
-  const warn=days<=7?' is-warning':'';
-  return '<section class="wp-client-subscription-banner'+warn+'"><div class="wp-client-subscription-main"><span class="wp-client-subscription-kicker">PREMIUM SUBSCRIPTION</span><b>'+days+' day'+(days===1?'':'s')+' left</b><small>Access ends on '+esc(endLabel)+'</small></div><div class="wp-client-subscription-action"><span>Renew for ₱499 / 30 days</span><button class="btn" onclick="openPlanUpgradeModal(\'premium\')">Pay / Renew <span>→</span></button></div></section>';
+ const expired=s.status==='expired'||(valid&&end.getTime()<=Date.now()&&normalizePlan(s.plan_code)==='premium');
+ const premium=normalizePlan(s.plan_code)==='premium'&&!expired&&s.status==='active';
+ const endLabel=valid?wpTrialDateText(rawEnd):'No expiry date';
+ if(trial)return '<section class="wp-client-subscription-banner is-warning"><div class="wp-client-subscription-main"><span class="wp-client-subscription-kicker">7-DAY PREMIUM FREE TRIAL</span><b>'+days+' day'+(days===1?'':'s')+' remaining</b><small>Trial ends '+esc(endLabel)+' · No automatic charge</small></div><div class="wp-client-subscription-action"><span>Keep Premium after your trial</span><button class="btn" onclick="go(\'subscription\')">View plans →</button></div></section>';
+ if(premium)return '<section class="wp-client-subscription-banner"><div class="wp-client-subscription-main"><span class="wp-client-subscription-kicker">PREMIUM SUBSCRIPTION</span><b>'+days+' day'+(days===1?'':'s')+' remaining</b><small>Access ends '+esc(endLabel)+'</small></div><div class="wp-client-subscription-action"><span>Renew Premium ₱499 / 30 days</span><button class="btn" onclick="openPlanUpgradeModal(\'premium\')">Pay / Renew →</button></div></section>';
+ if(expired||s.status==='suspended'){
+  const trialEnded=!!(s.trial_starts_at||s.admin_trial_enabled)&&!s.current_period_ends_at;
+  return '<section class="wp-client-subscription-banner is-expired"><div class="wp-client-subscription-main"><span class="wp-client-subscription-kicker">'+(trialEnded?'FREE TRIAL ENDED':'PREMIUM ACCESS ENDED')+'</span><b>'+(trialEnded?'Premium tools are on hold':'Premium access has ended')+'</b><small>Saved business records are retained. Choose Premium to restore access.</small></div><div class="wp-client-subscription-action"><span>₱499 / 30 days</span><button class="btn" onclick="go(\'subscription\')">View plans →</button></div></section>';
  }
- if(expired){
-  return '<section class="wp-client-subscription-banner is-expired"><div class="wp-client-subscription-main"><span class="wp-client-subscription-kicker">PREMIUM EXPIRED</span><b>Your account is now on Free</b><small>Previous Premium expiry: '+esc(endLabel)+'</small></div><div class="wp-client-subscription-action"><span>Restore Premium for ₱499 / 30 days</span><button class="btn" onclick="openPlanUpgradeModal(\'premium\')">Pay / Renew <span>→</span></button></div></section>';
- }
- return '<section class="wp-client-subscription-banner is-free"><div class="wp-client-subscription-main"><span class="wp-client-subscription-kicker">FREE PLAN</span><b>Free forever</b><small>No expiration date · Core carwash operations</small></div><div class="wp-client-subscription-action"><span>Unlock all Premium features for ₱499 / 30 days</span><button class="btn" onclick="openPlanUpgradeModal(\'premium\')">Get Premium <span>→</span></button></div></section>';
+ if(wpOwnerTrialEligible())return wpTrialOfferCard();
+ return '<section class="wp-client-subscription-banner is-free"><div class="wp-client-subscription-main"><span class="wp-client-subscription-kicker">FREE PLAN</span><b>Free forever</b><small>Core carwash operations · No expiry</small></div><div class="wp-client-subscription-action"><span>Unlock Premium for ₱499 / 30 days</span><button class="btn" onclick="openPlanUpgradeModal(\'premium\')">Get Premium →</button></div></section>';
 }
 function vendoPage(){return `<section class="panel"><span class="badge">Coming soon</span><h1>WashPilot Smart Vendo</h1><p>Connect compatible coin-operated carwash machines to your workspace when hardware integration becomes available.</p><h2>Planned capabilities</h2><ul><li>Registered devices and installation status</li><li>Coin transactions, usage and machine revenue</li><li>Connectivity and maintenance alerts</li><li>Service settings for each machine</li></ul><p>No machines are connected. Retrofitting existing machines will require compatible hardware adapters for each manufacturer.</p></section>`;}
 function dashboardPage(){
@@ -2165,12 +2224,12 @@ function dashboardPage(){
  return `<div class="wp-dashboard">
   <div class="wp-dashboard-intro"><div><span class="wp-dashboard-eyebrow">YOUR WORKSPACE</span><h1>Dashboard</h1><p>See today’s activity and keep your washes moving.</p></div><button class="btn wp-dashboard-start" type="button" onclick="go('newwash')">＋ New wash</button></div>
   <div id="wpDashboardBookingNotifications"></div>
+  ${subscriptionStatusBanner()}
   <section aria-labelledby="wpDashboardSales"><div class="wp-dashboard-section-head"><div><h2 id="wpDashboardSales">Sales over time</h2><p>Collected payments for each period</p></div></div><div class="grid wp-dashboard-periods">${stat('Today’s Sales',money(sales),'Collected today','₱','green')}${stat('Weekly Sales',money(weekSales),'Monday through today','↗')}${stat('Monthly Sales',money(monthSales),'First day of this month to today','▣','purple')}${stat('Yearly Sales',money(yearSales),'January 1 to today','▤','amber')}</div></section>
   <div class="wp-dashboard-main-grid">
    <section class="panel wp-dashboard-queue" aria-labelledby="wpDashboardQueue"><div class="panel-head"><div><h2 id="wpDashboardQueue">Vehicles in progress</h2><p>Active tickets registered today</p></div><button class="btn ghost small" type="button" onclick="go('queue')">Open queue →</button></div>${queue?`<div class="wp-dashboard-rows">${queue}</div>`:'<div class="wp-dashboard-empty"><strong>No active washes today</strong><span>When you create a wash ticket, it will appear here.</span></div>'}</section>
    <section class="panel wp-dashboard-guide" aria-labelledby="wpDashboardGuide"><div class="panel-head"><div><h2 id="wpDashboardGuide">Your daily flow</h2><p>Three simple steps for each vehicle</p></div></div><ol><li><span>1</span><div><strong>Create a wash</strong><small>Add the vehicle and choose a service.</small></div></li><li><span>2</span><div><strong>Update the queue</strong><small>Move the wash through each stage.</small></div></li><li><span>3</span><div><strong>Collect payment</strong><small>Record payment when the vehicle is ready.</small></div></li></ol></section>
   </div>
-  ${subscriptionStatusBanner()}
   <section class="panel wp-dashboard-recent" aria-labelledby="wpDashboardRecent"><div class="panel-head"><div><h2 id="wpDashboardRecent">Recent transactions</h2><p>Your latest wash tickets</p></div><button class="btn ghost small" type="button" onclick="go('transactions')">View all →</button></div>${transactionTable(recent,false)}</section>
   <div class="grid two wp-dashboard-details"><section class="panel"><div class="panel-head"><h2>Daily sales</h2><span class="subtle">Last 7 days</span></div><div class="chart" aria-label="Daily sales for the last seven days">${days.map(d=>`<div class="bar-wrap" aria-label="${esc(d.label)}: ${money(d.value)}"><div class="bar" title="${money(d.value)}" style="height:${Math.max(3,d.value/max*78)}%"></div><span class="bar-label">${d.label}</span></div>`).join('')}</div></section>
    <section class="panel"><div class="panel-head"><h2>Payment breakdown</h2><span class="subtle">Today</span></div>${paymentBreakdown(paidTransactionsBetween(today(),today()))}<div class="divider"></div>${planRank(effectivePlan())>=2?`<div class="panel-head"><h2>Daily expenses</h2><strong>${money(expenses)}</strong></div><div class="muted-box"><div style="display:flex;justify-content:space-between;font-size:11px"><span>Estimated net earnings</span><b style="color:var(--green)">${money(sales-expenses)}</b></div><small class="subtle">Gross sales less recorded expenses. Not a full accounting profit calculation.</small></div>`:`<div class="muted-box"><b>Want to track expenses and estimated earnings?</b><p class="subtle">Upgrade to Premium for ₱499 / 30 days to record operating costs and see estimated net earnings.</p><button class="btn small" onclick="setPlan('premium')">Preview Premium</button></div>`}</section></div>
@@ -2535,6 +2594,7 @@ function easyDashboardPage(){
   const latest=state.transactions.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.time||'').localeCompare(a.time||'')).slice(0,5);
   const onboarding=state.services.filter(s=>s.type==='main'&&s.active).length===0;
   return homeRangeTabs()+`<section class="easy-welcome"><div><span class="badge">YOUR WORKSPACE</span><h1>Welcome, ${esc(owner)}.</h1><p>${esc(biz.name||'Your carwash')} · Performance ${periodLabel}. Sales count only payments that have been collected.</p></div><button class="btn" onclick="go('newwash')">＋ New Wash</button></section>`+
+   subscriptionStatusBanner()+
    `<div class="grid stats">${stat('Sales',money(sales),`Collected payments ${periodLabel}`,'₱','green')}${stat('Vehicles Served',vehicles,selectedHomeRange===1?'Tickets registered today':`Tickets registered ${periodLabel}`,'🚘')}${stat('In Progress',active.length,`Active wash jobs ${periodLabel}`,'◷','amber')}${stat('Completed',completed,`Paid and completed ${periodLabel}`,'✓','purple')}</div>`+
    (onboarding?`<section class="panel" style="margin-bottom:15px"><div class="panel-head"><div><h3>Set up your carwash</h3><span class="subtle">Add your services before creating the next wash ticket.</span></div><span class="badge">GETTING STARTED</span></div><button class="btn" onclick="catalogTab='main';go('catalog')">Add your services and prices</button></section>`:'')+
    `<div class="grid two"><section class="panel"><div class="panel-head"><h3>Vehicles to look after</h3><button class="btn ghost small" onclick="go('queue')">Open queue</button></div>${active.slice(0,5).map(t=>`<div class="easy-queue-row"><span class="plate">${esc(t.plate)}</span><div class="queue-info"><b>${esc(t.vehicle)} · ${esc(t.main)}</b><small>${esc(t.employee||'Awaiting assignment')} · ${money(t.total)} · ${esc(t.financialStatus||'Unpaid')}</small></div>${statusPill(t.status)}</div>`).join('')||'<div class="empty">No active vehicles. New wash tickets will appear here.</div>'}</section><section class="panel"><div class="panel-head"><h3>Recent wash tickets</h3><button class="btn ghost small" onclick="go('transactions')">View all</button></div>${latest.map(t=>`<div class="easy-queue-row"><span class="plate">${esc(t.plate)}</span><div class="queue-info"><b>${esc(t.vehicle)} · ${esc(t.main)}</b><small>${money(t.total)} · ${esc(t.payment||'Not collected')}</small></div>${statusPill(t.financialStatus||'Unpaid')}</div>`).join('')||'<div class="empty">No wash tickets yet.</div>'}</section></div>`;
@@ -2921,15 +2981,18 @@ function subscriptionPage(){
  if(!window.wpRealWorkspaceActive)return pageHead('Subscription & Billing','Sign in with a registered business account to manage billing.')+'<section class="panel"><div class="empty">Live subscription management is available to registered business accounts.</div></section>';
  const sub=window.wpRealSubscription||{};
  const plan=effectivePlan();
- const rawEnd=sub.current_period_ends_at||sub.next_due_at||null;
+ const trial=wpTrialPeriod();
+ const rawEnd=trial?sub.trial_ends_at:(sub.current_period_ends_at||sub.next_due_at||null);
  const end=rawEnd?new Date(rawEnd):null;
  const validEnd=end&&!Number.isNaN(end.getTime());
  const daysLeft=validEnd?Math.max(0,Math.ceil((end.getTime()-Date.now())/86400000)):null;
  const premiumExpired=!!(validEnd&&end.getTime()<=Date.now())||sub.status==='expired';
- const status=premiumExpired?'EXPIRED · FREE ACCESS':String(sub.status||'active').replace(/_/g,' ').toUpperCase();
- const isPremium=plan==='premium'&&!premiumExpired;
- const expiryText=validEnd?end.toLocaleDateString('en-PH',{month:'long',day:'numeric',year:'numeric'}):'No expiry';
- const periodCard=isPremium
+ const status=premiumExpired?'PREMIUM ON HOLD':trial?'7-DAY FREE TRIAL':String(sub.status||'active').replace(/_/g,' ').toUpperCase();
+ const isPremium=plan==='premium'&&!premiumExpired&&!trial;
+ const expiryText=validEnd?wpTrialDateText(rawEnd):'No expiry';
+ const periodCard=trial
+  ? '<div class="wp-subscription-expiry"><small>7-DAY PREMIUM TRIAL</small><b>'+esc(expiryText)+'</b><strong>'+daysLeft+' day'+(daysLeft===1?'':'s')+' remaining</strong><span>Premium is free until your trial ends. There are no automatic charges.</span></div>'
+  : isPremium
   ? '<div class="wp-subscription-expiry"><small>PREMIUM EXPIRES ON</small><b>'+esc(expiryText)+'</b><strong>'+daysLeft+' day'+(daysLeft===1?'':'s')+' left</strong><span>Renew for ₱499 to add another 30 days after your current period.</span></div>'
   : premiumExpired
    ? '<div class="wp-subscription-expiry is-expired"><small>PREMIUM PERIOD ENDED</small><b>'+esc(expiryText)+'</b><strong>Premium access has ended</strong><span>Your workspace is on the Free plan. Submit a renewal and upload payment proof to restore Premium.</span></div>'
@@ -2940,7 +3003,8 @@ function subscriptionPage(){
  const cards=planCard('basic','Free','₱0 · Forever','Essential tools for daily carwash operations',['One location','Core POS and wash queue','Services, add-ons, receipts and customer history','Daily sales summary'],plan==='basic')+
   planCard('premium','Premium','₱499 · 30 days','The complete WashPilot management workspace',['Bookings and online reservations','Employees, expenses and inventory','Reports, loyalty and add-on analytics','Multiple branches and service recipes'],plan==='premium');
  return pageHead('Subscription & Billing','Manage your Free or Premium plan and renew without losing your existing workspace.')+
-  '<div class="grid stats">'+stat('Current Plan',plan==='premium'?'PREMIUM':'FREE','Subscription tier','✓','green')+stat('Account Status',status,'Business access','▣')+stat('Premium Price', '₱499','Per 30-day period','₱','purple')+stat('Days Remaining',isPremium?daysLeft:'—',isPremium?'Until Premium expires':'Free plan does not expire','◷')+'</div>'+
+  wpTrialOfferCard()+
+  '<div class="grid stats">'+stat('Current Plan',plan==='premium'?'PREMIUM':'FREE','Subscription tier','✓','green')+stat('Account Status',status,'Business access','▣')+stat('Premium Price', '₱499','Per 30-day period','₱','purple')+stat('Days Remaining',(isPremium||trial)?daysLeft:'—',trial?'Until free trial ends':isPremium?'Until Premium expires':'Free plan does not expire','◷')+'</div>'+
   periodCard+
   '<section class="wp-billing-plans">'+cards+'</section>'+
   '<section class="panel" style="margin-top:16px"><div class="panel-head"><h3>Payment and renewal requests</h3><span class="subtle">Your payment proof goes to the WashPilot Super Admin for verification</span></div><div id="wpMyBillingRequests" class="empty">Loading payment request history…</div></section>'+
@@ -3435,7 +3499,7 @@ window.submitTrialSignup=async function(e){
     }
     const {data:business,error:businessError}=await sb.from('businesses').select('id,name,status,created_at,address,contact_phone').eq('id',businessId).single();
     if(businessError)throw new Error('Your business was found, but its workspace could not be loaded: '+businessError.message);
-    const {data:subscription,error:subscriptionError}=await sb.from('subscriptions').select('plan_code,status,trial_starts_at,trial_ends_at,current_period_ends_at').eq('business_id',businessId).single();
+    const {data:subscription,error:subscriptionError}=await sb.from('subscriptions').select('plan_code,status,trial_starts_at,trial_ends_at,current_period_starts_at,current_period_ends_at,next_due_at,admin_trial_enabled').eq('business_id',businessId).single();
     if(subscriptionError)throw new Error('Your business is available, but its subscription could not be loaded: '+subscriptionError.message);
     openRealWorkspace(user,business,subscription);
     if(window.washPilotBookingApi){
@@ -3611,6 +3675,18 @@ window.wpFinishAuthenticatedWorkspace=showAuthenticatedWorkspaceUI;
   }
 
   window.washPilotBillingApi = {
+    async startOwnerTrial(businessId){
+      if(!businessId||businessId!==window.wpRealBusinessId)throw new Error('Your business workspace is not ready.');
+      const sb=getClient();
+      const {data:endsAt,error}=await sb.rpc('start_owner_premium_trial',{p_business_id:businessId});
+      if(error)throw error;
+      const {data:subscription,error:readError}=await sb.from('subscriptions')
+        .select('plan_code,status,trial_starts_at,trial_ends_at,current_period_starts_at,current_period_ends_at,next_due_at,admin_trial_enabled')
+        .eq('business_id',businessId).single();
+      if(readError)throw readError;
+      return {endsAt,subscription};
+    },
+
     async listAdminTenants(adminUserId){
       if(!adminUserId)throw new Error('The platform administrator session is missing.');
       const sb=getClient();
