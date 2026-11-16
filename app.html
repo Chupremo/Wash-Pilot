@@ -1580,6 +1580,20 @@ body{background-color:#f5f7fb!important;color:#17243a!important}
 .wp-trial-confirm-points span{background:#ecfdf5;color:#166534;padding:8px 10px;border-radius:8px;font-size:12px;font-weight:750}
 @media(max-width:720px){.wp-self-trial-card{flex-direction:column;align-items:stretch;padding:18px}.wp-self-trial-actions{align-items:stretch}.wp-self-trial-button{width:100%}}
 
+
+/* Super Admin receiving methods: GCash / BPI */
+.wp-billing-admin{max-width:900px}.wp-billing-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:16px 0}
+.wp-billing-admin input:not([type=checkbox]),.wp-billing-admin select{min-height:44px}
+.wp-billing-qr-preview{display:flex;align-items:center;justify-content:center;width:min(100%,280px);min-height:145px;background:#f8fafc;border:1px dashed #b5c4d7;border-radius:12px;margin:10px 0;padding:12px}
+.wp-billing-qr-preview img{width:180px;height:180px;max-width:100%;object-fit:contain}
+.wp-billing-enabled{display:flex;align-items:center;gap:10px;margin:16px 0;font-size:13px;font-weight:700;color:#18365e}
+.wp-billing-enabled input{width:18px;height:18px;accent-color:#2563eb}
+.wp-payment-method-info{display:grid;grid-template-columns:minmax(0,1fr) 155px;gap:15px;align-items:center}
+.wp-payment-method-info small{display:block;margin-top:10px;color:#5f7086;font-size:11px}
+.wp-payment-method-info strong{display:block;overflow-wrap:anywhere;font-size:16px;color:#142f53}
+.wp-payment-method-info img{width:155px;height:155px;object-fit:contain;border:1px solid #dce4ed;border-radius:12px;background:#fff;padding:5px}
+@media(max-width:600px){.wp-billing-fields,.wp-payment-method-info{grid-template-columns:1fr}.wp-payment-method-info img{width:180px;height:180px}}
+
 </style>
 <link rel="stylesheet" href="/washpilot-design.css?v=20261116-wp-logo2">
 <script src="/washpilot-accessibility.js?v=20261117" defer></script>
@@ -3010,32 +3024,60 @@ function subscriptionPage(){
   '<section class="panel" style="margin-top:16px"><div class="panel-head"><h3>Payment and renewal requests</h3><span class="subtle">Your payment proof goes to the WashPilot Super Admin for verification</span></div><div id="wpMyBillingRequests" class="empty">Loading payment request history…</div></section>'+
   '<section class="panel" style="margin-top:16px"><div class="panel-head"><h3>How renewal works</h3></div><p class="subtle" style="line-height:1.7">Premium costs ₱499 for 30 days. Upload your payment receipt from this page. Your request appears in the Super Admin Billing & Revenue queue. Premium starts or extends only when the administrator approves the payment. Early renewals add 30 days to your existing expiry date; renewals after expiry start from the approval date. Rejected requests do not extend access.</p></section>';
 }
+
+/* WashPilot Premium subscription collection: GCash and BPI only. */
+const wpPremiumMethods=['GCash','BPI'];
+let wpBillingAdminSettings=null,wpBillingQrUrl='',wpBillingQrPreview='',wpPremiumCheckoutSettings=null;
+function wpPremiumDetails(settings,method){
+ const all=settings?.payment_methods||{},entry=all[method]||{};
+ const legacy=method==='GCash'?{account_name:settings?.gcash_account_name,account_number:settings?.gcash_number,qr_image_url:settings?.qr_image_url}:{};
+ return {account_name:String(entry.account_name||legacy.account_name||''),account_number:String(entry.account_number||legacy.account_number||''),qr_image_url:String(entry.qr_image_url||legacy.qr_image_url||''),enabled:entry.enabled===true||entry.enabled==='true',instructions:String(entry.instructions||settings?.payment_instructions||'')};
+}
+function wpPremiumReady(settings,method){
+ if(!wpPremiumMethods.includes(method))return false;
+ const d=wpPremiumDetails(settings,method);
+ return !!(d.enabled&&d.account_name.trim()&&d.account_number.trim()&&/^https:\/\//i.test(d.qr_image_url));
+}
+function wpPremiumAvailable(settings){return wpPremiumMethods.filter(m=>wpPremiumReady(settings,m));}
+function wpShowPremiumDetails(method){
+ const box=document.getElementById('wpPremiumMethodDetails');if(!box)return;
+ if(!wpPremiumAvailable(wpPremiumCheckoutSettings).includes(method)){box.textContent='This payment method is unavailable.';return;}
+ const d=wpPremiumDetails(wpPremiumCheckoutSettings,method);
+ box.innerHTML='<div class="wp-payment-instructions-head"><b>'+esc(method)+' receiving details</b><span>READY</span></div>'+
+ '<div class="wp-payment-method-info"><div><small>Account Number</small><strong>'+esc(d.account_number)+'</strong><small>Account Name</small><strong>'+esc(d.account_name)+'</strong></div>'+
+ '<img src="'+esc(d.qr_image_url)+'" alt="'+esc(method)+' QR code" loading="lazy"></div>'+
+ '<p class="subtle">'+esc(d.instructions||'Send the exact amount, then attach proof of payment below.')+'</p>';
+}
+
 async function openPlanUpgradeModal(planCode){
  const code=normalizePlan(planCode);
- if(!window.wpRealWorkspaceActive||code!=='premium'){toast('Sign in to a registered business workspace to renew Premium.');return;}
- openModal('<div class="modal-head"><h2>Premium · ₱499 / 30 days</h2><button class="close" onclick="closeModal()">×</button></div><div class="empty">Loading payment instructions…</div>');
+ if(!window.wpRealWorkspaceActive||code!=='premium'){toast('Sign in to your business to renew Premium.');return;}
+ openModal('<div class="modal-head"><h2>Premium · ₱499 / 30 days</h2><button class="close" onclick="closeModal()">×</button></div><div class="empty">Loading payment details…</div>');
  try{
   const settings=await window.washPilotBillingApi.getPaymentSettings();
   const history=await window.washPilotBillingApi.getMyRequests(window.wpRealBusinessId);
-  if(history.find(x=>x.status==='pending'))throw new Error('A payment request is already waiting for review. Please wait until the Super Admin reviews it.');
-  const configured=!!(settings.gcash_number&&settings.gcash_account_name);
-  const qr=settings.qr_image_url?'<img class="wp-gcash-qr" src="'+esc(settings.qr_image_url)+'" alt="GCash payment QR code">':'';
-  const activeSub=window.wpRealSubscription||{};const isRenewal=effectivePlan()==='premium'||activeSub.status==='expired'||premiumPeriodExpired(activeSub);
-  document.getElementById('modal').innerHTML='<div class="modal-head"><h2>'+(isRenewal?'Renew Premium':'Get Premium')+'</h2><button class="close" onclick="closeModal()">×</button></div>'+
-   '<div class="wp-upgrade-summary"><span>Premium subscription</span><b>30 days</b><span>Amount due</span><strong>₱499</strong></div>'+
-   '<section class="wp-payment-instructions"><div class="wp-payment-instructions-head"><b>GCash payment details</b><span>'+(configured?'READY':'NOT CONFIGURED')+'</span></div>'+
-   (configured?qr+'<b>'+esc(settings.gcash_account_name)+'</b><strong>'+esc(settings.gcash_number)+'</strong><p>'+esc(settings.payment_instructions||'Send ₱499 and upload your receipt.')+'</p>':'<p class="wp-payment-unconfigured">No GCash receiving details are configured. Please contact WashPilot before sending payment.</p>')+'</section>'+
-   '<form onsubmit="submitPlanUpgrade(event,\'premium\',499)"><div class="field"><label>Payment receipt / screenshot *</label><input name="proof" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" required><small class="subtle">JPG, PNG, WebP or PDF · Up to 10 MB</small></div>'+
-   '<div class="actions" style="justify-content:flex-end;margin-top:18px"><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn" type="submit">Send payment to admin for approval</button></div></form>';
- }catch(err){
-  document.getElementById('modal').innerHTML='<div class="modal-head"><h2>Premium payment</h2><button class="close" onclick="closeModal()">×</button></div><div class="inline-note">'+esc(err.message||'Could not load payment details.')+'</div><div class="actions" style="justify-content:flex-end;margin-top:16px"><button class="btn ghost" onclick="closeModal()">Close</button></div>';
- }
+  if(history.some(r=>r.status==='pending'))throw Error('You already have a payment pending approval.');
+  const methods=wpPremiumAvailable(settings);
+  if(!methods.length)throw Error('No subscription receiving method is currently ready. Contact WashPilot support.');
+  wpPremiumCheckoutSettings=settings;
+  const current=window.wpRealSubscription||{},renew=effectivePlan()==='premium'||current.status==='expired'||premiumPeriodExpired(current);
+  const modal=document.getElementById('modal');
+  if(!modal)return;
+  modal.innerHTML='<div class="modal-head"><h2>'+(renew?'Renew Premium':'Get Premium')+'</h2><button class="close" onclick="closeModal()">×</button></div>'+
+  '<div class="wp-upgrade-summary"><span>Premium subscription</span><b>30 days</b><span>Amount due</span><strong>₱499</strong></div>'+
+  '<form onsubmit="submitPlanUpgrade(event,\x27premium\x27,499)"><div class="field" style="margin:15px 0">'+
+  '<label for="wpPremiumPaymentMethod">Choose payment method</label><select name="payment_method" id="wpPremiumPaymentMethod" required onchange="wpShowPremiumDetails(this.value)">'+methods.map(m=>'<option value="'+m+'">'+m+'</option>').join('')+'</select></div>'+
+  '<section class="wp-payment-instructions" id="wpPremiumMethodDetails" aria-live="polite"></section>'+
+  '<div class="field" style="margin-top:14px"><label>Payment receipt / screenshot *</label><input name="proof" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" required><small class="subtle">JPG, PNG, WebP or PDF · Up to 10 MB. Super Admin approval required.</small></div>'+
+  '<div class="actions" style="justify-content:flex-end;margin-top:18px"><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn" type="submit">Submit payment for verification</button></div></form>';
+  wpShowPremiumDetails(methods[0]);
+ }catch(err){const box=document.getElementById('modal');if(box)box.innerHTML='<div class="modal-head"><h2>Premium payment</h2><button class="close" onclick="closeModal()">×</button></div><p class="inline-note">'+esc(err.message)+'</p>';}
 }
 async function submitPlanUpgrade(e,planCode,amount){
  e.preventDefault();const form=e.currentTarget,submit=form.querySelector('button[type="submit"]');
  if(submit){submit.disabled=true;submit.textContent='Submitting…';}
  try{
-  await window.washPilotBillingApi.submitUpgrade({businessId:window.wpRealBusinessId,planCode:'premium',amount:499,file:form.elements.proof.files?.[0]});
+  await window.washPilotBillingApi.submitUpgrade({businessId:window.wpRealBusinessId,planCode:'premium',amount:499,method:form.elements.payment_method.value,file:form.elements.proof.files?.[0]});
   closeModal();toast('Payment request sent to the Super Admin. Premium access changes after approval.');
   render();loadMyBillingRequests();
  }catch(err){
@@ -3047,7 +3089,7 @@ async function loadMyBillingRequests(){
  const el=document.getElementById('wpMyBillingRequests');if(!el||!window.wpRealBusinessId||!window.washPilotBillingApi)return;
  try{
   const rows=await window.washPilotBillingApi.getMyRequests(window.wpRealBusinessId);
-  el.innerHTML=rows.length?'<div class="table-wrap"><table><thead><tr><th>Request</th><th>Plan</th><th>Amount</th><th>Submitted</th><th>Status</th><th>Admin note</th></tr></thead><tbody>'+rows.map(r=>'<tr><td><b>'+esc(r.request_type==='renewal'?'Premium renewal':r.request_type==='upgrade'?'Premium request':'Payment request')+'</b></td><td>'+esc(planName(planRank(r.plan_code)))+'</td><td>'+money(r.amount)+'</td><td>'+dateLabel(String(r.submitted_at).slice(0,10))+'</td><td>'+statusPill(String(r.status).toUpperCase())+'</td><td>'+esc(r.reviewer_note||'—')+'</td></tr>').join('')+'</tbody></table></div>':'<div class="empty">No payment or renewal requests yet.</div>';
+  el.innerHTML=rows.length?'<div class="table-wrap"><table><thead><tr><th>Request</th><th>Plan</th><th>Amount</th><th>Method</th><th>Submitted</th><th>Status</th><th>Admin note</th></tr></thead><tbody>'+rows.map(r=>'<tr><td><b>'+esc(r.request_type==='renewal'?'Premium renewal':r.request_type==='upgrade'?'Premium request':'Payment request')+'</b></td><td>'+esc(planName(planRank(r.plan_code)))+'</td><td>'+money(r.amount)+'</td><td>'+esc(r.payment_method||'—')+'</td><td>'+dateLabel(String(r.submitted_at).slice(0,10))+'</td><td>'+statusPill(String(r.status).toUpperCase())+'</td><td>'+esc(r.reviewer_note||'—')+'</td></tr>').join('')+'</tbody></table></div>':'<div class="empty">No payment or renewal requests yet.</div>';
  }catch(err){el.innerHTML='<div class="empty">Payment request history is unavailable: '+esc(err.message)+'</div>';}
 }
 function platformDashboard(){
@@ -3125,40 +3167,83 @@ async function updateTenant(e,id){
  }catch(err){alert(err.message||'Could not update the live business subscription.');if(btn){btn.disabled=false;btn.textContent='Save live changes';}}
 }
 function recordTenantPayment(){toast('Payments must be submitted by the business owner and approved from Billing & Revenue.');}
+
 function platformBillingPage(){
  const ts=Array.isArray(platformData.tenants)?platformData.tenants:[];
- const active=ts.filter(t=>t.status==='Active');
+ const active=ts.filter(t=>t.status==='Active'),pending=ts.filter(t=>t.status==='Past Due'||t.status==='Pending Verification').length;
  const mrr=active.reduce((a,t)=>a+Number(t.mrr||0),0);
- const pending=ts.filter(t=>t.status==='Past Due'||t.status==='Pending Verification').length;
- return pageHead('Billing & Revenue','Live customer upgrade requests and subscription plan values.')+
-  '<section class="panel"><div class="panel-head"><h3>GCash receiving details</h3><span class="subtle">Shown to business owners at upgrade checkout</span></div>'+
-  '<form id="wpBillingSettingsForm" onsubmit="savePlatformBillingSettings(event)"><div class="grid two">'+
-  '<div class="field"><label>GCash account name</label><input name="gcash_account_name" required></div><div class="field"><label>GCash mobile number</label><input name="gcash_number" type="tel" required></div>'+
-  '<div class="field"><label>GCash QR image URL (optional)</label><input name="qr_image_url" type="url" placeholder="https://…"></div><div class="field"><label>Payment instructions</label><input name="payment_instructions"></div></div>'+
-  '<div class="actions" style="justify-content:flex-end;margin-top:12px"><button class="btn" type="submit">Save payment details</button></div></form></section>'+
-  '<section class="panel" style="margin-top:16px"><div class="panel-head"><h3>Live upgrade and reactivation requests</h3><span class="subtle">Payment submissions from registered businesses</span></div><div id="wpPlatformBillingRequests" class="empty">Loading live payment requests…</div></section>'+
-  '<section class="panel" style="margin-top:16px"><div class="panel-head"><h3>Live subscription snapshot</h3><button class="btn ghost small" onclick="refreshPlatformAdminData()">↻ Refresh</button></div>'+
-  '<div class="grid stats">'+stat('Active subscriptions',active.length,'Current active plans','✓','green')+stat('Estimated MRR',money(mrr),'Active plan value · not cash collected','₱','purple')+stat('Businesses needing attention',pending,'Past due or pending verification','!','amber')+stat('Registered businesses',ts.length,'Live tenant records','▣')+'</div>'+
-  '<div class="inline-note">Recurring plan value is calculated from live subscription records and plan prices. Cash collected, invoices and payouts are not reported here because no live invoice ledger is connected.</div></section>';
+ return pageHead('Billing & Revenue','Configure GCash or BPI receiving accounts and verify subscription payments.')+
+ '<section class="panel wp-billing-admin"><div class="panel-head"><div><h3>Receiving Accounts</h3><span class="subtle">Select a method and manage its account number, account name and QR code separately.</span></div></div>'+
+ '<form id="wpBillingSettingsForm" onsubmit="savePlatformBillingSettings(event)">'+
+ '<div class="field"><label for="wpBillingMethod">Payment Method</label><select id="wpBillingMethod" name="payment_method" onchange="wpSelectAdminBillingMethod(this.value)"><option value="GCash">GCash</option><option value="BPI">BPI</option></select></div>'+
+ '<div class="wp-billing-fields"><div class="field"><label for="wpBillingNumber">Account Number</label><input id="wpBillingNumber" name="account_number" maxlength="32" inputmode="numeric" placeholder="Enter account number"></div>'+
+ '<div class="field"><label for="wpBillingName">Account Name</label><input id="wpBillingName" name="account_name" maxlength="100" placeholder="Registered account holder"></div></div>'+
+ '<div class="field"><label for="wpBillingQrFile">QR Code</label><input id="wpBillingQrFile" name="qr_file" type="file" accept="image/png,image/jpeg,image/webp" onchange="wpPreviewBillingQr()">'+
+ '<small class="subtle">Upload PNG, JPG or WebP up to 5 MB. The QR code is displayed to owners only for enabled accounts.</small>'+
+ '<div id="wpBillingQrPreview" class="wp-billing-qr-preview" aria-live="polite"></div>'+
+ '<button type="button" class="btn ghost small" onclick="wpRemoveBillingQr()">Remove QR</button></div>'+
+ '<div class="field" style="margin-top:12px"><label for="wpBillingInstructions">Payment Instructions (optional)</label><textarea id="wpBillingInstructions" name="instructions" maxlength="500" rows="2"></textarea></div>'+
+ '<label class="wp-billing-enabled"><input type="checkbox" name="enabled"> Enable this payment method for Premium subscriptions</label>'+
+ '<p id="wpBillingMethodHint" class="subtle" aria-live="polite">Account Number, Account Name and QR Code required to enable.</p>'+
+ '<div class="actions" style="justify-content:flex-end;margin-top:12px"><button type="submit" class="btn">Save selected method</button></div></form></section>'+
+ '<section class="panel" style="margin-top:16px"><div class="panel-head"><h3>Upgrade and renewal requests</h3><span class="subtle">Business owners submit payment proof for your approval</span></div><div id="wpPlatformBillingRequests" class="empty">Loading requests…</div></section>'+
+ '<section class="panel" style="margin-top:16px"><div class="panel-head"><h3>Live subscription snapshot</h3><button class="btn ghost small" onclick="refreshPlatformAdminData()">↻ Refresh</button></div>'+
+ '<div class="grid stats">'+stat('Active subscriptions',active.length,'Current active plans','✓','green')+stat('Estimated MRR',money(mrr),'Active plan value · not cash collected','₱','purple')+stat('Businesses needing attention',pending,'Past due or pending verification','!','amber')+stat('Registered businesses',ts.length,'Live tenant records','▣')+'</div></section>';
+}
+function wpDropBillingObjectUrl(){if(wpBillingQrPreview){URL.revokeObjectURL(wpBillingQrPreview);wpBillingQrPreview='';}}
+function wpDrawBillingQr(){
+ const el=document.getElementById('wpBillingQrPreview');if(!el)return;
+ const url=wpBillingQrPreview||wpBillingQrUrl;
+ el.innerHTML=url&&/^(https:\/\/|blob:)/.test(url)?'<img src="'+esc(url)+'" alt="Current receiving account QR code">':'<span>No QR code uploaded</span>';
+}
+function wpSelectAdminBillingMethod(method){
+ if(!wpPremiumMethods.includes(method))return;
+ const f=document.getElementById('wpBillingSettingsForm');if(!f)return;
+ wpDropBillingObjectUrl();
+ const d=wpPremiumDetails(wpBillingAdminSettings,method);
+ f.elements.payment_method.value=method;f.elements.account_number.value=d.account_number;
+ f.elements.account_name.value=d.account_name;f.elements.instructions.value=d.instructions;
+ f.elements.enabled.checked=d.enabled;f.elements.qr_file.value='';
+ wpBillingQrUrl=d.qr_image_url;wpDrawBillingQr();
+ const hint=document.getElementById('wpBillingMethodHint');
+ if(hint)hint.textContent=wpPremiumReady(wpBillingAdminSettings,method)?method+' is currently available at checkout.':method+' is not shown at checkout until all three details are filled and enabled.';
+}
+function wpPreviewBillingQr(){
+ const f=document.getElementById('wpBillingSettingsForm'),file=f?.elements.qr_file.files?.[0];
+ wpDropBillingObjectUrl();
+ if(!file){wpDrawBillingQr();return;}
+ if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>5*1024*1024){f.elements.qr_file.value='';alert('Upload a PNG, JPG or WebP QR code under 5 MB.');wpDrawBillingQr();return;}
+ wpBillingQrPreview=URL.createObjectURL(file);wpDrawBillingQr();
+}
+function wpRemoveBillingQr(){
+ wpDropBillingObjectUrl();
+ const f=document.getElementById('wpBillingSettingsForm');if(f)f.elements.qr_file.value='';
+ wpBillingQrUrl='';wpDrawBillingQr();
 }
 async function loadPlatformBillingRequests(){
- const el=document.getElementById('wpPlatformBillingRequests');if(!el||!window.washPilotBillingApi)return;
+ const box=document.getElementById('wpPlatformBillingRequests');if(!box||!window.washPilotBillingApi)return;
  try{
   const [rows,settings]=await Promise.all([window.washPilotBillingApi.listAdminRequests(),window.washPilotBillingApi.getPaymentSettings()]);
   const form=document.getElementById('wpBillingSettingsForm');
-  if(form){form.elements.gcash_account_name.value=settings.gcash_account_name||'';form.elements.gcash_number.value=settings.gcash_number||'';form.elements.qr_image_url.value=settings.qr_image_url||'';form.elements.payment_instructions.value=settings.payment_instructions||'';}
-  if(!rows.length){el.innerHTML='<div class="empty">No customer payment requests yet.</div>';return;}
-  el.innerHTML='<div class="table-wrap"><table><thead><tr><th>Business</th><th>Request</th><th>Plan</th><th>Amount</th><th>Submitted</th><th>Status</th><th>Payment proof</th><th>Action</th></tr></thead><tbody>'+
-   rows.map(r=>'<tr><td><b>'+esc(r.business_name)+'</b></td><td>'+esc(r.request_type==='renewal'?'Premium renewal':r.request_type==='upgrade'?'Premium access':'Reactivation')+'</td><td>'+esc(planName(planRank(r.plan_code)))+'</td><td>'+money(r.amount)+'</td><td>'+dateLabel(String(r.submitted_at).slice(0,10))+'</td><td>'+statusPill(String(r.status).toUpperCase())+'</td><td><button class="btn ghost small" onclick="viewUpgradeProof(\''+esc(r.proof_object_path)+'\')">View receipt</button></td><td>'+(r.status==='pending'?'<button class="btn success small" onclick="reviewPlatformBillingRequest(\''+r.id+'\',true)">Approve</button> <button class="btn danger small" onclick="reviewPlatformBillingRequest(\''+r.id+'\',false)">Reject</button>':'—')+'</td></tr>').join('')+'</tbody></table></div>';
- }catch(err){el.innerHTML='<div class="empty">Could not load live requests. Sign in as a WashPilot platform administrator to review payments. '+esc(err.message)+'</div>';}
+  if(form){const method=wpPremiumMethods.includes(form.elements.payment_method.value)?form.elements.payment_method.value:'GCash';wpBillingAdminSettings=settings;wpSelectAdminBillingMethod(method);}
+  if(!rows.length){box.innerHTML='<div class="empty">No Premium payment requests yet.</div>';return;}
+  box.innerHTML='<div class="table-wrap"><table><thead><tr><th>Business</th><th>Request</th><th>Plan</th><th>Amount</th><th>Method</th><th>Submitted</th><th>Status</th><th>Proof</th><th>Action</th></tr></thead><tbody>'+
+  rows.map(r=>'<tr><td>'+esc(r.business_name)+'</td><td>'+esc(r.request_type||'Payment')+'</td><td>'+esc(planName(planRank(r.plan_code)))+'</td><td>'+money(r.amount)+'</td><td><b>'+esc(r.payment_method||'—')+'</b></td><td>'+dateLabel(String(r.submitted_at).slice(0,10))+'</td><td>'+statusPill(String(r.status).toUpperCase())+'</td><td><button class="btn ghost small" onclick="viewUpgradeProof(\x27'+esc(r.proof_object_path)+'\x27)">View receipt</button></td><td>'+(r.status==='pending'?'<button class="btn success small" onclick="reviewPlatformBillingRequest(\x27'+r.id+'\x27,true)">Approve</button> <button class="btn danger small" onclick="reviewPlatformBillingRequest(\x27'+r.id+'\x27,false)">Reject</button>':'—')+'</td></tr>').join('')+'</tbody></table></div>';
+ }catch(err){box.innerHTML='<div class="empty">Could not load subscription payment settings: '+esc(err.message)+'</div>';}
 }
 async function savePlatformBillingSettings(e){
- e.preventDefault();const form=e.currentTarget,btn=form.querySelector('button[type="submit"]');if(btn){btn.disabled=true;btn.textContent='Saving…';}
+ e.preventDefault();const f=e.currentTarget,method=f.elements.payment_method.value,btn=f.querySelector('button[type=submit]');
+ if(!wpPremiumMethods.includes(method)){alert('Choose GCash or BPI.');return;}
+ const next={method,account_number:f.elements.account_number.value.trim(),account_name:f.elements.account_name.value.trim(),qr_image_url:wpBillingQrUrl,
+  instructions:f.elements.instructions.value.trim(),enabled:f.elements.enabled.checked,file:f.elements.qr_file.files?.[0]||null};
+ if(next.enabled&&(!next.account_number||!next.account_name||(!next.qr_image_url&&!next.file))){alert('Complete Account Number, Account Name and QR Code before enabling '+method+'.');return;}
+ if(btn){btn.disabled=true;btn.textContent='Saving…';}
  try{
-  await window.washPilotBillingApi.savePaymentSettings({gcash_account_name:form.elements.gcash_account_name.value.trim(),gcash_number:form.elements.gcash_number.value.trim(),qr_image_url:form.elements.qr_image_url.value.trim(),payment_instructions:form.elements.payment_instructions.value.trim()});
-  toast('GCash payment details saved.');loadPlatformBillingRequests();
- }catch(err){alert(err.message||'Could not save GCash details.');}
- finally{if(btn){btn.disabled=false;btn.textContent='Save payment details';}}
+  wpBillingAdminSettings=await window.washPilotBillingApi.savePaymentSettings(next);
+  wpSelectAdminBillingMethod(method);
+  toast(method+' payment details saved'+(wpPremiumReady(wpBillingAdminSettings,method)?' and available to business owners.':'.'));
+ }catch(err){alert(err.message||'Could not save receiving account.');}
+ finally{if(btn){btn.disabled=false;btn.textContent='Save selected method';}}
 }
 async function viewUpgradeProof(path){
  try{const url=await window.washPilotBillingApi.createProofUrl(path);window.open(url,'_blank','noopener');}
@@ -3738,26 +3823,31 @@ window.wpFinishAuthenticatedWorkspace=showAuthenticatedWorkspaceUI;
       return true;
     },
     async getPaymentSettings(){
-      const {data,error}=await getClient().from('billing_payment_settings').select('gcash_account_name,gcash_number,qr_image_url,payment_instructions').eq('id',true).maybeSingle();
+      const {data,error}=await getClient().from('billing_payment_settings')
+        .select('gcash_account_name,gcash_number,qr_image_url,payment_instructions,payment_methods')
+        .eq('id',true).maybeSingle();
       if(error)throw error;return data||{};
     },
     async getMyRequests(businessId){
       const {data,error}=await getClient().from('payment_reactivation_requests').select('id,plan_code,amount,payment_method,status,submitted_at,reviewer_note,request_type').eq('business_id',businessId).order('submitted_at',{ascending:false}).limit(10);
       if(error)throw error;return data||[];
     },
-    async submitUpgrade({businessId,planCode,amount,file}){
-      if(!file)throw new Error('Please attach your payment receipt or screenshot.');
-      if(file.size>10*1024*1024)throw new Error('Payment proof must be 10 MB or smaller.');
+    async submitUpgrade({businessId,planCode,amount,method,file}){
+      if(!wpPremiumMethods.includes(method))throw Error('Choose GCash or BPI.');
+      const settings=await this.getPaymentSettings();
+      if(!wpPremiumReady(settings,method))throw Error('The chosen payment method is not available. Please refresh and try another.');
+      if(!file)throw Error('Please attach your payment receipt or screenshot.');
+      if(file.size>10*1024*1024)throw Error('Payment proof must be 10 MB or smaller.');
       const allowed=['image/jpeg','image/png','image/webp','application/pdf'];
-      if(!allowed.includes(file.type))throw new Error('Upload a JPG, PNG, WebP image, or PDF receipt.');
+      if(!allowed.includes(file.type))throw Error('Upload a JPG, PNG, WebP image, or PDF receipt.');
       const sb=getClient(),ext=({'image/jpeg':'jpg','image/png':'png','image/webp':'webp','application/pdf':'pdf'})[file.type];
       const token=window.crypto?.randomUUID?window.crypto.randomUUID():Math.random().toString(36).slice(2);
       const objectPath=businessId+'/'+Date.now()+'-'+token+'.'+ext;
       const {error:uploadError}=await sb.storage.from('washpilot-payment-proofs').upload(objectPath,file,{upsert:false,contentType:file.type});
       if(uploadError)throw uploadError;
-      const {data,error}=await sb.rpc('submit_plan_upgrade_request',{p_business_id:businessId,p_plan_code:planCode,p_payment_method:'GCash',p_payment_reference:null,p_amount:amount,p_proof_object_path:objectPath});
+      const {data,error}=await sb.rpc('submit_plan_upgrade_request',{p_business_id:businessId,p_plan_code:planCode,p_payment_method:method,p_payment_reference:null,p_amount:amount,p_proof_object_path:objectPath});
       if(error){try{await sb.storage.from('washpilot-payment-proofs').remove([objectPath]);}catch(_){}throw error;}
-      return {requestId:data,objectPath};
+      return {requestId:data,objectPath,method};
     },
     async listAdminRequests(){
       const sb=getClient();
@@ -3770,8 +3860,30 @@ window.wpFinishAuthenticatedWorkspace=showAuthenticatedWorkspaceUI;
     async createProofUrl(path){const {data,error}=await getClient().storage.from('washpilot-payment-proofs').createSignedUrl(path,1800);if(error)throw error;return data.signedUrl;},
     async reviewRequest(requestId,approve,note){const {error}=await getClient().rpc('review_reactivation_request',{p_request_id:requestId,p_approve:!!approve,p_reviewer_note:note||null});if(error)throw error;return true;},
     async savePaymentSettings(settings){
-      const {data,error}=await getClient().from('billing_payment_settings').update({gcash_account_name:settings.gcash_account_name||null,gcash_number:settings.gcash_number||null,qr_image_url:settings.qr_image_url||null,payment_instructions:settings.payment_instructions||'Send the exact amount using GCash, then upload your payment receipt.',updated_at:new Date().toISOString()}).eq('id',true).select().single();
-      if(error)throw error;return data;
+      if(!wpPremiumMethods.includes(settings.method))throw Error('Choose GCash or BPI.');
+      const sb=getClient();let qrUrl=String(settings.qr_image_url||''),path=null;
+      if(settings.file){
+        const file=settings.file;
+        if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>5*1024*1024)throw Error('Upload a PNG, JPG or WebP QR code under 5 MB.');
+        const ext=({'image/png':'png','image/jpeg':'jpg','image/webp':'webp'})[file.type];
+        const token=window.crypto?.randomUUID?window.crypto.randomUUID():Math.random().toString(36).slice(2);
+        path=settings.method.toLowerCase()+'/'+Date.now()+'-'+token+'.'+ext;
+        const {error:uploadError}=await sb.storage.from('washpilot-billing-qr').upload(path,file,{upsert:false,contentType:file.type});
+        if(uploadError)throw uploadError;
+        qrUrl=sb.storage.from('washpilot-billing-qr').getPublicUrl(path).data.publicUrl;
+      }
+      try{
+        const {error}=await sb.rpc('save_platform_billing_method',{
+          p_method:settings.method,p_account_name:settings.account_name,
+          p_account_number:settings.account_number,p_qr_image_url:qrUrl,
+          p_enabled:!!settings.enabled,p_instructions:settings.instructions||''
+        });
+        if(error)throw error;
+        return await this.getPaymentSettings();
+      }catch(err){
+        if(path){try{await sb.storage.from('washpilot-billing-qr').remove([path]);}catch(_){}}
+        throw err;
+      }
     }
   };
 
