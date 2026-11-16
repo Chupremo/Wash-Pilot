@@ -3662,14 +3662,18 @@ window.wpFinishAuthenticatedWorkspace=showAuthenticatedWorkspaceUI;
       const statusMap={'Active':'active','Trial':'trialing','Past Due':'expired','Pending Verification':'pending_verification','Suspended':'suspended','Cancelled':'cancelled'};
       const dbStatus=statusMap[status];
       if(!businessId||!['basic','premium'].includes(planCode)||!dbStatus)throw new Error('Invalid business subscription update.');
-      const sb=getClient();
-      const {data:updatedSubscription,error:subscriptionError}=await sb.from('subscriptions').update({plan_code:planCode,status:dbStatus,updated_at:new Date().toISOString()}).eq('business_id',businessId).select('business_id');
-      if(subscriptionError)throw subscriptionError;
-      if(!updatedSubscription?.length)throw new Error('No subscription record was updated for this business.');
-      const businessStatus=status==='Suspended'?'suspended':status==='Cancelled'?'closed':'active';
-      const {error:businessError}=await sb.from('businesses').update({status:businessStatus,updated_at:new Date().toISOString()}).eq('id',businessId);
-      if(businessError)throw businessError;
-      return true;
+      // The server applies both subscription and business changes in one
+      // transaction, after checking current platform-admin membership.
+      // Never issue direct table writes here: an RLS/GRANT failure could leave
+      // the subscription changed and business status unchanged.
+      const {data,error}=await getClient().rpc('admin_update_tenant_account',{
+        p_business_id:businessId,
+        p_plan_code:planCode,
+        p_status:status
+      });
+      if(error)throw error;
+      if(!data||data.business_id!==businessId)throw new Error('Business update could not be verified. Refresh and try again.');
+      return data;
     },
     async getPaymentSettings(){
       const {data,error}=await getClient().from('billing_payment_settings')
