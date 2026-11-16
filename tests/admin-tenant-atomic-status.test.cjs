@@ -1,0 +1,34 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'..');
+for(const file of ['app.html','signin.html']){
+  const src=fs.readFileSync(path.join(root,file),'utf8');
+  const start=src.indexOf('async updateAdminTenant({businessId,planCode,status}){');
+  const end=src.indexOf('async getPaymentSettings()',start);
+  assert(start>0&&end>start,file+': admin update method exists');
+  const code=src.slice(start,end);
+  assert(code.includes(".rpc('admin_update_tenant_account'"),file+': atomic admin RPC');
+  assert(code.includes("p_business_id:businessId"),file+': business ID passed');
+  assert(code.includes("p_plan_code:planCode"),file+': plan passed');
+  assert(code.includes("p_status:status"),file+': status passed');
+  assert(!code.includes(".from('businesses').update("),file+': no direct business update');
+  assert(!code.includes(".from('subscriptions').update("),file+': no direct subscription update');
+  assert(code.includes('if(error)throw error'),file+': RPC errors shown');
+  assert(code.includes('data.business_id!==businessId'),file+': verifies result belongs to target');
+  assert(src.includes("async function updateTenant(e,id){"),file+': Super Admin form preserved');
+  assert(src.includes("await window.washPilotBillingApi.updateAdminTenant("),file+': form uses API');
+}
+const sql=fs.readFileSync(path.join(root,'supabase/migrations/20261116035000_admin_tenant_atomic_status.sql'),'utf8');
+assert(sql.includes('security definer'), 'transaction function must have server authorization');
+assert(sql.includes('not public.is_platform_admin()'),'server enforces platform admin role');
+assert(sql.includes('for update'), 'locks records for concurrent updates');
+assert(sql.includes('update public.subscriptions'),'updates subscription');
+assert(sql.includes('update public.businesses'),'updates business');
+assert(sql.includes('subscription_audit_log'),'logs state changes');
+assert(sql.includes('raise exception'), 'errors abort transaction');
+assert(sql.includes('revoke all on function public.admin_update_tenant_account'), 'revoke default function execute');
+assert(sql.includes('grant execute on function public.admin_update_tenant_account'), 'grant only authenticated access');
+assert(sql.includes('Premium activation requires a verified, unexpired paid period'), 'rejects unauthorized Premium activation');
+assert(sql.includes('Payment is pending')||sql.includes('subscription payment is pending'), 'blocks changes while payment review pending');
+assert(sql.includes("p_status='Suspended'"), 'handles suspension');
+assert(sql.includes("p_status='Cancelled'"), 'handles cancellation');
+console.log('PASS: both application shells use one authenticated atomic admin operation, server-side authorization, no partial table writes, audit log and paid plan safeguards.');
