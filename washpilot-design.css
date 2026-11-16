@@ -1308,3 +1308,75 @@ body.wp-page-app .wp-public .wp-payment-instructions {
  #publicLanding .wp-site-nav.wp-home-nav{gap:6px;padding-left:9px!important;padding-right:9px!important}
  .wp-page-app .topbar-brand-icon{width:70px!important;flex-basis:70px!important;height:40px!important}
 }
+
+
+/* Full-viewport sidebar: visually continuous as dashboard content grows.
+   Its contents scroll independently; mobile remains an off-canvas overlay. */
+@media (min-width:761px){
+ body.wp-page-app.washpilot-authenticated #washpilotApp.app{
+   display:grid!important;
+   align-items:stretch!important;
+   min-height:100dvh!important;
+ }
+ body.wp-page-app.washpilot-authenticated #washpilotApp.app>.sidebar{
+   position:sticky!important;
+   top:0!important;
+   left:auto!important;
+   right:auto!important;
+   align-self:start!important;
+   box-sizing:border-box!important;
+   height:100dvh!important;
+   min-height:100vh!important;
+   max-height:100dvh!important;
+   width:100%!important;
+   min-width:0!important;
+   overflow-y:auto!important;
+   overflow-x:hidden!important;
+   overscroll-behavior-y:contain;
+   scrollbar-width:thin;
+   scrollbar-color:#415a78 #081d37;
+   padding-bottom:calc(22px + env(safe-area-inset-bottom))!important;
+ }
+ body.wp-page-app.washpilot-authenticated #washpilotApp.app>.sidebar .side-foot{margin-top:auto}
+ body.wp-page-app.washpilot-authenticated #washpilotApp.app>.main{min-width:0;align-self:stretch}
+}
+/* Explicit Log out replaces the anonymous "BO" initials. */
+body.wp-page-app #washpilotApp .topbar .wp-topbar-logout{
+  display:inline-flex!important;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  flex:0 0 auto;
+  min-height:44px;
+  min-width:105px;
+  padding:9px 14px;
+  border:1px solid #d7e1ee;
+  border-radius:11px;
+  background:#fff!important;
+  color:#183658!important;
+  box-shadow:none!important;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif!important;
+  font-size:13px!important;
+  font-weight:750!important;
+  line-height:1.2;
+  white-space:nowrap;
+  cursor:pointer;
+}
+body.wp-page-app #washpilotApp .topbar .wp-topbar-logout:hover{background:#f1f5fb!important;border-color:#b5c6dd}
+body.wp-page-app #washpilotApp .topbar .wp-topbar-logout:focus-visible{outline:3px solid #2563eb;outline-offset:2px}
+body.wp-page-app #washpilotApp .topbar .wp-topbar-logout svg{flex:none}
+@media(max-width:760px){
+ body.wp-page-app.washpilot-authenticated #washpilotApp.app>.sidebar{
+   height:100dvh!important;
+   min-height:100dvh!important;
+   max-height:100dvh!important;
+   overflow-y:auto!important;
+   overscroll-behavior:contain;
+ }
+ body.wp-page-app #washpilotApp .topbar .wp-topbar-logout{
+   min-height:44px!important;
+   min-width:93px!important;
+   padding:8px 10px!important;
+   font-size:12px!important;
+ }
+}
