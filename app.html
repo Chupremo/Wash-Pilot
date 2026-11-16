@@ -3208,6 +3208,37 @@ async function loadMyBillingRequests(){
   el.innerHTML=rows.length?'<div class="table-wrap"><table><thead><tr><th>Request</th><th>Plan</th><th>Amount</th><th>Method</th><th>Submitted</th><th>Status</th><th>Admin note</th></tr></thead><tbody>'+rows.map(r=>'<tr><td><b>'+esc(r.request_type==='renewal'?'Premium renewal':r.request_type==='upgrade'?'Premium request':'Payment request')+'</b></td><td>'+esc(planName(planRank(r.plan_code)))+'</td><td>'+money(r.amount)+'</td><td>'+esc(r.payment_method||'—')+'</td><td>'+dateLabel(String(r.submitted_at).slice(0,10))+'</td><td>'+statusPill(String(r.status).toUpperCase())+'</td><td>'+esc(r.reviewer_note||'—')+'</td></tr>').join('')+'</tbody></table></div>':'<div class="empty">No payment or renewal requests yet.</div>';
  }catch(err){el.innerHTML='<div class="empty">Payment request history is unavailable: '+esc(err.message)+'</div>';}
 }
+let wpPlatformPosRows=[],wpPlatformPosError='',wpPlatformPosLoading=false,wpPlatformPosLoaded=false,wpPlatformPosRange=30;
+async function refreshPlatformPosUsage(){
+ if(!window.wpRealPlatformAdminActive||!window.washPilotBillingApi?.listAdminPosUsage||wpPlatformPosLoading)return;
+ wpPlatformPosLoading=true;wpPlatformPosError='';
+ try{wpPlatformPosRows=await window.washPilotBillingApi.listAdminPosUsage();wpPlatformPosLoaded=true}
+ catch(err){wpPlatformPosError=err?.message||String(err);wpPlatformPosLoaded=false}
+ finally{wpPlatformPosLoading=false;if(currentRole==='platform')render()}
+}
+function platformPosUsagePanel(){
+ const cutoff=isoAgo(wpPlatformPosRange-1),ts=platformData.tenants||[],byBusiness=new Map();
+ const rows=wpPlatformPosRows.filter(r=>String(r.transaction_date)>=cutoff);
+ for(const r of rows){
+  let b=byBusiness.get(r.business_id);
+  if(!b){b={receipts:0,paid:0,revenue:0,days:new Set(),last:''};byBusiness.set(r.business_id,b)}
+  b.receipts++;b.days.add(r.transaction_date);if(r.transaction_date>b.last)b.last=r.transaction_date;
+  if(r.financial_status==='Paid'){b.revenue+=Number(r.total_php||0);b.paid++}
+ }
+ const revenue=[...byBusiness.values()].reduce((v,b)=>v+b.revenue,0);
+ const paid=[...byBusiness.values()].reduce((v,b)=>v+b.paid,0);
+ const range='<select aria-label="POS reporting period" onchange="wpPlatformPosRange=Number(this.value);render()" style="max-width:150px">'+[7,30,90].map(n=>'<option value="'+n+'" '+(wpPlatformPosRange===n?'selected':'')+'>Last '+n+' days</option>').join('')+'</select>';
+ const businesses=ts.map(t=>({t,m:byBusiness.get(t.id)})).sort((a,b)=>(b.m?.revenue||0)-(a.m?.revenue||0));
+ const body=businesses.length?'<div class="table-wrap"><table><thead><tr><th>Business</th><th>Paid POS sales</th><th>Paid receipts</th><th>POS activity days</th><th>Last receipt</th><th>Usage status</th></tr></thead><tbody>'+businesses.map(({t,m})=>'<tr><td><b>'+esc(t.name)+'</b></td><td class="amount">'+money(m?.revenue||0)+'</td><td>'+(m?.paid||0)+'</td><td>'+(m?.days.size||0)+'</td><td>'+(m?.last?dateLabel(m.last):'—')+'</td><td>'+(!m?'No synced data':m.days.size>=Math.max(3,Math.ceil(wpPlatformPosRange/7))?'Active':'Low activity')+'</td></tr>').join('')+'</tbody></table></div>':'<div class="empty">No registered businesses found.</div>';
+ return '<section class="panel" style="margin-top:15px"><div class="panel-head"><div><h3>POS Usage & Revenue Monitor</h3><p class="subtle">Owner-reported walk-in POS activity · not verified bank deposits</p></div><div class="actions">'+range+'<button class="btn ghost small" onclick="refreshPlatformPosUsage()">↻ Refresh POS</button></div></div>'+
+ (wpPlatformPosError?'<div role="alert" class="inline-note">Unable to load POS data: '+esc(wpPlatformPosError)+'</div>':'')+
+ '<div class="grid stats">'+stat('Reported POS sales',money(revenue),'Paid receipts only','₱','green')+
+ stat('Paid POS transactions',paid,'Across all businesses','▤')+
+ stat('Businesses using POS',byBusiness.size,'At least one synced receipt','▣','purple')+
+ stat('Businesses without activity',Math.max(0,ts.length-byBusiness.size),'No synced receipts in this range','◷','amber')+'</div>'+
+ (!wpPlatformPosLoaded?'<div class="inline-note">POS reporting has not loaded yet. Refresh POS to retry.</div>':'')+body+
+ '<p class="subtle" style="margin-top:12px;line-height:1.6">Does not include online bookings or WashPilot subscription payments. Refunded, voided and unpaid tickets are excluded from sales. Previously stored receipts sync when owners sign in. The figures are self-reported and must not automatically qualify businesses for rewards.</p></section>';
+}
 function platformDashboard(){
  const ts=Array.isArray(platformData.tenants)?platformData.tenants:[];
  const active=ts.filter(t=>t.status==='Active');
@@ -3230,6 +3261,7 @@ function platformDashboard(){
   '</div><div class="grid two"><section class="panel"><div class="panel-head"><h3>Subscription health</h3><button class="btn ghost small" onclick="go(\'tenants\')">Manage businesses</button></div>'+
    health.map(a=>'<div style="margin:13px 0"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px"><b>'+a[0]+'</b><span>'+a[1]+' businesses</span></div><div class="progress"><span style="width:'+(ts.length?a[1]/ts.length*100:0)+'%;background:'+a[2]+'"></span></div></div>').join('')+
   '</section><section class="panel"><div class="panel-head"><h3>Subscription revenue</h3><button class="btn ghost small" onclick="go(\'platformBilling\')">View billing</button></div><div class="mini-card"><small>Estimated active monthly plan value</small><strong>'+money(mrr)+'</strong><small>'+active.length+' active subscription(s)</small></div><div class="inline-note" style="margin-top:12px">This is recurring plan value calculated from active subscriptions. It is not a receipt or cash-collection total.</div></section></div>'+
+  platformPosUsagePanel()+
   '<section class="panel" style="margin-top:15px"><div class="panel-head"><h3>Recently added businesses</h3><button class="btn ghost small" onclick="go(\'tenants\')">View all</button></div>'+(rows.length?tenantTable(rows,false):'<div class="empty">No customer businesses are registered yet.</div>')+'</section>';
 }
 async function refreshPlatformAdminData(){
@@ -3238,6 +3270,7 @@ async function refreshPlatformAdminData(){
   const rows=await window.washPilotBillingApi.listAdminTenants(window.wpRealPlatformAdminUserId);
   window.wpSetLivePlatformData(rows);
   render();
+  refreshPlatformPosUsage();
   toast('Live WashPilot data refreshed.');
  }catch(err){alert(err.message||'Could not refresh live platform data.');}
 }
